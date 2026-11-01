@@ -537,6 +537,7 @@ function room(id){
        R(0,245,300,95,'#efc08e')+'<path d="M0 272H300M0 300H300M0 326H300M80 245V272M200 245V272M30 272V300M150 272V300M250 272V300M90 300V326M210 300V326" stroke="#d9a673" stroke-width="2" fill="none"/>'+
        E(150,306,112,24,'#ffb3d4')+E(150,306,84,16,'#ffd6e8');
   }
+  if(id==='bedroom'&&S.gender==='boy'){const m={'#ffe9f3':'#e4f0ff','#ffd6e8':'#c9e0ff','#ff9ec9':'#6aa8ff','#ffb3d4':'#7fb6ff','#b79cff':'#4f7bd9','#ffe0ef':'#d6e6ff','#efc08e':'#d8b98a'};o=o.replace(/#[0-9a-f]{6}/gi,c=>m[c.toLowerCase()]||c)}
   return o;
 }
 const star=(cx,cy,r,f)=>{const p=[];for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.45:r;p.push((cx+rr*Math.cos(a)).toFixed(1)+','+(cy+rr*Math.sin(a)).toFixed(1))}return '<polygon points="'+p.join(' ')+'" fill="'+f+'" stroke="#e6a800" stroke-width="1.5" stroke-linejoin="round"/>'};
