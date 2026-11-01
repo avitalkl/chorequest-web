@@ -185,6 +185,8 @@ function viewFamily(){
 }
 function modal(html){$('mbox').innerHTML=html;$('modal').classList.add('on')}
 function closeModal(){$('modal').classList.remove('on')}
+let askCb=null;
+function ask(title,value,cb){askCb=cb;modal('<h3 style="margin:0 0 10px">'+esc(title)+'</h3><input id="askin" maxlength="14" value="'+esc(value)+'"><button class="big" data-a="askok">'+L().save+'</button><button class="b" style="margin-top:10px" data-a="closem">'+L().cancel+'</button>');setTimeout(()=>$('askin').focus(),50)}
 function showLink(title,hint,url,qr){
   const l=L();let svg='';
   if(qr){const q=qrcode(0,'M');q.addData(url);q.make();svg='<div class="qr">'+q.createSvgTag({cellSize:4,margin:2,scalable:true})+'</div>'}
@@ -202,8 +204,9 @@ document.addEventListener('click',e=>{
   if(t.dataset.delc){if(!confirm(l.confirmDel))return;run(async()=>{const r=await sb.from('chores').update({active:false}).eq('id',t.dataset.delc);if(r.error)throw r.error;editing=null});return}
   if(t.dataset.pair){const id=t.dataset.pair,k=D.kids.find(x=>x.id===id);
     sb.rpc('create_kid_invite',{p_kid:id}).then(r=>{if(r.error)return toast(l.err);showLink(l.pairT+' – '+k.name,l.pairH,here('../kid/?join='+r.data),true)});return}
-  if(t.dataset.ren){const k=D.kids.find(x=>x.id===t.dataset.ren);const n=prompt(l.kidName,k.name);
-    if(n&&n.trim())run(async()=>{const r=await sb.from('kids').update({name:n.trim().slice(0,14)}).eq('id',k.id);if(r.error)throw r.error});return}
+  if(t.dataset.ren){const k=D.kids.find(x=>x.id===t.dataset.ren);
+    ask(l.kidName,k.name,n=>run(async()=>{const r=await sb.from('kids').update({name:n.slice(0,14)}).eq('id',k.id);if(r.error)throw r.error}));return}
+  if(a==='askok'){const v=$('askin').value.trim();if(v){closeModal();const f=askCb;askCb=null;f(v)}return}
   switch(a){
     case 'lang':P.lang=P.lang==='en'?'he':'en';localStorage.setItem(PK,JSON.stringify(P));render();break;
     case 'google':localStorage.setItem('cq-google','1');sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname.replace(/index\.html$/,'')}});break;
@@ -215,7 +218,7 @@ document.addEventListener('click',e=>{
       const title=$('fn').value.trim();if(!title){toast(l.needName);break}
       const row={title:title.slice(0,60),icon:($('fi').value.trim()||'⭐').slice(0,8),coins:Math.max(0,Math.min(50,parseInt($('fc').value,10)||0)),game:$('fg').value,kid_id:$('fk').value||null};
       run(async()=>{const r=editing==='new'?await sb.from('chores').insert(Object.assign({household_id:D.hh.id},row)):await sb.from('chores').update(row).eq('id',editing);if(r.error)throw r.error;editing=null});break}
-    case 'addkid':{const n=prompt(l.kidName,'');if(n&&n.trim())run(async()=>{const r=await sb.from('kids').insert({household_id:D.hh.id,name:n.trim().slice(0,14)});if(r.error)throw r.error});break}
+    case 'addkid':ask(l.kidName,'',n=>run(async()=>{const r=await sb.from('kids').insert({household_id:D.hh.id,name:n.slice(0,14)});if(r.error)throw r.error}));break;
     case 'savename':{const n=$('hn').value.trim();if(n)run(async()=>{const r=await sb.from('households').update({name:n}).eq('id',D.hh.id);if(r.error)throw r.error;toast('✓')});break}
     case 'toggle':run(async()=>{const r=await sb.from('households').update({require_approval:!D.hh.require_approval}).eq('id',D.hh.id);if(r.error)throw r.error});break;
     case 'invite':sb.rpc('create_parent_invite').then(r=>{if(r.error)return toast(l.err);showLink(l.inviteT,l.inviteH,here('./?invite='+r.data),false)});break;
