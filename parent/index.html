@@ -82,7 +82,7 @@ en:{app:'ChoreQuest Parent',tag:'Set chores, approve them, and cheer your kids o
  noKids:'Add your child to get started',needKid:'Add a child first',paired:n=>n+' device'+(n===1?'':'s')+' paired',
  prizes:'Prizes',addPrize:'+ Add prize',cost:'Cost',noPrizes:'No prizes yet. Add real-world rewards like ice cream or movie night.',confirmPrize:'Delete this prize?',
  given:'Given',wants:'wants',repeat:'Repeats',daily:'Every day',weekly:'Weekly',weekly1:'Once a week',weeklyN:n=>n+'× a week',
- days:'Only on these days',daysHint:'Leave empty for every day.',target:'Times per week',kidsT:'Kids'},
+ days:'Only on these days',daysHint:'Leave empty for every day.',target:'Times per week',kidsT:'Kids',gender:'Avatar style',girl:'Girl',boy:'Boy'},
 he:{app:'ChoreQuest להורים',tag:'קבעו משימות, אשרו אותן ועודדו את הילדים.',google:'המשך עם Google',signout:'התנתקות',
  setupT:'הקמת המשפחה',setupH:'תנו שם למשפחה. אפשר לשנות אחר כך.',famName:'שם המשפחה',create:'יצירת משפחה',
  approvals:'אישורים',chores:'משימות',kids:'ילדים',family:'משפחה',
@@ -99,7 +99,7 @@ he:{app:'ChoreQuest להורים',tag:'קבעו משימות, אשרו אותן 
  noKids:'הוסיפו את הילד/ה כדי להתחיל',needKid:'קודם הוסיפו ילד/ה',paired:n=>n+' מכשירים מחוברים',
  prizes:'פרסים',addPrize:'+ הוספת פרס',cost:'מחיר',noPrizes:'אין פרסים עדיין. הוסיפו פרסים אמיתיים כמו גלידה או ערב סרט.',confirmPrize:'למחוק את הפרס?',
  given:'נמסר',wants:'רוצה',repeat:'חזרה',daily:'כל יום',weekly:'שבועי',weekly1:'פעם בשבוע',weeklyN:n=>n+' פעמים בשבוע',
- days:'רק בימים האלה',daysHint:'השאירו ריק לכל יום.',target:'פעמים בשבוע',kidsT:'ילדים'}};
+ days:'רק בימים האלה',daysHint:'השאירו ריק לכל יום.',target:'פעמים בשבוע',kidsT:'ילדים',gender:'סגנון דמות',girl:'בת',boy:'בן'}};
 const PK='chorequest-parent-v1';
 const P=JSON.parse(localStorage.getItem(PK)||'null')||{lang:'en'};
 const L=()=>T[P.lang],$=id=>document.getElementById(id);
@@ -133,7 +133,7 @@ async function load(){
   const [h,mm,k,c,p,dv,pz,pr]=await Promise.all([
     sb.from('households').select('id,name,require_approval').eq('id',hid).single(),
     sb.from('household_members').select('user_id').eq('household_id',hid),
-    sb.from('kids').select('id,name,coins').eq('household_id',hid).order('created_at'),
+    sb.from('kids').select('id,name,coins,gender').eq('household_id',hid).order('created_at'),
     sb.from('chores').select('id,title,icon,coins,game,kid_id,repeat,weekdays,weekly_target').eq('household_id',hid).eq('active',true).order('created_at'),
     sb.from('completions').select('id,kid_id,chore_id,base_coins,bonus,created_at').eq('household_id',hid).eq('status','pending').order('created_at'),
     sb.from('kid_devices').select('kid_id'),
@@ -213,7 +213,7 @@ function viewChores(){
 }
 function viewKids(){
   const l=L();
-  return '<div class="sec"><h3>'+l.kidsT+'</h3>'+(D.kids.length?D.kids.map(k=>'<div class="row"><span class="e">👧</span><div class="m">'+esc(k.name)+'<small>'+l.coinsN(k.coins)+' · '+l.paired(D.devices[k.id]||0)+'</small></div>'+
+  return '<div class="sec"><h3>'+l.kidsT+'</h3>'+(D.kids.length?D.kids.map(k=>'<div class="row"><span class="e">'+(k.gender==='boy'?'👦':'👧')+'</span><div class="m">'+esc(k.name)+'<small>'+l.coinsN(k.coins)+' · '+l.paired(D.devices[k.id]||0)+'</small></div>'+
     '<button class="b" data-ren="'+k.id+'">✏️</button><button class="b ok" data-pair="'+k.id+'">'+l.pair+'</button></div>').join(''):'<div class="empty">'+l.noKids+'</div>')+
     '<button class="big" data-a="addkid" style="margin-top:8px">'+l.addKid+'</button></div>';
 }
@@ -226,7 +226,15 @@ function viewFamily(){
 }
 function modal(html){$('mbox').innerHTML=html;$('modal').classList.add('on')}
 function closeModal(){$('modal').classList.remove('on')}
-let askCb=null;
+let askCb=null,kidG='girl';
+function kidForm(k,cb){
+  const l=L();askCb=cb;kidG=k?k.gender:'girl';
+  modal('<h3 style="margin:0 0 10px">'+esc(l.kidName)+'</h3><input id="askin" maxlength="14" value="'+esc(k?k.name:'')+'">'+
+   '<div class="lab" style="text-align:start">'+l.gender+'</div><div style="display:flex;gap:10px">'+
+   ['girl','boy'].map(g=>'<button class="b gbtn'+(kidG===g?' ok':'')+'" style="flex:1" data-g="'+g+'">'+(g==='girl'?'👧 '+l.girl:'👦 '+l.boy)+'</button>').join('')+'</div>'+
+   '<button class="big" data-a="kidok">'+l.save+'</button><button class="b" style="margin-top:10px" data-a="closem">'+l.cancel+'</button>');
+  setTimeout(()=>$('askin').focus(),50);
+}
 function ask(title,value,cb){askCb=cb;modal('<h3 style="margin:0 0 10px">'+esc(title)+'</h3><input id="askin" maxlength="14" value="'+esc(value)+'"><button class="big" data-a="askok">'+L().save+'</button><button class="b" style="margin-top:10px" data-a="closem">'+L().cancel+'</button>');setTimeout(()=>$('askin').focus(),50)}
 function showLink(title,hint,url,qr){
   const l=L();let svg='';
@@ -251,7 +259,9 @@ document.addEventListener('click',e=>{
   if(t.dataset.pair){const id=t.dataset.pair,k=D.kids.find(x=>x.id===id);
     sb.rpc('create_kid_invite',{p_kid:id}).then(r=>{if(r.error)return toast(l.err);showLink(l.pairT+' – '+k.name,l.pairH,here('../kid/?join='+r.data),true)});return}
   if(t.dataset.ren){const k=D.kids.find(x=>x.id===t.dataset.ren);
-    ask(l.kidName,k.name,n=>run(async()=>{const r=await sb.from('kids').update({name:n.slice(0,14)}).eq('id',k.id);if(r.error)throw r.error}));return}
+    kidForm(k,(n,g)=>run(async()=>{const r=await sb.from('kids').update({name:n.slice(0,14),gender:g}).eq('id',k.id);if(r.error)throw r.error}));return}
+  if(t.dataset.g){kidG=t.dataset.g;document.querySelectorAll('.gbtn').forEach(x=>x.classList.toggle('ok',x.dataset.g===kidG));return}
+  if(a==='kidok'){const v=$('askin').value.trim();if(v){closeModal();const f=askCb;askCb=null;f(v,kidG)}return}
   if(a==='askok'){const v=$('askin').value.trim();if(v){closeModal();const f=askCb;askCb=null;f(v)}return}
   switch(a){
     case 'lang':P.lang=P.lang==='en'?'he':'en';localStorage.setItem(PK,JSON.stringify(P));render();break;
@@ -272,7 +282,7 @@ document.addEventListener('click',e=>{
       const row={title:title.slice(0,60),icon:(draft.icon.trim()||'⭐').slice(0,8),coins:Math.max(0,Math.min(50,parseInt(draft.coins,10)||0)),game:draft.game,kid_id:draft.kid_id,
         repeat:draft.repeat,weekly_target:wk?Math.max(1,Math.min(7,parseInt(draft.weekly_target,10)||1)):1,weekdays:!wk&&draft.weekdays.length?draft.weekdays.slice().sort():null};
       run(async()=>{const r=editing==='new'?await sb.from('chores').insert(Object.assign({household_id:D.hh.id},row)):await sb.from('chores').update(row).eq('id',editing);if(r.error)throw r.error;editing=null});break}
-    case 'addkid':ask(l.kidName,'',n=>run(async()=>{const r=await sb.from('kids').insert({household_id:D.hh.id,name:n.slice(0,14)});if(r.error)throw r.error}));break;
+    case 'addkid':kidForm(null,(n,g)=>run(async()=>{const r=await sb.from('kids').insert({household_id:D.hh.id,name:n.slice(0,14),gender:g});if(r.error)throw r.error}));break;
     case 'savename':{const n=$('hn').value.trim();if(n)run(async()=>{const r=await sb.from('households').update({name:n}).eq('id',D.hh.id);if(r.error)throw r.error;toast('✓')});break}
     case 'toggle':run(async()=>{const r=await sb.from('households').update({require_approval:!D.hh.require_approval}).eq('id',D.hh.id);if(r.error)throw r.error});break;
     case 'invite':sb.rpc('create_parent_invite').then(r=>{if(r.error)return toast(l.err);showLink(l.inviteT,l.inviteH,here('./?invite='+r.data),false)});break;
