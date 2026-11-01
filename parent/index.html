@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -75,7 +75,7 @@ en:{app:'ChoreQuest Parent',tag:'Set chores, approve them, and cheer your kids o
  setupT:'Set up your family',setupH:'Name your family. You can change it later.',famName:'Family name',create:'Create family',
  approvals:'Approvals',chores:'Chores',kids:'Kids',family:'Family',
  nothing:'Nothing waiting for approval',pickIcon:'Pick an icon',iconSearch:'Search icons (tennis, bed, dog...)',noIcons:q=>'No icons found for "'+q+'"',doneT:'Completed',dToday:'Today',dWeek:'This week (resets Sunday)',doneNone:'Nothing completed yet',approve:'Approve',reject:'Reject',bonus:n=>'+'+n+' bonus',
- add:'+ Add chore',edit:'Edit',save:'Save',cancel:'Cancel',del:'Delete',name:'Name',icon:'Icon',coins:'Coins',game:'Game',forWho:'For',everyone:'Everyone',
+ add:'+ Add chore',edit:'Edit',save:'Save',cancel:'Cancel',del:'Delete',name:'Name (English)',nameHe:'Name in Hebrew (optional)',icon:'Icon',coins:'Coins',game:'Game',forWho:'For',everyone:'Everyone',
  g:{memory:'Memory match',bubbles:'Pop bubbles',stars:'Catch stars',critters:'Tap critters',simon:'Copy the song',count:'Counting',queens:'Color Queens',sudoku:'Emoji sudoku',scramble:'Word scramble',slide:'Slide puzzle',reflex:'Color reflex',tennis:'Tennis rally',flip:'Flip master',birds:'Catch birds',none:'No game'},
  confirmDel:'Delete this chore?',needName:'Please enter a name',noChores:'No chores yet',
  addKid:'+ Add a child',kidName:'Child name',pair:'Pair device',rename:'Rename',removeKid:'Remove child',confirmKid:'Remove this child and all their data?',
@@ -94,7 +94,7 @@ he:{app:'מסע המשימות להורים',tag:'קבעו משימות, אשר�
  setupT:'הקמת המשפחה',setupH:'תנו שם למשפחה. אפשר לשנות אחר כך.',famName:'שם המשפחה',create:'יצירת משפחה',
  approvals:'אישורים',chores:'משימות',kids:'ילדים',family:'משפחה',
  nothing:'אין מה לאשר כרגע',pickIcon:'בחרו אייקון',iconSearch:'חיפוש אייקון (טניס, מיטה, כלב...)',noIcons:q=>'לא נמצאו אייקונים עבור "'+q+'"',doneT:'הושלמו',dToday:'היום',dWeek:'השבוע (מתאפס ביום ראשון)',doneNone:'עוד לא הושלם דבר',approve:'אישור',reject:'דחייה',bonus:n=>'+'+n+' בונוס',
- add:'+ הוספת משימה',edit:'עריכה',save:'שמירה',cancel:'ביטול',del:'מחיקה',name:'שם',icon:'אייקון',coins:'מטבעות',game:'משחק',forWho:'עבור',everyone:'כולם',
+ add:'+ הוספת משימה',edit:'עריכה',save:'שמירה',cancel:'ביטול',del:'מחיקה',name:'שם (אנגלית)',nameHe:'שם בעברית (לא חובה)',icon:'אייקון',coins:'מטבעות',game:'משחק',forWho:'עבור',everyone:'כולם',
  g:{memory:'זיכרון',bubbles:'פוצצו בועות',stars:'תפסו כוכבים',critters:'תפסו חברים',simon:'חזרו על השיר',count:'ספירה',queens:'מלכות הצבעים',sudoku:'סודוקו אימוג׳י',scramble:'ערבוביית מילים',slide:'פאזל הזזה',reflex:'תגובה מהירה',tennis:'טניס',flip:'מתעמלת מאוזנת',birds:'תפסו ציפורים',none:'ללא משחק'},
  confirmDel:'למחוק את המשימה?',needName:'נא להזין שם',noChores:'אין משימות עדיין',
  addKid:'+ הוספת ילד/ה',kidName:'שם הילד/ה',pair:'חיבור מכשיר',rename:'שינוי שם',removeKid:'הסרת ילד/ה',confirmKid:'להסיר את הילד/ה ואת כל הנתונים?',
@@ -120,6 +120,8 @@ function setInstallName(name,short){
     j.name=name;j.short_name=short;j.start_url=new URL(j.start_url,base).href;j.scope=new URL(j.scope,base).href;
     j.icons.forEach(i=>i.src=new URL(i.src,base).href);
     const old=ln.href;ln.href=URL.createObjectURL(new Blob([JSON.stringify(j)],{type:'application/manifest+json'}));if(old.startsWith('blob:'))URL.revokeObjectURL(old)}).catch(()=>{})}
+const HE_CH={'Brush teeth':['צחצחי שיניים','צחצח שיניים'],'Pick up socks':['אספי גרביים','אסוף גרביים'],'Read 20 minutes':['קראי 20 דקות','קרא 20 דקות'],'Make the bed':['סדרי את המיטה','סדר את המיטה'],'Help with dishes':['עזרי בכלים','עזור בכלים'],'Tidy my room':['סדרי את החדר','סדר את החדר'],'Do homework':['עשי שיעורי בית','עשה שיעורי בית']};
+function ttl(x){if(!x)return '';if(P.lang!=='he')return x.title;if(x.title_he)return x.title_he;const h=HE_CH[x.title];if(!h)return x.title;const k=D.kids.find(y=>y.id===x.kid_id);return h[k&&k.gender==='girl'?0:1]}
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200)}
 const D={user:null,hh:null,members:0,kids:[],chores:[],pending:[],devices:{},prizes:[],prizeReq:[]};
@@ -166,7 +168,7 @@ function drawIcons(){
 }
 function readDraft(){
   if(!draft||!$('fn'))return;
-  draft.title=$('fn').value;draft.icon=$('fi').value;draft.coins=$('fc').value;draft.game=$('fg').value;draft.kid_id=$('fk').value||null;
+  draft.title=$('fn').value;draft.title_he=$('fnh').value;draft.icon=$('fi').value;draft.coins=$('fc').value;draft.game=$('fg').value;draft.kid_id=$('fk').value||null;
   draft.repeat=$('fr').value;if($('fw'))draft.weekly_target=$('fw').value;
 }
 function scheduleText(c){
@@ -190,10 +192,10 @@ async function load(){
     sb.from('households').select('id,name,require_approval').eq('id',hid).single(),
     sb.from('household_members').select('user_id').eq('household_id',hid),
     sb.from('kids').select('id,name,coins,gender').eq('household_id',hid).order('created_at'),
-    sb.from('chores').select('id,title,icon,coins,game,kid_id,repeat,weekdays,weekly_target').eq('household_id',hid).eq('active',true).order('created_at'),
+    sb.from('chores').select('id,title,title_he,icon,coins,game,kid_id,repeat,weekdays,weekly_target').eq('household_id',hid).eq('active',true).order('created_at'),
     sb.from('completions').select('id,kid_id,chore_id,base_coins,bonus,created_at').eq('household_id',hid).eq('status','pending').order('created_at'),
     sb.from('kid_devices').select('kid_id'),
-    sb.from('prizes').select('id,title,icon,cost').eq('household_id',hid).eq('active',true).order('created_at'),
+    sb.from('prizes').select('id,title,title_he,icon,cost').eq('household_id',hid).eq('active',true).order('created_at'),
     sb.from('prize_requests').select('id,kid_id,prize_id,cost,created_at').eq('household_id',hid).eq('status','pending').order('created_at'),
         sb.from('completions').select('id,kid_id,chore_id,base_coins,bonus,day').eq('household_id',hid).eq('status','approved').gte('day',weekStart())        .order('day',{ascending:false})]);
           const e=[h,mm,k,c,p,dv,pz,pr,dn].find(x=>x.error);if(e)throw e.error;
@@ -237,7 +239,7 @@ function viewDone(){
     const coins=mine.reduce((s,r)=>s+r.base_coins+(r.bonus||0),0);
     h+='<div class="row" style="font-weight:800"><div class="m">'+esc(k.name)+'<small>'+mine.length+' ✓ · 💰 '+coins+'</small></div></div>';
     Object.keys(by).forEach(id=>{const c=D.chores.find(x=>x.id===id)||{icon:'⭐',title:'?'};
-      h+='<div class="row"><span class="e">'+esc(c.icon)+'</span><div class="m">'+esc(c.title)+'</div><b>×'+by[id].length+'</b></div>'});
+      h+='<div class="row"><span class="e">'+esc(c.icon)+'</span><div class="m">'+esc(ttl(c))+'</div><b>×'+by[id].length+'</b></div>'});
   });
   return h+'</div>';
 }
@@ -246,23 +248,24 @@ function viewApprovals(){
   if(!D.pending.length&&!D.prizeReq.length)return '<div class="sec"><div class="empty">🎉 '+l.nothing+'</div></div>'+viewDone();
   let h='';
   if(D.prizeReq.length)h+='<div class="sec">'+D.prizeReq.map(r=>{const z=D.prizes.find(x=>x.id===r.prize_id)||{icon:'🎁',title:'?'};
-    return '<div class="row"><span class="e">'+esc(z.icon)+'</span><div class="m">'+esc(z.title)+'<small>'+esc(kname(r.kid_id))+' '+l.wants+' · 💰 '+r.cost+'</small></div>'+
+    return '<div class="row"><span class="e">'+esc(z.icon)+'</span><div class="m">'+esc(ttl(z))+'<small>'+esc(kname(r.kid_id))+' '+l.wants+' · 💰 '+r.cost+'</small></div>'+
      '<button class="b bad" data-prej="'+r.id+'">'+l.reject+'</button><button class="b ok" data-pgive="'+r.id+'">'+l.given+'</button></div>'}).join('')+'</div>';
   if(D.pending.length)h+='<div class="sec">'+D.pending.map(p=>{const c=D.chores.find(x=>x.id===p.chore_id)||{icon:'⭐',title:'?'};
-    return '<div class="row"><span class="e">'+esc(c.icon)+'</span><div class="m">'+esc(c.title)+'<small>'+esc(kname(p.kid_id))+' · 💰 '+p.base_coins+(p.bonus?' ('+l.bonus(p.bonus)+')':'')+'</small></div>'+
+    return '<div class="row"><span class="e">'+esc(c.icon)+'</span><div class="m">'+esc(ttl(c))+'<small>'+esc(kname(p.kid_id))+' · 💰 '+p.base_coins+(p.bonus?' ('+l.bonus(p.bonus)+')':'')+'</small></div>'+
      '<button class="b bad" data-rej="'+p.id+'">'+l.reject+'</button><button class="b ok" data-app="'+p.id+'">'+l.approve+'</button></div>'}).join('')+'</div>';
   return h+viewDone();
 }
 function viewPrizes(){
   const l=L();
   if(editing){
-    const z=editing==='new'?{icon:'🎁',cost:50,title:''}:D.prizes.find(x=>x.id===editing)||{};
+    const z=editing==='new'?{icon:'🎁',cost:50,title:'',title_he:''}:D.prizes.find(x=>x.id===editing)||{};
     return '<div class="sec"><div class="lab" style="margin-top:0">'+l.name+'</div><div style="display:flex;gap:10px;align-items:center"><button class="iconbtn" id="pib" data-a="pickicon" data-t="pi" aria-label="'+esc(l.icon)+'">'+esc(z.icon)+'</button><input id="pn" maxlength="60" value="'+esc(z.title)+'"></div><input id="pi" type="hidden" value="'+esc(z.icon)+'">'+
+     '<div class="lab">'+l.nameHe+'</div><input id="pnh" maxlength="60" dir="rtl" value="'+esc(z.title_he||'')+'">'+
      '<div class="lab">'+l.cost+'</div><input id="pc" type="number" min="1" max="5000" inputmode="numeric" value="'+z.cost+'">'+
      '<button class="big" data-a="saveprize">'+l.save+'</button><div style="display:flex;gap:10px;margin-top:10px"><button class="b" style="flex:1" data-a="cancel">'+l.cancel+'</button>'+
      (editing!=='new'?'<button class="b bad" style="flex:1" data-delp="'+editing+'">'+l.del+'</button>':'')+'</div></div>';
   }
-  return '<div class="sec">'+(D.prizes.length?D.prizes.map(z=>'<div class="row"><span class="e">'+esc(z.icon)+'</span><div class="m">'+esc(z.title)+'<small>💰 '+z.cost+'</small></div><button class="b" data-edp="'+z.id+'">'+l.edit+'</button></div>').join(''):'<div class="empty">'+l.noPrizes+'</div>')+'</div>'+
+  return '<div class="sec">'+(D.prizes.length?D.prizes.map(z=>'<div class="row"><span class="e">'+esc(z.icon)+'</span><div class="m">'+esc(ttl(z))+'<small>💰 '+z.cost+'</small></div><button class="b" data-edp="'+z.id+'">'+l.edit+'</button></div>').join(''):'<div class="empty">'+l.noPrizes+'</div>')+'</div>'+
    '<button class="big" data-a="newprize">'+l.addPrize+'</button>';
 }
 function viewChores(){
@@ -271,6 +274,7 @@ function viewChores(){
     const c=draft;
     const dn=DAYS[P.lang];
     return '<div class="sec"><div class="lab" style="margin-top:0">'+l.name+'</div><div style="display:flex;gap:10px;align-items:center"><button class="iconbtn" id="fib" data-a="pickicon" data-t="fi" aria-label="'+esc(l.icon)+'">'+esc(c.icon)+'</button><input id="fn" maxlength="60" value="'+esc(c.title)+'"></div><input id="fi" type="hidden" value="'+esc(c.icon)+'">'+
+     '<div class="lab">'+l.nameHe+'</div><input id="fnh" maxlength="60" dir="rtl" value="'+esc(c.title_he||'')+'">'+
      '<div class="lab">'+l.coins+'</div><input id="fc" type="number" min="0" max="50" inputmode="numeric" value="'+esc(c.coins)+'">'+
      '<div class="lab">'+l.game+'</div><select id="fg">'+GAMES.map(g=>'<option value="'+g+'"'+(c.game===g?' selected':'')+'>'+l.g[g]+'</option>').join('')+'</select>'+
      '<div class="lab">'+l.forWho+'</div><select id="fk"><option value="">'+l.everyone+'</option>'+D.kids.map(k=>'<option value="'+k.id+'"'+(c.kid_id===k.id?' selected':'')+'>'+esc(k.name)+'</option>').join('')+'</select>'+
@@ -280,7 +284,7 @@ function viewChores(){
      '<button class="big" data-a="savechore">'+l.save+'</button><div style="display:flex;gap:10px;margin-top:10px"><button class="b" style="flex:1" data-a="cancel">'+l.cancel+'</button>'+
      (editing!=='new'?'<button class="b bad" style="flex:1" data-delc="'+editing+'">'+l.del+'</button>':'')+'</div></div>';
   }
-  return '<div class="sec">'+(D.chores.length?D.chores.map(c=>'<div class="row"><span class="e">'+esc(c.icon)+'</span><div class="m">'+esc(c.title)+'<small>💰 '+c.coins+' · '+scheduleText(c)+' · '+l.g[c.game]+(c.kid_id?' · '+esc(kname(c.kid_id)):'')+'</small></div><button class="b" data-edc="'+c.id+'">'+l.edit+'</button></div>').join(''):'<div class="empty">'+l.noChores+'</div>')+'</div>'+
+  return '<div class="sec">'+(D.chores.length?D.chores.map(c=>'<div class="row"><span class="e">'+esc(c.icon)+'</span><div class="m">'+esc(ttl(c))+'<small>💰 '+c.coins+' · '+scheduleText(c)+' · '+l.g[c.game]+(c.kid_id?' · '+esc(kname(c.kid_id)):'')+'</small></div><button class="b" data-edc="'+c.id+'">'+l.edit+'</button></div>').join(''):'<div class="empty">'+l.noChores+'</div>')+'</div>'+
    '<button class="big" data-a="newchore">'+l.add+'</button>';
 }
 function viewKids(){
@@ -310,14 +314,14 @@ async function kidDetails(id){
   const l=L(),k=D.kids.find(x=>x.id===id);if(!k)return;
   const todo=todoFor(k);
   modal('<h3 style="margin:0 0 10px">'+(k.gender==='boy'?'👦 ':'👧 ')+esc(k.name)+'</h3><div class="lab" style="margin-top:0">'+l.todoT+'</div>'+
-   (todo.length?todo.map(c=>'<div class="row"><span class="e">'+esc(c.icon)+'</span><div class="m">'+esc(c.title)+'<small>💰 '+c.coins+'</small></div></div>').join(''):'<div class="empty">'+l.allDone+'</div>')+
+   (todo.length?todo.map(c=>'<div class="row"><span class="e">'+esc(c.icon)+'</span><div class="m">'+esc(ttl(c))+'<small>💰 '+c.coins+'</small></div></div>').join(''):'<div class="empty">'+l.allDone+'</div>')+
    '<div class="lab">'+l.histT+'</div><div id="hist"><div class="empty">…</div></div><button class="b" style="margin-top:10px;width:100%" data-a="closem">'+l.close+'</button>');
   const [lg,pr]=await Promise.all([
     sb.from('coin_ledger').select('amount,item_key,created_at').eq('kid_id',id).eq('kind','purchase').not('item_key','is',null).order('created_at',{ascending:false}).limit(40),
     sb.from('prize_requests').select('cost,status,created_at,prizes(title,icon)').eq('kid_id',id).order('created_at',{ascending:false}).limit(40)]);
   const rows=[].concat(
     (lg.data||[]).map(r=>({t:r.created_at,e:'🛍️',n:itemName(r.item_key),c:Math.abs(r.amount),s:''})),
-    (pr.data||[]).map(r=>({t:r.created_at,e:(r.prizes&&r.prizes.icon)||'🎁',n:(r.prizes&&r.prizes.title)||'',c:r.cost,s:l.pst[r.status]||r.status}))
+    (pr.data||[]).map(r=>({t:r.created_at,e:(r.prizes&&r.prizes.icon)||'🎁',n:ttl(r.prizes)||'',c:r.cost,s:l.pst[r.status]||r.status}))
   ).sort((a,b)=>b.t.localeCompare(a.t));
   const h=$('hist');if(!h)return;
   h.innerHTML=rows.length?rows.map(r=>'<div class="row"><span class="e">'+esc(r.e)+'</span><div class="m">'+esc(r.n)+'<small>'+new Date(r.t).toLocaleDateString(P.lang==='he'?'he-IL':'en-GB')+(r.s?' · '+esc(r.s):'')+'</small></div><b>'+r.c+' 💰</b></div>').join(''):'<div class="empty">'+l.noHist+'</div>';
@@ -380,18 +384,18 @@ document.addEventListener('click',e=>{
     case 'feedback':feedbackForm();break;
     case 'signout':sb.auth.signOut().then(()=>{D.user=null;D.hh=null;render()});break;
     case 'create':{const n=($('fam').value||'').trim();run(async()=>{const r=await sb.rpc('create_household',{p_name:n});if(r.error)throw r.error});break}
-    case 'newchore':if(!D.kids.length){toast(l.needKid);tab='family';render();break}editing='new';draft={icon:'⭐',coins:5,game:'memory',title:'',kid_id:null,repeat:'daily',weekdays:[],weekly_target:1};render();break;
+    case 'newchore':if(!D.kids.length){toast(l.needKid);tab='family';render();break}editing='new';draft={icon:'⭐',coins:5,game:'memory',title:'',title_he:'',kid_id:null,repeat:'daily',weekdays:[],weekly_target:1};render();break;
     case 'newprize':editing='new';render();break;
     case 'saveprize':{
       const title=$('pn').value.trim();if(!title){toast(l.needName);break}
-      const row={title:title.slice(0,60),icon:($('pi').value.trim()||'🎁').slice(0,8),cost:Math.max(1,Math.min(5000,parseInt($('pc').value,10)||1))};
+      const row={title:title.slice(0,60),title_he:($('pnh').value.trim().slice(0,60))||null,icon:($('pi').value.trim()||'🎁').slice(0,8),cost:Math.max(1,Math.min(5000,parseInt($('pc').value,10)||1))};
       run(async()=>{const r=editing==='new'?await sb.from('prizes').insert(Object.assign({household_id:D.hh.id},row)):await sb.from('prizes').update(row).eq('id',editing);if(r.error)throw r.error;editing=null});break}
     case 'cancel':editing=null;render();break;
     case 'savechore':{
       readDraft();
       const title=draft.title.trim();if(!title){toast(l.needName);break}
       const wk=draft.repeat==='weekly';
-      const row={title:title.slice(0,60),icon:(draft.icon.trim()||'⭐').slice(0,8),coins:Math.max(0,Math.min(50,parseInt(draft.coins,10)||0)),game:draft.game,kid_id:draft.kid_id,
+      const row={title:title.slice(0,60),title_he:(draft.title_he||'').trim().slice(0,60)||null,icon:(draft.icon.trim()||'⭐').slice(0,8),coins:Math.max(0,Math.min(50,parseInt(draft.coins,10)||0)),game:draft.game,kid_id:draft.kid_id,
         repeat:draft.repeat,weekly_target:wk?Math.max(1,Math.min(7,parseInt(draft.weekly_target,10)||1)):1,weekdays:!wk&&draft.weekdays.length?draft.weekdays.slice().sort():null};
       run(async()=>{const r=editing==='new'?await sb.from('chores').insert(Object.assign({household_id:D.hh.id},row)):await sb.from('chores').update(row).eq('id',editing);if(r.error)throw r.error;editing=null});break}
     case 'addkid':kidForm(null,(n,g)=>run(async()=>{const r=await sb.from('kids').insert({household_id:D.hh.id,name:n.slice(0,14),gender:g});if(r.error)throw r.error}));break;
