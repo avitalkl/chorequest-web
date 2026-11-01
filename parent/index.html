@@ -69,14 +69,14 @@ nav .badge{position:absolute;top:2px;right:18%;background:var(--red);color:#fff;
 <script>
 const SB_URL='https://glcdftegvtnxvjqssmat.supabase.co',SB_KEY='sb_publishable_ku9qVFPspoVuliLJy4Pglg_-td_8a2G';
 const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:'chorequest-parent-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-const GAMES=['memory','bubbles','stars','critters','simon','count','none'];
+const GAMES=['memory','bubbles','stars','birds','critters','simon','count','queens','sudoku','scramble','slide','reflex','tennis','flip','none'];
 const T={
 en:{app:'ChoreQuest Parent',tag:'Set chores, approve them, and cheer your kids on.',google:'Continue with Google',signout:'Sign out',
  setupT:'Set up your family',setupH:'Name your family. You can change it later.',famName:'Family name',create:'Create family',
  approvals:'Approvals',chores:'Chores',kids:'Kids',family:'Family',
  nothing:'Nothing waiting for approval',pickIcon:'Pick an icon',iconSearch:'Search icons (tennis, bed, dog...)',noIcons:q=>'No icons found for "'+q+'"',doneT:'Completed',dToday:'Today',dWeek:'This week (resets Sunday)',doneNone:'Nothing completed yet',approve:'Approve',reject:'Reject',bonus:n=>'+'+n+' bonus',
  add:'+ Add chore',edit:'Edit',save:'Save',cancel:'Cancel',del:'Delete',name:'Name',icon:'Icon',coins:'Coins',game:'Game',forWho:'For',everyone:'Everyone',
- g:{memory:'Memory match',bubbles:'Pop bubbles',stars:'Catch stars',critters:'Tap critters',simon:'Copy the song',count:'Counting',none:'No game'},
+ g:{memory:'Memory match',bubbles:'Pop bubbles',stars:'Catch stars',critters:'Tap critters',simon:'Copy the song',count:'Counting',queens:'Color Queens',sudoku:'Emoji sudoku',scramble:'Word scramble',slide:'Slide puzzle',reflex:'Color reflex',tennis:'Tennis rally',flip:'Flip master',birds:'Catch birds',none:'No game'},
  confirmDel:'Delete this chore?',needName:'Please enter a name',noChores:'No chores yet',
  addKid:'+ Add a child',kidName:'Child name',pair:'Pair device',rename:'Rename',removeKid:'Remove child',confirmKid:'Remove this child and all their data?',
  pairT:'Pair a device',pairH:'On the child\'s device open the camera and scan this code. It works for 7 days.',copy:'Copy link',copied:'Copied!',close:'Close',
@@ -90,12 +90,12 @@ en:{app:'ChoreQuest Parent',tag:'Set chores, approve them, and cheer your kids o
  days:'Only on these days',daysHint:'Leave empty for every day.',target:'Times per week',kidsT:'Kids',gender:'Avatar style',girl:'Girl',boy:'Boy',
  todoT:'Not done yet today',allDone:'All done for today 🎉',histT:'Purchase history',noHist:'No purchases yet',pst:{pending:'Waiting',given:'Given',rejected:'Rejected',cancelled:'Cancelled'},
  fbT:'Feedback',fbH:'Tell us what you love, what is broken, or what you wish existed.',fbIdea:'💡 Idea',fbBug:'🐞 Problem',fbOther:'💬 Other',fbSend:'Send',fbThanks:'Thank you! Sent 💌'},
-he:{app:'ChoreQuest להורים',tag:'קבעו משימות, אשרו אותן ועודדו את הילדים.',google:'המשך עם Google',signout:'התנתקות',
+he:{app:'מסע המשימות להורים',tag:'קבעו משימות, אשרו אותן ועודדו את הילדים.',google:'המשך עם Google',signout:'התנתקות',
  setupT:'הקמת המשפחה',setupH:'תנו שם למשפחה. אפשר לשנות אחר כך.',famName:'שם המשפחה',create:'יצירת משפחה',
  approvals:'אישורים',chores:'משימות',kids:'ילדים',family:'משפחה',
  nothing:'אין מה לאשר כרגע',pickIcon:'בחרו אייקון',iconSearch:'חיפוש אייקון (טניס, מיטה, כלב...)',noIcons:q=>'לא נמצאו אייקונים עבור "'+q+'"',doneT:'הושלמו',dToday:'היום',dWeek:'השבוע (מתאפס ביום ראשון)',doneNone:'עוד לא הושלם דבר',approve:'אישור',reject:'דחייה',bonus:n=>'+'+n+' בונוס',
  add:'+ הוספת משימה',edit:'עריכה',save:'שמירה',cancel:'ביטול',del:'מחיקה',name:'שם',icon:'אייקון',coins:'מטבעות',game:'משחק',forWho:'עבור',everyone:'כולם',
- g:{memory:'זיכרון',bubbles:'פוצצו בועות',stars:'תפסו כוכבים',critters:'תפסו חברים',simon:'חזרו על השיר',count:'ספירה',none:'ללא משחק'},
+ g:{memory:'זיכרון',bubbles:'פוצצו בועות',stars:'תפסו כוכבים',critters:'תפסו חברים',simon:'חזרו על השיר',count:'ספירה',queens:'מלכות הצבעים',sudoku:'סודוקו אימוג׳י',scramble:'ערבוביית מילים',slide:'פאזל הזזה',reflex:'תגובה מהירה',tennis:'טניס',flip:'מתעמלת מאוזנת',birds:'תפסו ציפורים',none:'ללא משחק'},
  confirmDel:'למחוק את המשימה?',needName:'נא להזין שם',noChores:'אין משימות עדיין',
  addKid:'+ הוספת ילד/ה',kidName:'שם הילד/ה',pair:'חיבור מכשיר',rename:'שינוי שם',removeKid:'הסרת ילד/ה',confirmKid:'להסיר את הילד/ה ואת כל הנתונים?',
  pairT:'חיבור מכשיר',pairH:'במכשיר של הילד/ה פתחו את המצלמה וסרקו את הקוד. הקוד תקף ל-7 ימים.',copy:'העתקת קישור',copied:'הועתק!',close:'סגירה',
@@ -198,11 +198,11 @@ async function run(fn){try{await fn()}catch(e){toast(L().err);console.error(e)}a
 
 function render(){
   const l=L(),app=$('app');
-  document.documentElement.lang=P.lang;document.documentElement.dir=P.lang==='he'?'rtl':'ltr';
+  document.documentElement.lang=P.lang;document.title=l.app;document.documentElement.dir=P.lang==='he'?'rtl':'ltr';
   const head='<header><h1>'+l.app+'</h1><button class="chip" data-a="lang">'+(P.lang==='en'?'עב':'EN')+'</button></header>';
   if(loading){app.innerHTML=head;return}
   if(!D.user){
-    app.innerHTML=head+'<div class="center"><div class="logo">🏆</div><h2>ChoreQuest</h2><p style="color:var(--muted);font-weight:600">'+l.tag+'</p>'+
+    app.innerHTML=head+'<div class="center"><div class="logo">🏆</div><h2>'+(P.lang==='he'?'מסע המשימות':'ChoreQuest')+'</h2><p style="color:var(--muted);font-weight:600">'+l.tag+'</p>'+
       '<button class="big g" data-a="google"><svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.6 5.9c4.4-4.1 7-10.1 7-17.6z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.9-6.1C.9 16.4 0 20.1 0 24s.9 7.6 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>'+l.google+'</button></div>';
     return}
   if(!D.hh){
