@@ -66,6 +66,10 @@
   .stats{display:flex;gap:8px;margin:14px 0 0;flex-wrap:wrap}
   .stats span{background:var(--card);border-radius:99px;padding:6px 14px;font-weight:700;font-size:14px;box-shadow:var(--shadow)}
   .stage.mini{max-width:230px;margin:0 auto}
+  header{position:sticky;top:0;z-index:6;background:linear-gradient(var(--bg1),var(--bg1));padding-bottom:10px}
+  .shopstick{position:sticky;top:var(--hh,70px);z-index:4;background:var(--bg1);margin:0 -20px 10px;padding:4px 20px 0}
+  .shopstick .stage.mini{max-width:120px}
+  .shopstick .tabs{margin:8px 0 6px}.shopstick .tabs.sub{margin:0 0 6px}
   .tabs.seg{margin-top:0}.tabs.seg button{flex:1}
   .tabs.sub{flex-wrap:wrap;overflow:visible;margin:0 0 10px}
   .tabs.sub button{padding:6px 12px;font-size:13px}
@@ -151,8 +155,8 @@
       <div class="tabs seg" id="pzseg"></div>
       <div id="shopview">
         <p class="hello" id="shophello"></p>
-        <div class="stage mini"><div id="savatar"></div></div>
-        <div class="tabs" id="stabs"></div><div class="tabs sub" id="ssub"></div>
+        <div class="shopstick"><div class="stage mini"><div id="savatar"></div></div>
+        <div class="tabs" id="stabs"></div><div class="tabs sub" id="ssub"></div></div>
         <div class="grid" id="sgrid"></div>
       </div>
       <div id="realview">
@@ -705,6 +709,7 @@ function renderMe(){
 
 /* ---------- shell ---------- */
 function renderAll(){
+  document.documentElement.style.setProperty('--hh',(document.querySelector('header').offsetHeight||70)+'px');
   const l=L();document.documentElement.lang=S.lang;document.documentElement.dir=S.lang==='he'?'rtl':'ltr';
   $('title').textContent=l.title;$('n1').textContent=l.tasks;$('n2').textContent=l.me;$('n3').textContent=l.pz.title;$('coins').textContent=S.coins;$('mute').textContent=S.mute?'🔇':'🔊';
   renderTasks();renderPrizes();renderMe();
