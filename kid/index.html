@@ -479,6 +479,14 @@ function countGame(){
       b.onclick=()=>{if(v===n){score++;chime();hud();round()}else{b.classList.add('no');tone(220,ctx().currentTime,.2,'sine',.1)}};$('opts').appendChild(b)})}
   round();runClock(40,()=>winGame(Math.min(score*2,BONUS_CAP),true),s=>{sec=s;hud()});
 }
+function setInstallName(name,short){
+  const m=document.querySelector('meta[name="apple-mobile-web-app-title"]');if(m)m.content=short;
+  const ln=document.querySelector('link[rel="manifest"]');if(!ln)return;
+  if(!ln.dataset.src)ln.dataset.src=new URL(ln.getAttribute('href'),location.href).href;
+  fetch(ln.dataset.src).then(r=>r.json()).then(j=>{const base=ln.dataset.src;
+    j.name=name;j.short_name=short;j.start_url=new URL(j.start_url,base).href;j.scope=new URL(j.scope,base).href;
+    j.icons.forEach(i=>i.src=new URL(i.src,base).href);
+    const old=ln.href;ln.href=URL.createObjectURL(new Blob([JSON.stringify(j)],{type:'application/manifest+json'}));if(old.startsWith('blob:'))URL.revokeObjectURL(old)}).catch(()=>{})}
 const rnd=n=>Math.floor(Math.random()*n),shuf=a=>a.slice().sort(()=>Math.random()-.5);
 function bigBox(){const b=$('dom');b.className='gbox';b.style.display='block';b.innerHTML='';return b}
 function canvasSetup(maxH){const cv=$('arena');cv.style.display='block';cv.onpointermove=null;cv.onpointerdown=null;
@@ -922,7 +930,7 @@ function renderMe(){
 function renderAll(){
   document.documentElement.style.setProperty('--hh',(document.querySelector('header').offsetHeight||70)+'px');
   const l=L();document.documentElement.lang=S.lang;document.documentElement.dir=S.lang==='he'?'rtl':'ltr';
-  $('title').textContent=l.title;document.title=l.title;$('n1').textContent=l.tasks;$('n2').textContent=l.me;$('n3').textContent=l.pz.title;$('coins').textContent=S.coins;$('mute').textContent=S.mute?'🔇':'🔊';
+  $('title').textContent=l.title;document.title=l.title;setInstallName(l.title,l.title);$('n1').textContent=l.tasks;$('n2').textContent=l.me;$('n3').textContent=l.pz.title;$('coins').textContent=S.coins;$('mute').textContent=S.mute?'🔇':'🔊';
   renderTasks();renderPrizes();renderMe();
 }
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));

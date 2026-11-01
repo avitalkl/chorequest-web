@@ -112,6 +112,14 @@ he:{app:'מסע המשימות להורים',tag:'קבעו משימות, אשר�
 const PK='chorequest-parent-v1';
 const P=JSON.parse(localStorage.getItem(PK)||'null')||{lang:'en'};
 const L=()=>T[P.lang],$=id=>document.getElementById(id);
+function setInstallName(name,short){
+  const m=document.querySelector('meta[name="apple-mobile-web-app-title"]');if(m)m.content=short;
+  const ln=document.querySelector('link[rel="manifest"]');if(!ln)return;
+  if(!ln.dataset.src)ln.dataset.src=new URL(ln.getAttribute('href'),location.href).href;
+  fetch(ln.dataset.src).then(r=>r.json()).then(j=>{const base=ln.dataset.src;
+    j.name=name;j.short_name=short;j.start_url=new URL(j.start_url,base).href;j.scope=new URL(j.scope,base).href;
+    j.icons.forEach(i=>i.src=new URL(i.src,base).href);
+    const old=ln.href;ln.href=URL.createObjectURL(new Blob([JSON.stringify(j)],{type:'application/manifest+json'}));if(old.startsWith('blob:'))URL.revokeObjectURL(old)}).catch(()=>{})}
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200)}
 const D={user:null,hh:null,members:0,kids:[],chores:[],pending:[],devices:{},prizes:[],prizeReq:[]};
@@ -198,7 +206,7 @@ async function run(fn){try{await fn()}catch(e){toast(L().err);console.error(e)}a
 
 function render(){
   const l=L(),app=$('app');
-  document.documentElement.lang=P.lang;document.title=l.app;document.documentElement.dir=P.lang==='he'?'rtl':'ltr';
+  document.documentElement.lang=P.lang;document.title=l.app;setInstallName(l.app,P.lang==='he'?'משימות להורים':'CQ Parent');document.documentElement.dir=P.lang==='he'?'rtl':'ltr';
   const head='<header><h1>'+l.app+'</h1><button class="chip" data-a="lang">'+(P.lang==='en'?'עב':'EN')+'</button></header>';
   if(loading){app.innerHTML=head;return}
   if(!D.user){
