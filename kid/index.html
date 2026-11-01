@@ -556,7 +556,7 @@ function avatar(w0,o){
   const fv=t=>SHOP[t].find(x=>x.id===w[t]);
   const hair=fv('hair').v,sk=fv('skin'),SK=sk.v,SD=sk.d,iris=fv('eyes').v,tc=fv('topc').v,bc=fv('botc').v,sh=fv('shoes'),pet=fv('pet').v;
   const top=w.top,hat=w.hat,acc=w.acc,boy=S.gender==='boy';
-  const arm=(d,x,y)=>'<path d="'+d+'" stroke="'+OL+'" stroke-width="18" fill="none" stroke-linecap="round"/><path d="'+d+'" stroke="'+SK+'" stroke-width="12" fill="none" stroke-linecap="round"/><circle cx="'+x+'" cy="'+y+'" r="8.5" fill="'+SK+'" stroke="'+OL+'" stroke-width="3"/>';
+  const arm=(d,x,y)=>'<path d="'+d+'" stroke="'+OL+'" stroke-width="19" fill="none" stroke-linecap="round"/><path d="'+d+'" stroke="'+SK+'" stroke-width="13" fill="none" stroke-linecap="round"/>';
 
   const wings=acc==='wings'?'<g opacity=".92"><path d="M120 216 Q30 160 46 246 Q66 292 122 254Z" fill="#bfe9ff" stroke="#fff" stroke-width="3"/><path d="M180 216 Q270 160 254 246 Q234 292 178 254Z" fill="#ffc9e8" stroke="#fff" stroke-width="3"/></g>':'';
 
