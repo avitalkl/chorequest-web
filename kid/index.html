@@ -238,7 +238,10 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const tname=t=>t.name||L().t[t.id]||t.id;
 const isPend=d=>!!d&&d.status==='pending';
-const L=()=>T[S.lang];
+const HE_M=[['סיימי','סיים'],['תפסי','תפוס'],['לחצי','לחץ'],['פוצצי','פוצץ'],['חזרי','חזור'],['הסתכלי','הסתכל'],['ספרי','ספור'],['מצאי','מצא'],['החליקי','החלק'],['בקשי','בקש'],['סרקי','סרוק'],['התחברי','התחבר'],['נסי','נסה'],['בדקי','בדוק'],['הוציאי','הוצא'],['קבלי','קבל'],['דלגי','דלג']].map(([a,b])=>[new RegExp('(?<![א-ת])'+a+'(?![א-ת])','g'),b]);
+const toM=v=>typeof v==='string'?HE_M.reduce((s,[r,b])=>s.replace(r,b),v):typeof v==='function'?(...a)=>toM(v(...a)):Array.isArray(v)?v.map(toM):v&&typeof v==='object'?Object.fromEntries(Object.entries(v).map(([k,x])=>[k,toM(x)])):v;
+let heM=null;
+const L=()=>{if(S.lang==='he'&&S.gender==='boy')return heM||(heM=toM(T.he));return T[S.lang]};
 let grp='head',tab='hair', pendingTask=null, pendingBonus=0;
 
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1800)}
