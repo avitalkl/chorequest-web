@@ -17,6 +17,7 @@ header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
 header h1{flex:1;margin:0;font-size:24px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:16px}
 .stat{background:var(--card);border-radius:16px;padding:14px;box-shadow:0 4px 14px #4b3f9419}
+.stat.click{cursor:pointer}.stat.click:hover{outline:2px solid var(--blue)}
 .stat b{display:block;font-size:30px}.stat span{color:var(--muted);font-size:13px;font-weight:600}
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:14px}
 .sec{background:var(--card);border-radius:18px;padding:14px 16px;box-shadow:0 4px 14px #4b3f9419}
@@ -50,11 +51,12 @@ async function dash(){
   const r=await sb.rpc('admin_dashboard');
   if(r.error){await sb.auth.signOut();return login('This account is not an admin.')}
   const d=r.data,t=d.totals;
-  const S=(n,l)=>'<div class="stat"><b>'+n+'</b><span>'+l+'</span></div>';
+  const S=(n,l,k)=>'<div class="stat click" data-k="'+k+'" data-l="'+esc(l)+'"><b>'+n+'</b><span>'+l+' ›</span></div>';
   const list=(a,f)=>a.length?a.map(f).join(''):'<div class="empty">Nothing yet</div>';
   app.innerHTML='<header><h1>🛡️ ChoreQuest Admin</h1><button id="rf">Refresh</button><button id="so">Sign out</button></header>'+
-   '<div class="grid">'+S(t.households,'Families')+S(t.parents,'Parents')+S(t.kids,'Kids')+S(t.devices,'Paired devices')+S(t.chores,'Chores')+S(t.prizes,'Prizes')+S(t.completions,'Chores completed')+
-    S(t.new_households_7d,'New families (7d)')+S(t.active_households_7d,'Active families (7d)')+S(t.completions_7d,'Completed (7d)')+S(t.feedback_new,'New feedback')+'</div>'+
+   '<div class="grid">'+S(t.households,'Families','households')+S(t.parents,'Parents','parents')+S(t.kids,'Kids','kids')+S(t.devices,'Paired devices','devices')+S(t.chores,'Chores','chores')+S(t.prizes,'Prizes','prizes')+S(t.completions,'Chores completed','completions')+
+       S(t.new_households_7d,'New families (7d)','new_households_7d')+S(t.active_households_7d,'Active families (7d)','active_households_7d')+S(t.completions_7d,'Completed (7d)','completions_7d')+
+       '<div class="stat click" id="fbs"><b>'+t.feedback_new+'</b><span>New feedback ›</span></div></div><div id="detail"></div>'+
    '<div class="cols">'+
    '<div class="sec" style="grid-column:1/-1"><h2>💬 Feedback</h2>'+list(d.feedback,f=>'<div class="row"><div class="m"><span class="tag '+(f.kind==='bug'?'bug':'')+'">'+esc(f.kind)+'</span> <span class="fb">'+esc(f.message)+'</span><small>'+esc(f.email||'')+' · '+esc(f.family||'')+' · '+fmt(f.created_at)+'</small></div>'+
      '<button data-fb="'+f.id+'" data-st="'+(f.status==='new'?'done':'new')+'">'+(f.status==='new'?'Mark done':'Reopen')+'</button></div>')+'</div>'+
@@ -63,6 +65,15 @@ async function dash(){
    '<div class="sec"><h2>🎁 Added prizes</h2>'+list(d.prizes,p=>'<div class="row"><span class="e">'+esc(p.icon)+'</span><div class="m">'+esc(p.title)+'<small>'+esc(p.family)+' · '+p.cost+' coins · '+p.requests+' requests · '+fmt(p.created_at)+'</small></div></div>')+'</div>'+
    '</div>';
   $('rf').onclick=dash;$('so').onclick=()=>sb.auth.signOut().then(()=>login());
+  document.querySelectorAll('.stat[data-k]').forEach(s=>s.onclick=async()=>{
+    const box=$('detail');box.innerHTML='<div class="sec" style="margin-bottom:16px">Loading…</div>';box.scrollIntoView({behavior:'smooth',block:'nearest'});
+    const q=await sb.rpc('admin_detail',{p_kind:s.dataset.k});
+    if(q.error){box.innerHTML='<div class="sec" style="margin-bottom:16px">'+esc(q.error.message)+'</div>';return}
+    box.innerHTML='<div class="sec" style="margin-bottom:16px"><div style="display:flex;align-items:center"><h2 style="flex:1">'+esc(s.dataset.l)+' ('+q.data.length+')</h2><button id="dx">Close</button></div>'+
+      list(q.data,x=>'<div class="row"><span class="e">'+esc(x.icon)+'</span><div class="m">'+esc(x.title)+'<small>'+esc(x.sub)+' · '+fmt(x.at)+'</small></div></div>')+'</div>';
+    $('dx').onclick=()=>box.innerHTML=''
+  });
+  $('fbs').onclick=()=>document.querySelector('.sec').scrollIntoView({behavior:'smooth'});
   document.querySelectorAll('[data-fb]').forEach(b=>b.onclick=async()=>{await sb.rpc('admin_set_feedback',{p_id:b.dataset.fb,p_status:b.dataset.st});dash()});
 }
 (async()=>{
