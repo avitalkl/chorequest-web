@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ChoreQuest Parent</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#5b6cff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="CQ Parent">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+:root{--ink:#26214a;--muted:#7a74a3;--blue:#5b6cff;--mint:#2fb892;--red:#e0455f;--gold:#ffc83d;--card:#fff;--shadow:0 6px 20px #4b3f9422}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:var(--ink);background:linear-gradient(160deg,#eef0ff,#f6efff);-webkit-user-select:none;user-select:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+input,select{font:inherit;color:var(--ink);width:100%;padding:12px 14px;border-radius:14px;border:2px solid #e1deff;background:#fff;-webkit-user-select:text;user-select:text}
+#app{max-width:520px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;padding:0 18px}
+header{display:flex;align-items:center;gap:8px;padding:calc(14px + env(safe-area-inset-top)) 0 10px}
+header h1{flex:1;margin:0;font-size:22px}
+.chip{background:#fff;border-radius:99px;padding:8px 13px;font-weight:700;box-shadow:var(--shadow);font-size:14px}
+main{flex:1;padding-bottom:100px}
+.sec{background:var(--card);border-radius:20px;padding:14px 16px;margin-bottom:14px;box-shadow:var(--shadow)}
+.sec h3{margin:0 0 10px;font-size:16px}
+.row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid #0000000d}
+.row:first-of-type{border-top:0}
+.row .e{font-size:28px}.row .m{flex:1;min-width:0;font-weight:700}
+.row .m small{display:block;color:var(--muted);font-weight:600;font-size:12px}
+.b{border-radius:99px;padding:8px 15px;font-weight:700;background:#eceaff;color:var(--blue);font-size:14px}
+.b.ok{background:var(--mint);color:#fff}.b.bad{background:#ffe3ea;color:var(--red)}
+.big{display:block;width:100%;padding:14px;border-radius:16px;background:linear-gradient(135deg,#5b6cff,#8a6cff);color:#fff;font-weight:800;font-size:16px;margin-top:12px;text-align:center}
+.big.g{background:#fff;color:#4285f4;border:2px solid #dbe4ff;display:flex;gap:10px;align-items:center;justify-content:center}
+.lab{font-size:13px;font-weight:700;color:var(--muted);margin:12px 0 5px}
+.empty{color:var(--muted);text-align:center;padding:18px 0;font-weight:600}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;padding:8px 14px calc(8px + env(safe-area-inset-bottom));pointer-events:none}
+nav div{display:flex;width:100%;max-width:520px;background:#fff;border-radius:24px;box-shadow:0 -4px 24px #4b3f9433;padding:6px;pointer-events:auto}
+nav button{flex:1;padding:8px 2px;border-radius:18px;font-size:11px;font-weight:700;color:var(--muted);position:relative}
+nav button.on{background:#eceaff;color:var(--blue)}nav .i{display:block;font-size:22px}
+nav .badge{position:absolute;top:2px;right:18%;background:var(--red);color:#fff;border-radius:99px;font-size:11px;min-width:18px;padding:1px 5px}
+.center{text-align:center;padding-top:60px}.center .logo{font-size:72px}
+.toast{position:fixed;left:50%;top:18px;transform:translate(-50%,-90px);background:#26214aee;color:#fff;padding:11px 18px;border-radius:99px;font-weight:700;transition:.3s;z-index:50;max-width:90%}
+.toast.on{transform:translate(-50%,0)}
+.modal{position:fixed;inset:0;background:#26214a99;display:none;align-items:center;justify-content:center;z-index:40;padding:18px}
+.modal.on{display:flex}
+.modal .box{background:#fff;border-radius:24px;padding:20px;max-width:380px;width:100%;max-height:92vh;overflow:auto;text-align:center}
+.qr{width:240px;max-width:100%;margin:10px auto;background:#fff;padding:6px;border-radius:12px}.qr svg{width:100%;height:auto;display:block}
+.link{word-break:break-all;font-size:12px;color:var(--muted);-webkit-user-select:text;user-select:text;margin:6px 0}
+.tog{width:52px;height:30px;border-radius:99px;background:#d8d4f0;position:relative;transition:.2s;flex:none}
+.tog::after{content:'';position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s}
+.tog.on{background:var(--mint)}.tog.on::after{left:25px}
+[dir=rtl] .tog::after{left:auto;right:3px}[dir=rtl] .tog.on::after{right:25px}
+.err{color:var(--red);font-weight:700;margin-top:10px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="modal" id="modal"><div class="box" id="mbox"></div></div>
+<div class="toast" id="toast"></div>
+<script src="../vendor/supabase.js"></script>
+<script src="../vendor/qrcode.js"></script>
+<script>
+const SB_URL='https://glcdftegvtnxvjqssmat.supabase.co',SB_KEY='sb_publishable_ku9qVFPspoVuliLJy4Pglg_-td_8a2G';
+const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:'chorequest-parent-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const GAMES=['memory','bubbles','stars','critters','simon','count','none'];
+const T={
+en:{app:'ChoreQuest Parent',tag:'Set chores, approve them, and cheer your kids on.',google:'Continue with Google',signout:'Sign out',
+ setupT:'Set up your family',setupH:'Name your family. You can change it later.',famName:'Family name',create:'Create family',
+ approvals:'Approvals',chores:'Chores',kids:'Kids',family:'Family',
+ nothing:'Nothing waiting for approval',approve:'Approve',reject:'Reject',bonus:n=>'+'+n+' bonus',
+ add:'+ Add chore',edit:'Edit',save:'Save',cancel:'Cancel',del:'Delete',name:'Name',icon:'Icon',coins:'Coins',game:'Game',forWho:'For',everyone:'Everyone',
+ g:{memory:'Memory match',bubbles:'Pop bubbles',stars:'Catch stars',critters:'Tap critters',simon:'Copy the song',count:'Counting',none:'No game'},
+ confirmDel:'Delete this chore?',needName:'Please enter a name',noChores:'No chores yet',
+ addKid:'+ Add a child',kidName:'Child name',pair:'Pair device',rename:'Rename',removeKid:'Remove child',confirmKid:'Remove this child and all their data?',
+ pairT:'Pair a device',pairH:'On the child\'s device open the camera and scan this code. It works for 7 days.',copy:'Copy link',copied:'Copied!',close:'Close',
+ reqApproval:'Require approval for coins',reqHint:'When on, coins are paid only after you approve.',
+ inviteT:'Invite another parent',inviteH:'Send this link. It works for 3 days and can be used once.',inviteBtn:'Create invite link',
+ members:n=>n+' parent'+(n===1?'':'s'),famRename:'Family name',err:'Something went wrong. Please try again.',
+ joinedOk:'You joined the family!',inviteBad:'That invite is invalid or expired.',coinsN:n=>n+' coins',today:'Today',
+ noKids:'Add your child to get started',needKid:'Add a child first',paired:n=>n+' device'+(n===1?'':'s')+' paired'},
+he:{app:'ChoreQuest להורים',tag:'קבעו משימות, אשרו אותן ועודדו את הילדים.',google:'המשך עם Google',signout:'התנתקות',
+ setupT:'הקמת המשפחה',setupH:'תנו שם למשפחה. אפשר לשנות אחר כך.',famName:'שם המשפחה',create:'יצירת משפחה',
+ approvals:'אישורים',chores:'משימות',kids:'ילדים',family:'משפחה',
+ nothing:'אין מה לאשר כרגע',approve:'אישור',reject:'דחייה',bonus:n=>'+'+n+' בונוס',
+ add:'+ הוספת משימה',edit:'עריכה',save:'שמירה',cancel:'ביטול',del:'מחיקה',name:'שם',icon:'אייקון',coins:'מטבעות',game:'משחק',forWho:'עבור',everyone:'כולם',
+ g:{memory:'זיכרון',bubbles:'פוצצו בועות',stars:'תפסו כוכבים',critters:'תפסו חברים',simon:'חזרו על השיר',count:'ספירה',none:'ללא משחק'},
+ confirmDel:'למחוק את המשימה?',needName:'נא להזין שם',noChores:'אין משימות עדיין',
+ addKid:'+ הוספת ילד/ה',kidName:'שם הילד/ה',pair:'חיבור מכשיר',rename:'שינוי שם',removeKid:'הסרת ילד/ה',confirmKid:'להסיר את הילד/ה ואת כל הנתונים?',
+ pairT:'חיבור מכשיר',pairH:'במכשיר של הילד/ה פתחו את המצלמה וסרקו את הקוד. הקוד תקף ל-7 ימים.',copy:'העתקת קישור',copied:'הועתק!',close:'סגירה',
+ reqApproval:'דרישת אישור למטבעות',reqHint:'כשמופעל, מטבעות משולמים רק אחרי אישור שלכם.',
+ inviteT:'הזמנת הורה נוסף',inviteH:'שלחו את הקישור. תקף ל-3 ימים ולשימוש חד פעמי.',inviteBtn:'יצירת קישור הזמנה',
+ members:n=>n+' הורים',famRename:'שם המשפחה',err:'משהו השתבש. נסו שוב.',
+ joinedOk:'הצטרפתם למשפחה!',inviteBad:'ההזמנה לא תקפה או שפגה.',coinsN:n=>n+' מטבעות',today:'היום',
+ noKids:'הוסיפו את הילד/ה כדי להתחיל',needKid:'קודם הוסיפו ילד/ה',paired:n=>n+' מכשירים מחוברים'}};
+const PK='chorequest-parent-v1';
+const P=JSON.parse(localStorage.getItem(PK)||'null')||{lang:'en'};
+const L=()=>T[P.lang],$=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200)}
+const D={user:null,hh:null,members:0,kids:[],chores:[],pending:[],devices:{}};
+let tab='approvals',editing=null,loading=true;
+
+async function load(){
+  const {data:{session}}=await sb.auth.getSession();
+  D.user=session&&!session.user.is_anonymous?session.user:null;
+  if(!D.user){D.hh=null;return}
+  const pend=localStorage.getItem('cq-pending-invite');
+  if(pend){localStorage.removeItem('cq-pending-invite');
+    const r=await sb.rpc('accept_parent_invite',{p_code:pend});toast(r.error?L().inviteBad:L().joinedOk)}
+  const m=await sb.from('household_members').select('household_id,role').limit(1);
+  if(m.error)throw m.error;
+  if(!m.data.length){D.hh=null;return}
+  const hid=m.data[0].household_id;
+  const [h,mm,k,c,p,dv]=await Promise.all([
+    sb.from('households').select('id,name,require_approval').eq('id',hid).single(),
+    sb.from('household_members').select('user_id').eq('household_id',hid),
+    sb.from('kids').select('id,name,coins').eq('household_id',hid).order('created_at'),
+    sb.from('chores').select('id,title,icon,coins,game,kid_id').eq('household_id',hid).eq('active',true).order('created_at'),
+    sb.from('completions').select('id,kid_id,chore_id,base_coins,bonus,created_at').eq('household_id',hid).eq('status','pending').order('created_at'),
+    sb.from('kid_devices').select('kid_id')]);
+  const e=[h,mm,k,c,p,dv].find(x=>x.error);if(e)throw e.error;
+  D.hh=h.data;D.members=mm.data.length;D.kids=k.data;D.chores=c.data;D.pending=p.data;
+  D.devices={};dv.data.forEach(x=>D.devices[x.kid_id]=(D.devices[x.kid_id]||0)+1);
+}
+async function reload(){try{await load()}catch(e){toast(L().err)}loading=false;render()}
+async function run(fn){try{await fn()}catch(e){toast(L().err);console.error(e)}await reload()}
+
+function render(){
+  const l=L(),app=$('app');
+  document.documentElement.lang=P.lang;document.documentElement.dir=P.lang==='he'?'rtl':'ltr';
+  const head='<header><h1>'+l.app+'</h1><button class="chip" data-a="lang">'+(P.lang==='en'?'עב':'EN')+'</button></header>';
+  if(loading){app.innerHTML=head;return}
+  if(!D.user){
+    app.innerHTML=head+'<div class="center"><div class="logo">🏆</div><h2>ChoreQuest</h2><p style="color:var(--muted);font-weight:600">'+l.tag+'</p>'+
+      '<button class="big g" data-a="google"><svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.6 5.9c4.4-4.1 7-10.1 7-17.6z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.9-6.1C.9 16.4 0 20.1 0 24s.9 7.6 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>'+l.google+'</button></div>';
+    return}
+  if(!D.hh){
+    app.innerHTML=head+'<div class="center" style="padding-top:30px"><div class="logo">🏠</div><h2>'+l.setupT+'</h2><p style="color:var(--muted);font-weight:600">'+l.setupH+'</p>'+
+      '<div class="lab" style="text-align:start">'+l.famName+'</div><input id="fam" maxlength="40" value="'+(P.lang==='he'?'המשפחה שלי':'My family')+'"><button class="big" data-a="create">'+l.create+'</button></div>';
+    return}
+  const np=D.pending.length;
+  let body='';
+  if(tab==='approvals')body=viewApprovals();else if(tab==='chores')body=viewChores();else if(tab==='kids')body=viewKids();else body=viewFamily();
+  app.innerHTML=head+'<main>'+body+'</main><nav><div>'+
+   [['approvals','✅',l.approvals],['chores','📝',l.chores],['kids','👧',l.kids],['family','🏠',l.family]].map(t=>
+    '<button data-tab="'+t[0]+'" class="'+(tab===t[0]?'on':'')+'"><span class="i">'+t[1]+'</span>'+t[2]+(t[0]==='approvals'&&np?'<span class="badge">'+np+'</span>':'')+'</button>').join('')+'</div></nav>';
+}
+const kname=id=>{const k=D.kids.find(x=>x.id===id);return k?k.name:''};
+function viewApprovals(){
+  const l=L();
+  if(!D.pending.length)return '<div class="sec"><div class="empty">🎉 '+l.nothing+'</div></div>';
+  return '<div class="sec">'+D.pending.map(p=>{const c=D.chores.find(x=>x.id===p.chore_id)||{icon:'⭐',title:'?'};
+    return '<div class="row"><span class="e">'+esc(c.icon)+'</span><div class="m">'+esc(c.title)+'<small>'+esc(kname(p.kid_id))+' · 💰 '+p.base_coins+(p.bonus?' ('+l.bonus(p.bonus)+')':'')+'</small></div>'+
+     '<button class="b bad" data-rej="'+p.id+'">'+l.reject+'</button><button class="b ok" data-app="'+p.id+'">'+l.approve+'</button></div>'}).join('')+'</div>';
+}
+function viewChores(){
+  const l=L();
+  if(editing){
+    const c=editing==='new'?{icon:'⭐',coins:5,game:'memory',title:'',kid_id:null}:D.chores.find(x=>x.id===editing)||{};
+    return '<div class="sec"><div class="lab" style="margin-top:0">'+l.name+'</div><input id="fn" maxlength="60" value="'+esc(c.title)+'">'+
+     '<div class="lab">'+l.icon+'</div><input id="fi" maxlength="4" value="'+esc(c.icon)+'">'+
+     '<div class="lab">'+l.coins+'</div><input id="fc" type="number" min="0" max="50" inputmode="numeric" value="'+c.coins+'">'+
+     '<div class="lab">'+l.game+'</div><select id="fg">'+GAMES.map(g=>'<option value="'+g+'"'+(c.game===g?' selected':'')+'>'+l.g[g]+'</option>').join('')+'</select>'+
+     '<div class="lab">'+l.forWho+'</div><select id="fk"><option value="">'+l.everyone+'</option>'+D.kids.map(k=>'<option value="'+k.id+'"'+(c.kid_id===k.id?' selected':'')+'>'+esc(k.name)+'</option>').join('')+'</select>'+
+     '<button class="big" data-a="savechore">'+l.save+'</button><div style="display:flex;gap:10px;margin-top:10px"><button class="b" style="flex:1" data-a="cancel">'+l.cancel+'</button>'+
+     (editing!=='new'?'<button class="b bad" style="flex:1" data-delc="'+editing+'">'+l.del+'</button>':'')+'</div></div>';
+  }
+  return '<div class="sec">'+(D.chores.length?D.chores.map(c=>'<div class="row"><span class="e">'+esc(c.icon)+'</span><div class="m">'+esc(c.title)+'<small>💰 '+c.coins+' · '+l.g[c.game]+(c.kid_id?' · '+esc(kname(c.kid_id)):'')+'</small></div><button class="b" data-edc="'+c.id+'">'+l.edit+'</button></div>').join(''):'<div class="empty">'+l.noChores+'</div>')+'</div>'+
+   '<button class="big" data-a="newchore">'+l.add+'</button>';
+}
+function viewKids(){
+  const l=L();
+  return '<div class="sec">'+(D.kids.length?D.kids.map(k=>'<div class="row"><span class="e">👧</span><div class="m">'+esc(k.name)+'<small>'+l.coinsN(k.coins)+' · '+l.paired(D.devices[k.id]||0)+'</small></div>'+
+    '<button class="b" data-ren="'+k.id+'">✏️</button><button class="b ok" data-pair="'+k.id+'">'+l.pair+'</button></div>').join(''):'<div class="empty">'+l.noKids+'</div>')+'</div>'+
+    '<button class="big" data-a="addkid">'+l.addKid+'</button>';
+}
+function viewFamily(){
+  const l=L(),h=D.hh;
+  return '<div class="sec"><div class="lab" style="margin-top:0">'+l.famRename+'</div><div style="display:flex;gap:8px"><input id="hn" maxlength="40" value="'+esc(h.name)+'"><button class="b ok" data-a="savename">'+l.save+'</button></div></div>'+
+   '<div class="sec"><div class="row"><div class="m">'+l.reqApproval+'<small>'+l.reqHint+'</small></div><button class="tog'+(h.require_approval?' on':'')+'" data-a="toggle" aria-label="toggle"></button></div></div>'+
+   '<div class="sec"><h3>'+l.inviteT+' <small style="color:var(--muted)">('+l.members(D.members)+')</small></h3><p style="margin:0;color:var(--muted);font-weight:600;font-size:14px">'+l.inviteH+'</p><button class="big" data-a="invite">'+l.inviteBtn+'</button></div>'+
+   '<button class="big" style="background:#fff;color:var(--red)" data-a="signout">'+l.signout+'</button>';
+}
+function modal(html){$('mbox').innerHTML=html;$('modal').classList.add('on')}
+function closeModal(){$('modal').classList.remove('on')}
+function showLink(title,hint,url,qr){
+  const l=L();let svg='';
+  if(qr){const q=qrcode(0,'M');q.addData(url);q.make();svg='<div class="qr">'+q.createSvgTag({cellSize:4,margin:2,scalable:true})+'</div>'}
+  modal('<h3 style="margin:0 0 6px">'+esc(title)+'</h3><p style="margin:0;color:var(--muted);font-weight:600;font-size:14px">'+esc(hint)+'</p>'+svg+'<div class="link">'+esc(url)+'</div>'+
+   '<button class="big" data-a="copy" data-url="'+esc(url)+'">'+l.copy+'</button><button class="b" style="margin-top:10px" data-a="closem">'+l.close+'</button>');
+}
+const here=rel=>new URL(rel,location.href).href;
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button');if(!t)return;
+  const l=L(),a=t.dataset.a;
+  if(t.dataset.tab){tab=t.dataset.tab;editing=null;render();return}
+  if(t.dataset.app){run(async()=>{const r=await sb.rpc('approve_completion',{p_id:t.dataset.app});if(r.error)throw r.error;toast('✅')});return}
+  if(t.dataset.rej){run(async()=>{const r=await sb.rpc('reject_completion',{p_id:t.dataset.rej});if(r.error)throw r.error});return}
+  if(t.dataset.edc){editing=t.dataset.edc;render();return}
+  if(t.dataset.delc){if(!confirm(l.confirmDel))return;run(async()=>{const r=await sb.from('chores').update({active:false}).eq('id',t.dataset.delc);if(r.error)throw r.error;editing=null});return}
+  if(t.dataset.pair){const id=t.dataset.pair,k=D.kids.find(x=>x.id===id);
+    sb.rpc('create_kid_invite',{p_kid:id}).then(r=>{if(r.error)return toast(l.err);showLink(l.pairT+' – '+k.name,l.pairH,here('../kid/?join='+r.data),true)});return}
+  if(t.dataset.ren){const k=D.kids.find(x=>x.id===t.dataset.ren);const n=prompt(l.kidName,k.name);
+    if(n&&n.trim())run(async()=>{const r=await sb.from('kids').update({name:n.trim().slice(0,14)}).eq('id',k.id);if(r.error)throw r.error});return}
+  switch(a){
+    case 'lang':P.lang=P.lang==='en'?'he':'en';localStorage.setItem(PK,JSON.stringify(P));render();break;
+    case 'google':localStorage.setItem('cq-google','1');sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname.replace(/index\.html$/,'')}});break;
+    case 'signout':sb.auth.signOut().then(()=>{D.user=null;D.hh=null;render()});break;
+    case 'create':{const n=($('fam').value||'').trim();run(async()=>{const r=await sb.rpc('create_household',{p_name:n});if(r.error)throw r.error});break}
+    case 'newchore':if(!D.kids.length){toast(l.needKid);tab='kids';render();break}editing='new';render();break;
+    case 'cancel':editing=null;render();break;
+    case 'savechore':{
+      const title=$('fn').value.trim();if(!title){toast(l.needName);break}
+      const row={title:title.slice(0,60),icon:($('fi').value.trim()||'⭐').slice(0,8),coins:Math.max(0,Math.min(50,parseInt($('fc').value,10)||0)),game:$('fg').value,kid_id:$('fk').value||null};
+      run(async()=>{const r=editing==='new'?await sb.from('chores').insert(Object.assign({household_id:D.hh.id},row)):await sb.from('chores').update(row).eq('id',editing);if(r.error)throw r.error;editing=null});break}
+    case 'addkid':{const n=prompt(l.kidName,'');if(n&&n.trim())run(async()=>{const r=await sb.from('kids').insert({household_id:D.hh.id,name:n.trim().slice(0,14)});if(r.error)throw r.error});break}
+    case 'savename':{const n=$('hn').value.trim();if(n)run(async()=>{const r=await sb.from('households').update({name:n}).eq('id',D.hh.id);if(r.error)throw r.error;toast('✓')});break}
+    case 'toggle':run(async()=>{const r=await sb.from('households').update({require_approval:!D.hh.require_approval}).eq('id',D.hh.id);if(r.error)throw r.error});break;
+    case 'invite':sb.rpc('create_parent_invite').then(r=>{if(r.error)return toast(l.err);showLink(l.inviteT,l.inviteH,here('./?invite='+r.data),false)});break;
+    case 'copy':(navigator.clipboard?navigator.clipboard.writeText(t.dataset.url):Promise.reject()).then(()=>toast(l.copied),()=>toast(t.dataset.url));break;
+    case 'closem':closeModal();break;
+  }
+});
+$('modal').addEventListener('click',e=>{if(e.target===$('modal'))closeModal()});
+
+(async function boot(){
+  render();
+  const inv=new URLSearchParams(location.search).get('invite');
+  if(inv){localStorage.setItem('cq-pending-invite',inv);history.replaceState(null,'',location.pathname)}
+  const {data:{session}}=await sb.auth.getSession();
+  if(session&&session.user.is_anonymous)await sb.auth.signOut();
+  await reload();
+  sb.auth.onAuthStateChange((ev)=>{if(ev==='SIGNED_IN'&&!D.user)reload()});
+  setInterval(()=>{if(D.user&&D.hh&&!document.hidden&&!editing&&!$('modal').classList.contains('on'))load().then(render).catch(()=>{})},10000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&D.user&&!editing)load().then(render).catch(()=>{})});
+})();
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
