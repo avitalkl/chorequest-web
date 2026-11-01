@@ -87,7 +87,9 @@ en:{app:'ChoreQuest Parent',tag:'Set chores, approve them, and cheer your kids o
  noKids:'Add your child to get started',needKid:'Add a child first',paired:n=>n+' device'+(n===1?'':'s')+' paired',
  prizes:'Prizes',addPrize:'+ Add prize',cost:'Cost',noPrizes:'No prizes yet. Add real-world rewards like ice cream or movie night.',confirmPrize:'Delete this prize?',
  given:'Given',wants:'wants',repeat:'Repeats',daily:'Every day',weekly:'Weekly',weekly1:'Once a week',weeklyN:n=>n+'× a week',
- days:'Only on these days',daysHint:'Leave empty for every day.',target:'Times per week',kidsT:'Kids',gender:'Avatar style',girl:'Girl',boy:'Boy'},
+ days:'Only on these days',daysHint:'Leave empty for every day.',target:'Times per week',kidsT:'Kids',gender:'Avatar style',girl:'Girl',boy:'Boy',
+ todoT:'Not done yet today',allDone:'All done for today 🎉',histT:'Purchase history',noHist:'No purchases yet',pst:{pending:'Waiting',given:'Given',rejected:'Rejected',cancelled:'Cancelled'},
+ fbT:'Feedback to developer',fbH:'Tell us what you love, what is broken, or what you wish existed.',fbIdea:'💡 Idea',fbBug:'🐞 Problem',fbOther:'💬 Other',fbSend:'Send',fbThanks:'Thank you! Sent 💌'},
 he:{app:'ChoreQuest להורים',tag:'קבעו משימות, אשרו אותן ועודדו את הילדים.',google:'המשך עם Google',signout:'התנתקות',
  setupT:'הקמת המשפחה',setupH:'תנו שם למשפחה. אפשר לשנות אחר כך.',famName:'שם המשפחה',create:'יצירת משפחה',
  approvals:'אישורים',chores:'משימות',kids:'ילדים',family:'משפחה',
@@ -104,7 +106,9 @@ he:{app:'ChoreQuest להורים',tag:'קבעו משימות, אשרו אותן 
  noKids:'הוסיפו את הילד/ה כדי להתחיל',needKid:'קודם הוסיפו ילד/ה',paired:n=>n+' מכשירים מחוברים',
  prizes:'פרסים',addPrize:'+ הוספת פרס',cost:'מחיר',noPrizes:'אין פרסים עדיין. הוסיפו פרסים אמיתיים כמו גלידה או ערב סרט.',confirmPrize:'למחוק את הפרס?',
  given:'נמסר',wants:'רוצה',repeat:'חזרה',daily:'כל יום',weekly:'שבועי',weekly1:'פעם בשבוע',weeklyN:n=>n+' פעמים בשבוע',
- days:'רק בימים האלה',daysHint:'השאירו ריק לכל יום.',target:'פעמים בשבוע',kidsT:'ילדים',gender:'סגנון דמות',girl:'בת',boy:'בן'}};
+ days:'רק בימים האלה',daysHint:'השאירו ריק לכל יום.',target:'פעמים בשבוע',kidsT:'ילדים',gender:'סגנון דמות',girl:'בת',boy:'בן',
+ todoT:'עוד לא בוצע היום',allDone:'הכול בוצע להיום 🎉',histT:'היסטוריית רכישות',noHist:'אין רכישות עדיין',pst:{pending:'ממתין',given:'נמסר',rejected:'נדחה',cancelled:'בוטל'},
+ fbT:'משוב למפתחת',fbH:'ספרו מה אתם אוהבים, מה שבור, או מה חסר לכם.',fbIdea:'💡 רעיון',fbBug:'🐞 תקלה',fbOther:'💬 אחר',fbSend:'שליחה',fbThanks:'תודה! נשלח 💌'}};
 const PK='chorequest-parent-v1';
 const P=JSON.parse(localStorage.getItem(PK)||'null')||{lang:'en'};
 const L=()=>T[P.lang],$=id=>document.getElementById(id);
@@ -274,7 +278,7 @@ function viewChores(){
 function viewKids(){
   const l=L();
   return '<div class="sec"><h3>'+l.kidsT+'</h3>'+(D.kids.length?D.kids.map(k=>'<div class="row"><span class="e">'+(k.gender==='boy'?'👦':'👧')+'</span><div class="m">'+esc(k.name)+'<small>'+l.coinsN(k.coins)+' · '+l.paired(D.devices[k.id]||0)+'</small></div>'+
-    '<button class="b" data-ren="'+k.id+'">✏️</button><button class="b ok" data-pair="'+k.id+'">'+l.pair+'</button></div>').join(''):'<div class="empty">'+l.noKids+'</div>')+
+    '<button class="b" data-det="'+k.id+'">📋</button><button class="b" data-ren="'+k.id+'">✏️</button><button class="b ok" data-pair="'+k.id+'">'+l.pair+'</button></div>').join(''):'<div class="empty">'+l.noKids+'</div>')+
     '<button class="big" data-a="addkid" style="margin-top:8px">'+l.addKid+'</button></div>';
 }
 function viewFamily(){
@@ -282,7 +286,40 @@ function viewFamily(){
   return viewKids()+'<div class="sec"><div class="lab" style="margin-top:0">'+l.famRename+'</div><div style="display:flex;gap:8px"><input id="hn" maxlength="40" value="'+esc(h.name)+'"><button class="b ok" data-a="savename">'+l.save+'</button></div></div>'+
    '<div class="sec"><div class="row"><div class="m">'+l.reqApproval+'<small>'+l.reqHint+'</small></div><button class="tog'+(h.require_approval?' on':'')+'" data-a="toggle" aria-label="toggle"></button></div></div>'+
    '<div class="sec"><h3>'+l.inviteT+' <small style="color:var(--muted)">('+l.members(D.members)+')</small></h3><p style="margin:0;color:var(--muted);font-weight:600;font-size:14px">'+l.inviteH+'</p><button class="big" data-a="invite">'+l.inviteBtn+'</button></div>'+
+   '<button class="big" style="background:#fff" data-a="feedback">💬 '+l.fbT+'</button>'+
    '<button class="big" style="background:#fff;color:var(--red)" data-a="signout">'+l.signout+'</button>';
+}
+function todoFor(k){
+  const td=todayJ(),dow=new Date(td+'T12:00:00Z').getUTCDay(),ws=weekStart();
+  const taken=new Set((D.pending||[]).filter(p=>p.kid_id===k.id&&p.day===td).map(p=>p.chore_id));
+  (D.done||[]).forEach(r=>{if(r.kid_id===k.id&&r.day===td)taken.add(r.chore_id)});
+  return D.chores.filter(c=>(!c.kid_id||c.kid_id===k.id)&&!taken.has(c.id)&&(c.repeat==='weekly'
+    ?(D.done||[]).filter(r=>r.kid_id===k.id&&r.chore_id===c.id&&r.day>=ws).length<(c.weekly_target||1)
+    :(!(c.weekdays||[]).length||c.weekdays.includes(dow))));
+}
+const itemName=key=>{const s=String(key||'').split(':');return s[s.length-1].replace(/_/g,' ')};
+async function kidDetails(id){
+  const l=L(),k=D.kids.find(x=>x.id===id);if(!k)return;
+  const todo=todoFor(k);
+  modal('<h3 style="margin:0 0 10px">'+(k.gender==='boy'?'👦 ':'👧 ')+esc(k.name)+'</h3><div class="lab" style="margin-top:0">'+l.todoT+'</div>'+
+   (todo.length?todo.map(c=>'<div class="row"><span class="e">'+esc(c.icon)+'</span><div class="m">'+esc(c.title)+'<small>💰 '+c.coins+'</small></div></div>').join(''):'<div class="empty">'+l.allDone+'</div>')+
+   '<div class="lab">'+l.histT+'</div><div id="hist"><div class="empty">…</div></div><button class="b" style="margin-top:10px;width:100%" data-a="closem">'+l.close+'</button>');
+  const [lg,pr]=await Promise.all([
+    sb.from('coin_ledger').select('amount,item_key,created_at').eq('kid_id',id).eq('kind','purchase').not('item_key','is',null).order('created_at',{ascending:false}).limit(40),
+    sb.from('prize_requests').select('cost,status,created_at,prizes(title,icon)').eq('kid_id',id).order('created_at',{ascending:false}).limit(40)]);
+  const rows=[].concat(
+    (lg.data||[]).map(r=>({t:r.created_at,e:'🛍️',n:itemName(r.item_key),c:Math.abs(r.amount),s:''})),
+    (pr.data||[]).map(r=>({t:r.created_at,e:(r.prizes&&r.prizes.icon)||'🎁',n:(r.prizes&&r.prizes.title)||'',c:r.cost,s:l.pst[r.status]||r.status}))
+  ).sort((a,b)=>b.t.localeCompare(a.t));
+  const h=$('hist');if(!h)return;
+  h.innerHTML=rows.length?rows.map(r=>'<div class="row"><span class="e">'+esc(r.e)+'</span><div class="m">'+esc(r.n)+'<small>'+new Date(r.t).toLocaleDateString(P.lang==='he'?'he-IL':'en-GB')+(r.s?' · '+esc(r.s):'')+'</small></div><b>'+r.c+' 💰</b></div>').join(''):'<div class="empty">'+l.noHist+'</div>';
+}
+function feedbackForm(){
+  const l=L();
+  modal('<h3 style="margin:0 0 6px">'+l.fbT+'</h3><p style="margin:0 0 8px;color:var(--muted);font-weight:600;font-size:14px">'+l.fbH+'</p>'+
+   '<select id="fbk"><option value="idea">'+l.fbIdea+'</option><option value="bug">'+l.fbBug+'</option><option value="other">'+l.fbOther+'</option></select>'+
+   '<textarea id="fbm" maxlength="2000" rows="5" style="width:100%;margin-top:8px;font:inherit;padding:10px;border-radius:12px;border:2px solid #dde"></textarea>'+
+   '<button class="big" data-a="fbsend">'+l.fbSend+'</button><button class="b" style="margin-top:10px;width:100%" data-a="closem">'+l.cancel+'</button>');
 }
 function modal(html){$('mbox').innerHTML=html;$('modal').classList.add('on')}
 function closeModal(){$('modal').classList.remove('on')}
@@ -306,6 +343,8 @@ const here=rel=>new URL(rel,location.href).href;
 document.addEventListener('click',e=>{
   const t=e.target.closest('button');if(!t)return;
   const l=L(),a=t.dataset.a;
+  if(t.dataset.det){kidDetails(t.dataset.det);return}
+  if(a==='fbsend'){const m=($('fbm').value||'').trim();if(!m)return;sb.rpc('send_feedback',{p_message:m,p_kind:$('fbk').value}).then(r=>{if(r.error)return toast(l.err);closeModal();toast(l.fbThanks)});return}
   if(t.dataset.dview){dview=t.dataset.dview;render();return}
   if(t.dataset.ic){setIcon(ipick.target,t.dataset.ic,true);closeModal();return}
   if(t.dataset.icat){ipick.cat=t.dataset.icat;drawIcons();return}
@@ -330,6 +369,7 @@ document.addEventListener('click',e=>{
   switch(a){
     case 'lang':P.lang=P.lang==='en'?'he':'en';localStorage.setItem(PK,JSON.stringify(P));render();break;
     case 'google':localStorage.setItem('cq-google','1');sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname.replace(/index\.html$/,'')}});break;
+    case 'feedback':feedbackForm();break;
     case 'signout':sb.auth.signOut().then(()=>{D.user=null;D.hh=null;render()});break;
     case 'create':{const n=($('fam').value||'').trim();run(async()=>{const r=await sb.rpc('create_household',{p_name:n});if(r.error)throw r.error});break}
     case 'newchore':if(!D.kids.length){toast(l.needKid);tab='family';render();break}editing='new';draft={icon:'⭐',coins:5,game:'memory',title:'',kid_id:null,repeat:'daily',weekdays:[],weekly_target:1};render();break;
