@@ -63,6 +63,8 @@
   .item .sw{display:block;width:44px;height:44px;border-radius:50%;margin:0 auto 4px;border:3px solid #fff;box-shadow:0 2px 6px #0003}
   .item .big svg{width:64px;height:58px;display:block;margin:0 auto 2px;border-radius:12px;background:#f3ecff}
   .item .lbl{display:block;font-size:12px;margin:2px 0}
+  .stats{display:flex;gap:8px;margin:14px 0 0;flex-wrap:wrap}
+  .stats span{background:var(--card);border-radius:99px;padding:6px 14px;font-weight:700;font-size:14px;box-shadow:var(--shadow)}
   .stage.mini{max-width:230px;margin:0 auto}
   .tabs.seg{margin-top:0}.tabs.seg button{flex:1}
   .tabs.sub{flex-wrap:wrap;overflow:visible;margin:0 0 10px}
@@ -141,6 +143,7 @@
 
     <section class="page" id="p-me">
       <div class="stage"><div class="name" id="hname"></div><div id="avatar"></div></div>
+      <div class="stats" id="stats"></div>
       <div class="tabs" id="tabs"></div><div class="tabs sub" id="subtabs"></div>
       <div class="grid" id="shop"></div>
     </section>
@@ -298,6 +301,15 @@ async function refresh(quiet){
   const own=new Set(ki.data.map(r=>r.item_key));
   Object.keys(SHOP).forEach(t=>SHOP[t].forEach(x=>{if(x.p===0)own.add(t+':'+x.id)}));
   S.own=[...own];
+  try{
+    const [a,b]=await Promise.all([
+      sb.from('completions').select('day').eq('kid_id',kidId).eq('status','approved').gte('day',new Date(Date.now()-60*864e5).toISOString().slice(0,10)),
+      sb.from('coin_ledger').select('amount').eq('kid_id',kidId).gt('amount',0)]);
+    const days=new Set((a.data||[]).map(r=>r.day));let n=0,t=Date.parse(today()+'T12:00:00Z');
+    if(!days.has(new Date(t).toISOString().slice(0,10)))t-=864e5;
+    while(days.has(new Date(t).toISOString().slice(0,10))){n++;t-=864e5}
+    S.streak=n;S.life=(b.data||[]).reduce((s,r)=>s+r.amount,0);
+  }catch(e){}
   const day=today(),dow=new Date(day+'T12:00:00Z').getUTCDay(),ws=new Date(Date.parse(day+'T12:00:00Z')-dow*864e5).toISOString().slice(0,10);
   const weekUsed={};
   co.data.forEach(c=>{if(c.day>=ws&&c.status!=='rejected')weekUsed[c.chore_id]=(weekUsed[c.chore_id]||0)+1});
@@ -686,6 +698,8 @@ function renderMe(){
   const seg=$('pzseg');seg.innerHTML='';[['shop',l.pz.shop],['real',l.pz.real]].forEach(([k,t])=>{const b=document.createElement('button');b.textContent=t;b.className=pzv===k?'on':'';b.onclick=()=>{pzv=k;renderMe()};seg.appendChild(b)});
   $('shopview').style.display=pzv==='shop'?'':'none';$('realview').style.display=pzv==='real'?'':'none';
   $('shophello').textContent=l.pz.shopHello;
+  const he=S.lang==='he',st=S.streak||0;
+  $('stats').innerHTML='<span>🔥 '+st+(he?' ימים ברצף':' day streak')+'</span><span>💰 '+(S.life||0)+(he?' סה״כ':' earned')+'</span>'+(st>=3?'<span>🏅 '+(he?'להבה':'On fire')+'</span>':'')+((S.life||0)>=100?'<span>⭐ '+(he?'מאה מטבעות':'100 club')+'</span>':'');
 }
 
 /* ---------- shell ---------- */
