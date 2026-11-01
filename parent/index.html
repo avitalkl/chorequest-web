@@ -46,6 +46,11 @@ nav .badge{position:absolute;top:2px;right:18%;background:var(--red);color:#fff;
 .modal{position:fixed;inset:0;background:#26214a99;display:none;align-items:center;justify-content:center;z-index:40;padding:18px}
 .modal.on{display:flex}
 .modal .box{background:#fff;border-radius:24px;padding:20px;max-width:380px;width:100%;max-height:92vh;overflow:auto;text-align:center}
+.iconbtn{flex:none;width:54px;height:54px;border-radius:50%;background:#eceaff;font-size:28px;padding:0;line-height:1;border:2px solid #e1deff}
+.igrid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px}
+.igrid button{font-size:28px;padding:8px 0;border-radius:14px;background:#f5f3ff;line-height:1.2}
+.ichips{display:flex;gap:6px;overflow-x:auto;margin-top:10px;padding-bottom:4px}
+.ichips button{white-space:nowrap;padding:6px 12px;font-size:13px}
 .qr{width:240px;max-width:100%;margin:10px auto;background:#fff;padding:6px;border-radius:12px}.qr svg{width:100%;height:auto;display:block}
 .link{word-break:break-all;font-size:12px;color:var(--muted);-webkit-user-select:text;user-select:text;margin:6px 0}
 .tog{width:52px;height:30px;border-radius:99px;background:#d8d4f0;position:relative;transition:.2s;flex:none}
@@ -69,7 +74,7 @@ const T={
 en:{app:'ChoreQuest Parent',tag:'Set chores, approve them, and cheer your kids on.',google:'Continue with Google',signout:'Sign out',
  setupT:'Set up your family',setupH:'Name your family. You can change it later.',famName:'Family name',create:'Create family',
  approvals:'Approvals',chores:'Chores',kids:'Kids',family:'Family',
- nothing:'Nothing waiting for approval',doneT:'Completed',dToday:'Today',dWeek:'This week (resets Sunday)',doneNone:'Nothing completed yet',approve:'Approve',reject:'Reject',bonus:n=>'+'+n+' bonus',
+ nothing:'Nothing waiting for approval',pickIcon:'Pick an icon',iconSearch:'Search icons (tennis, bed, dog...)',noIcons:q=>'No icons found for "'+q+'"',doneT:'Completed',dToday:'Today',dWeek:'This week (resets Sunday)',doneNone:'Nothing completed yet',approve:'Approve',reject:'Reject',bonus:n=>'+'+n+' bonus',
  add:'+ Add chore',edit:'Edit',save:'Save',cancel:'Cancel',del:'Delete',name:'Name',icon:'Icon',coins:'Coins',game:'Game',forWho:'For',everyone:'Everyone',
  g:{memory:'Memory match',bubbles:'Pop bubbles',stars:'Catch stars',critters:'Tap critters',simon:'Copy the song',count:'Counting',none:'No game'},
  confirmDel:'Delete this chore?',needName:'Please enter a name',noChores:'No chores yet',
@@ -86,7 +91,7 @@ en:{app:'ChoreQuest Parent',tag:'Set chores, approve them, and cheer your kids o
 he:{app:'ChoreQuest להורים',tag:'קבעו משימות, אשרו אותן ועודדו את הילדים.',google:'המשך עם Google',signout:'התנתקות',
  setupT:'הקמת המשפחה',setupH:'תנו שם למשפחה. אפשר לשנות אחר כך.',famName:'שם המשפחה',create:'יצירת משפחה',
  approvals:'אישורים',chores:'משימות',kids:'ילדים',family:'משפחה',
- nothing:'אין מה לאשר כרגע',doneT:'הושלמו',dToday:'היום',dWeek:'השבוע (מתאפס ביום ראשון)',doneNone:'עוד לא הושלם דבר',approve:'אישור',reject:'דחייה',bonus:n=>'+'+n+' בונוס',
+ nothing:'אין מה לאשר כרגע',pickIcon:'בחרו אייקון',iconSearch:'חיפוש אייקון (טניס, מיטה, כלב...)',noIcons:q=>'לא נמצאו אייקונים עבור "'+q+'"',doneT:'הושלמו',dToday:'היום',dWeek:'השבוע (מתאפס ביום ראשון)',doneNone:'עוד לא הושלם דבר',approve:'אישור',reject:'דחייה',bonus:n=>'+'+n+' בונוס',
  add:'+ הוספת משימה',edit:'עריכה',save:'שמירה',cancel:'ביטול',del:'מחיקה',name:'שם',icon:'אייקון',coins:'מטבעות',game:'משחק',forWho:'עבור',everyone:'כולם',
  g:{memory:'זיכרון',bubbles:'פוצצו בועות',stars:'תפסו כוכבים',critters:'תפסו חברים',simon:'חזרו על השיר',count:'ספירה',none:'ללא משחק'},
  confirmDel:'למחוק את המשימה?',needName:'נא להזין שם',noChores:'אין משימות עדיין',
@@ -110,6 +115,43 @@ let tab='approvals',editing=null,loading=true,draft=null,dview='today';
 const todayJ=()=>new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jerusalem'});
 const weekStart=()=>{const d=todayJ(),dow=new Date(d+'T12:00:00Z').getUTCDay();return new Date(Date.parse(d+'T12:00:00Z')-dow*864e5).toISOString().slice(0,10)};
 const DAYS={en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],he:['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳']};
+const ICATS={all:['All','הכל'],morning:['Morning','בוקר'],clean:['Cleaning','ניקיון'],school:['School','לימודים'],sports:['Sports','ספורט'],pets:['Pets','חיות'],kitchen:['Kitchen','מטבח'],outdoor:['Outdoors','בחוץ'],fun:['Fun & prizes','כיף ופרסים']};
+const ICONS=[
+['🛏️','morning','bed make sleep bedroom sheets pillow tidy מיטה שינה'],['🦷','morning','teeth tooth brush dentist שיניים צחצוח'],['🚿','morning','shower wash bath מקלחת'],['👕','morning','clothes dress shirt wear בגדים'],['🧴','morning','lotion cream sunscreen קרם'],['🎒','morning','backpack bag school ready תיק'],['🌅','morning','morning wake sunrise בוקר'],['🌙','morning','night bedtime sleep לילה'],['💊','morning','vitamin medicine pill ויטמין'],['🧼','morning','soap hands wash סבון ידיים'],
+['🧹','clean','sweep broom floor clean טאטוא רצפה ניקיון'],['🧺','clean','laundry basket clothes כביסה'],['🧸','clean','tidy room toys teddy organize חדר סדר צעצועים'],['🧦','clean','socks pick up גרביים'],['🗑️','clean','trash garbage bin rubbish זבל'],['🚮','clean','recycle trash bin'],['🪣','clean','mop bucket wash'],['🧽','clean','sponge scrub wipe ספוג'],['🪟','clean','window glass חלון'],['🛁','clean','bathroom bath tub אמבטיה'],['🚽','clean','toilet bathroom שירותים'],['🧻','clean','paper toilet'],['🪥','clean','toothbrush'],['🧴','clean','spray bottle'],
+['📚','school','homework book books study read reading שיעורי בית ספר קריאה'],['📖','school','read reading story book לקרוא'],['✏️','school','pencil write writing homework כתיבה'],['🧮','school','math numbers count חשבון'],['♟️','school','chess queens logic game שחמט'],['🔬','school','science experiment מדע'],['🎹','school','piano music keyboard פסנתר מוזיקה'],['🎸','school','guitar music גיטרה'],['🎨','school','art paint draw ציור'],['💻','school','computer laptop typing מחשב'],['🗣️','school','speak english practice language'],['🧩','school','puzzle logic פאזל'],['🎻','school','violin music כינור'],['🥁','school','drums music תופים'],
+['🎾','sports','tennis racket racquet ball court match טניס'],['🤸','sports','gymnastics flip dance acrobatics flexibility התעמלות'],['⚽','sports','soccer football ball כדורגל'],['🏀','sports','basketball ball כדורסל'],['🏊','sports','swim swimming pool שחייה'],['🚴','sports','bike bicycle cycling אופניים'],['🏃','sports','run running jog exercise ריצה'],['🥋','sports','karate judo martial arts קראטה'],['🩰','sports','ballet dance ballerina בלט'],['💃','sports','dance dancing ריקוד'],['🏐','sports','volleyball'],['⛸️','sports','skate ice skating החלקה'],['🧘','sports','yoga stretch relax יוגה'],['🏋️','sports','gym weights exercise כושר'],['🛹','sports','skateboard'],['🏓','sports','ping pong table tennis'],
+['🐕','pets','dog walk puppy feed pet כלב'],['🐈','pets','cat kitten feed pet חתול'],['🐠','pets','fish tank aquarium דג'],['🐹','pets','hamster mouse pet'],['🐰','pets','rabbit bunny'],['🐦','pets','bird parrot'],['🥣','pets','bowl feed food pet dog cat אוכל'],['🦮','pets','walk dog leash טיול כלב'],['🐢','pets','turtle'],
+['🍽️','kitchen','dishes plate dinner table setting כלים צלחת שולחן'],['🧑‍🍳','kitchen','cook cooking help chef בישול'],['🥗','kitchen','salad lunch food'],['🍳','kitchen','breakfast egg cook'],['🥛','kitchen','milk drink water cup'],['🥪','kitchen','sandwich lunch pack'],['🧊','kitchen','fridge ice'],['🍎','kitchen','apple fruit healthy eat'],['🫙','kitchen','jar pantry'],['🧁','kitchen','bake cupcake baking אפייה'],
+['🌱','outdoor','plant garden water seed צמח גינה'],['🪴','outdoor','plant pot water plants השקיה'],['🌳','outdoor','tree yard garden'],['🍂','outdoor','leaves rake autumn'],['🚗','outdoor','car wash help'],['🛒','outdoor','shopping groceries store קניות'],['📬','outdoor','mail post mailbox'],['🌞','outdoor','sun summer beach'],['⛄','outdoor','snow winter'],['🎃','outdoor','halloween autumn seasonal'],['🌸','outdoor','flower spring seasonal'],['🎄','outdoor','christmas winter holiday'],['🕎','outdoor','hanukkah chanukah holiday חנוכה'],['🍎','outdoor','rosh hashanah apple holiday'],['🌿','outdoor','herbs plants'],
+['⭐','fun','star good job כוכב'],['🎁','fun','gift prize present מתנה פרס'],['🍦','fun','ice cream treat גלידה'],['🎬','fun','movie film cinema night סרט'],['🎮','fun','game gaming video screen time משחק מסך'],['📱','fun','phone tablet screen time'],['🍕','fun','pizza dinner food פיצה'],['🎢','fun','amusement park rides trip'],['🏊','fun','pool swim trip'],['🎂','fun','cake birthday party'],['🛍️','fun','shopping toy store'],['🍿','fun','popcorn movie'],['🏆','fun','trophy win prize גביע'],['❤️','fun','love kind help nice'],['🤝','fun','help kind share'],['👶','fun','sibling baby help brother sister אח אחות']];
+function iconWords(s){return s.toLowerCase().split(/[^a-z\u0590-\u05ff]+/).filter(w=>w.length>=3)}
+function iconMatches(q){
+  const ws=iconWords(q);if(!ws.length)return [];
+  return ICONS.map(i=>{const tg=i[2].split(' ');let s=0;
+    ws.forEach(w=>{const b=w.replace(/(es|s)$/,'');tg.forEach(t=>{if(t===w||t===b)s+=3;else if(t.startsWith(w)||t.startsWith(b))s+=1})});
+    return [i,s]}).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
+}
+function setIcon(target,ic,manual){
+  const f=$(target);if(f)f.value=ic;const b=$(target+'b');if(b)b.textContent=ic;
+  if(draft&&target==='fi'){draft.icon=ic;if(manual)draft.iconManual=true}
+}
+let ipick={target:'fi',cat:'all',q:''};
+function iconPicker(target){
+  ipick={target,cat:'all',q:''};const l=L();
+  modal('<h3 style="margin:0 0 10px">'+l.pickIcon+'</h3><div style="position:relative"><input id="icq" placeholder="'+esc(l.iconSearch)+'" autocomplete="off"><button class="b" data-ic-clear="1" style="position:absolute;inset-inline-end:6px;top:6px;padding:6px 10px">✕</button></div>'+
+   '<div class="ichips" id="ichips"></div><div class="igrid" id="igrid"></div><button class="b" style="margin-top:12px" data-a="closem">'+l.cancel+'</button>');
+  drawIcons();setTimeout(()=>$('icq').focus(),50);
+}
+function drawIcons(){
+  const l=L(),q=ipick.q.trim().toLowerCase(),li=P.lang==='he'?1:0;
+  $('ichips').innerHTML=Object.keys(ICATS).map(k=>'<button class="b'+(ipick.cat===k?' ok':'')+'" data-icat="'+k+'">'+ICATS[k][li]+'</button>').join('');
+  let list=ICONS.filter(i=>ipick.cat==='all'||i[1]===ipick.cat);
+  if(q)list=list.filter(i=>i[2].includes(q)||ICATS[i[1]].some(c=>c.toLowerCase().includes(q)));
+  const seen=new Set();list=list.filter(i=>!seen.has(i[0])&&seen.add(i[0]));
+  $('igrid').innerHTML=list.length?list.map(i=>'<button data-ic="'+i[0]+'">'+i[0]+'</button>').join(''):
+    '<div class="empty" style="grid-column:1/-1">'+esc(l.noIcons(ipick.q))+'<br><button data-ic="⭐" style="margin-top:8px;background:#f5f3ff;border-radius:14px;padding:8px 14px;font-size:28px">⭐</button></div>';
+}
 function readDraft(){
   if(!draft||!$('fn'))return;
   draft.title=$('fn').value;draft.icon=$('fi').value;draft.coins=$('fc').value;draft.game=$('fg').value;draft.kid_id=$('fk').value||null;
@@ -203,8 +245,7 @@ function viewPrizes(){
   const l=L();
   if(editing){
     const z=editing==='new'?{icon:'🎁',cost:50,title:''}:D.prizes.find(x=>x.id===editing)||{};
-    return '<div class="sec"><div class="lab" style="margin-top:0">'+l.name+'</div><input id="pn" maxlength="60" value="'+esc(z.title)+'">'+
-     '<div class="lab">'+l.icon+'</div><input id="pi" maxlength="4" value="'+esc(z.icon)+'">'+
+    return '<div class="sec"><div class="lab" style="margin-top:0">'+l.name+'</div><div style="display:flex;gap:10px;align-items:center"><button class="iconbtn" id="pib" data-a="pickicon" data-t="pi" aria-label="'+esc(l.icon)+'">'+esc(z.icon)+'</button><input id="pn" maxlength="60" value="'+esc(z.title)+'"></div><input id="pi" type="hidden" value="'+esc(z.icon)+'">'+
      '<div class="lab">'+l.cost+'</div><input id="pc" type="number" min="1" max="5000" inputmode="numeric" value="'+z.cost+'">'+
      '<button class="big" data-a="saveprize">'+l.save+'</button><div style="display:flex;gap:10px;margin-top:10px"><button class="b" style="flex:1" data-a="cancel">'+l.cancel+'</button>'+
      (editing!=='new'?'<button class="b bad" style="flex:1" data-delp="'+editing+'">'+l.del+'</button>':'')+'</div></div>';
@@ -217,8 +258,7 @@ function viewChores(){
   if(editing){
     const c=draft;
     const dn=DAYS[P.lang];
-    return '<div class="sec"><div class="lab" style="margin-top:0">'+l.name+'</div><input id="fn" maxlength="60" value="'+esc(c.title)+'">'+
-     '<div class="lab">'+l.icon+'</div><input id="fi" maxlength="4" value="'+esc(c.icon)+'">'+
+    return '<div class="sec"><div class="lab" style="margin-top:0">'+l.name+'</div><div style="display:flex;gap:10px;align-items:center"><button class="iconbtn" id="fib" data-a="pickicon" data-t="fi" aria-label="'+esc(l.icon)+'">'+esc(c.icon)+'</button><input id="fn" maxlength="60" value="'+esc(c.title)+'"></div><input id="fi" type="hidden" value="'+esc(c.icon)+'">'+
      '<div class="lab">'+l.coins+'</div><input id="fc" type="number" min="0" max="50" inputmode="numeric" value="'+esc(c.coins)+'">'+
      '<div class="lab">'+l.game+'</div><select id="fg">'+GAMES.map(g=>'<option value="'+g+'"'+(c.game===g?' selected':'')+'>'+l.g[g]+'</option>').join('')+'</select>'+
      '<div class="lab">'+l.forWho+'</div><select id="fk"><option value="">'+l.everyone+'</option>'+D.kids.map(k=>'<option value="'+k.id+'"'+(c.kid_id===k.id?' selected':'')+'>'+esc(k.name)+'</option>').join('')+'</select>'+
@@ -267,6 +307,9 @@ document.addEventListener('click',e=>{
   const t=e.target.closest('button');if(!t)return;
   const l=L(),a=t.dataset.a;
   if(t.dataset.dview){dview=t.dataset.dview;render();return}
+  if(t.dataset.ic){setIcon(ipick.target,t.dataset.ic,true);closeModal();return}
+  if(t.dataset.icat){ipick.cat=t.dataset.icat;drawIcons();return}
+  if(t.dataset.icClear){ipick.q='';$('icq').value='';drawIcons();$('icq').focus();return}
   if(t.dataset.tab){tab=t.dataset.tab;editing=null;render();return}
   if(t.dataset.app){run(async()=>{const r=await sb.rpc('approve_completion',{p_id:t.dataset.app});if(r.error)throw r.error;toast('✅')});return}
   if(t.dataset.rej){run(async()=>{const r=await sb.rpc('reject_completion',{p_id:t.dataset.rej});if(r.error)throw r.error});return}
@@ -308,10 +351,15 @@ document.addEventListener('click',e=>{
     case 'toggle':run(async()=>{const r=await sb.from('households').update({require_approval:!D.hh.require_approval}).eq('id',D.hh.id);if(r.error)throw r.error});break;
     case 'invite':sb.rpc('create_parent_invite').then(r=>{if(r.error)return toast(l.err);showLink(l.inviteT,l.inviteH,here('./?invite='+r.data),false)});break;
     case 'copy':(navigator.clipboard?navigator.clipboard.writeText(t.dataset.url):Promise.reject()).then(()=>toast(l.copied),()=>toast(t.dataset.url));break;
+    case 'pickicon':iconPicker(t.dataset.t);break;
     case 'closem':closeModal();break;
   }
 });
 $('modal').addEventListener('click',e=>{if(e.target===$('modal'))closeModal()});
+document.addEventListener('input',e=>{
+  if(e.target.id==='icq'){ipick.q=e.target.value;drawIcons();return}
+  if(e.target.id==='fn'&&draft&&editing==='new'&&!draft.iconManual){const m=iconMatches(e.target.value);if(m.length)setIcon('fi',m[0][0],false)}
+});
 document.addEventListener('change',e=>{if(e.target.dataset&&e.target.dataset.chg==='repeat'){readDraft();render()}});
 
 (async function boot(){
