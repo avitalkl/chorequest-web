@@ -142,10 +142,15 @@
       <div class="tabs" id="tabs"></div><div class="tabs sub" id="subtabs"></div>
       <div class="grid" id="shop"></div>
     </section>
+    <section class="page" id="p-prizes">
+      <p class="hello" id="pzhello"></p>
+      <div id="prizes"></div>
+    </section>
   </main>
 
   <nav>
     <button class="on" data-p="tasks"><span class="i">✅</span><span id="n1"></span></button>
+    <button data-p="prizes"><span class="i">🎁</span><span id="n3"></span></button>
     <button data-p="me"><span class="i">👧</span><span id="n2"></span></button>
   </nav>
 </div>
@@ -183,6 +188,7 @@ const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:'chorequest-kid-a
 const T = {
   en:{title:'ChoreQuest',hello:n=>`Good day, ${n}! Finish your quests to earn coins.`,tasks:'Quests',me:'Me',nameHint:'Tap the name to change it',gm:{critters:['Tap the critters!','Tap the little friends as they pop up. 30 seconds, each one is a bonus coin!'],simon:['Copy the song!','Watch the colors, then repeat them. Every round is bonus coins!'],count:['How many?','Count and tap the right number. 40 seconds, each answer is 2 bonus coins!'],memory:['Match the pairs!','Find all pairs in 60 seconds. The faster you are, the bigger the bonus!'],bubbles:['Pop the bubbles!','Pop as many as you can in 30 seconds. Each one is a bonus coin!'],stars:['Catch the stars!','Slide the basket to catch stars for 30 seconds. Each one is a bonus coin!']},
     pr:{title:'Connect this device',msg:'Ask a parent to show you the QR code in the Parent app, then scan it with the camera. Or paste the code here.',code:'Paste code',go:'Connect',bad:'That code did not work. Ask a parent for a new one.',err:'Something went wrong. Check the internet and try again.',appr:n=>'Approved! +'+n+' coins',retry:'Try again'},
+    pz:{title:'Prizes',hello:'Spend your coins on real prizes!',empty:'No prizes yet. Ask a parent to add some.',wait:'Waiting for a parent',got:'Got it!',ask:n=>'Get this prize for '+n+' coins?',weekN:(a,b)=>a+'/'+b+' this week',weekDone:'Done this week',asked:'Asked! A parent will check.',need:'Not enough coins yet'},
     bonus:n=>`Bonus +${n} coins!`,timeup:'Time is up! Great job!',nice:'You did it!',left:'s',hint:'Tap a quest when you finish it. Tap again to undo.',gtitle:'Match the pairs!',gsub:'Find all pairs in 60 seconds. The faster you are, the bigger the bonus!',
     win:'Quest complete!',done:'Collect coins',skip:'Skip game',own:'Owned',
     tn:{hair:'Hair color',style:'Hair style',skin:'Skin',eyes:'Eyes',mouth:'Mouth',face:'Face',top:'Top',topc:'Top color',bottom:'Bottom',botc:'Bottom color',shoes:'Shoes',hat:'Hats',acc:'Accessories',pet:'Pet',bg:'Place'},gn:{head:'Head',clothes:'Clothes',extras:'Extras',place:'Places'},
@@ -191,6 +197,7 @@ const T = {
     pa:{parent:'Parent area',enterPin:'Enter your PIN',setPin:'Create a 4-digit PIN to protect this area',ok:'OK',pin4:'PIN must be 4 digits',wrong:'Wrong PIN',close:'Close',approvals:'Waiting for approval',nothing:'Nothing waiting',approve:'Approve',reject:'Reject',chores:'Chores',add:'+ Add chore',edit:'Edit',del:'Delete',save:'Save',cancel:'Cancel',name:'Name',coins:'Coins',game:'Game',nogame:'No game',icon:'Icon',req:'Coins are paid only after a parent approves',changePin:'Change PIN',confirmDel:'Delete this chore?',waiting:'Waiting for parent',hint:'Tap a quest when you finish it. A parent will check it.',settings:'Settings',needName:'Please enter a name'}},
   he:{title:'ChoreQuest',hello:n=>`יום טוב, ${n}! סיימי משימות כדי להרוויח מטבעות.`,tasks:'משימות',me:'אני',nameHint:'לחצי על השם כדי לשנות',gm:{critters:['תפסי את החברים!','לחצי על החברים הקטנים כשהם קופצים. 30 שניות, כל אחד הוא מטבע בונוס!'],simon:['חזרי על השיר!','הסתכלי על הצבעים וחזרי עליהם. כל סיבוב נותן מטבעות בונוס!'],count:['כמה יש?','ספרי ולחצי על המספר הנכון. 40 שניות, כל תשובה היא מטבע בונוס!'],memory:['מצאי את הזוגות!','מצאי את כל הזוגות ב-60 שניות. ככל שמהר יותר, הבונוס גדול יותר!'],bubbles:['פוצצי בועות!','פוצצי כמה שיותר בועות ב-30 שניות. כל אחת היא מטבע בונוס!'],stars:['תפסי כוכבים!','החליקי את הסל כדי לתפוס כוכבים במשך 30 שניות. כל אחד הוא מטבע בונוס!']},
     pr:{title:'חיבור המכשיר',msg:'בקשי מהורה להציג את קוד ה-QR באפליקציית ההורים, וסרקי אותו במצלמה. אפשר גם להדביק כאן את הקוד.',code:'הדבקת קוד',go:'התחברי',bad:'הקוד לא עבד. בקשי מהורה קוד חדש.',err:'משהו השתבש. בדקי את האינטרנט ונסי שוב.',appr:n=>'אושר! +'+n+' מטבעות',retry:'נסי שוב'},
+    pz:{title:'פרסים',hello:'הוציאי מטבעות על פרסים אמיתיים!',empty:'אין פרסים עדיין. בקשי מהורה להוסיף.',wait:'ממתין להורה',got:'התקבל!',ask:n=>'לקבל את הפרס תמורת '+n+' מטבעות?',weekN:(a,b)=>a+'/'+b+' השבוע',weekDone:'הושלם השבוע',asked:'נשלח! הורה יבדוק.',need:'אין עדיין מספיק מטבעות'},
     bonus:n=>`בונוס +${n} מטבעות!`,timeup:'נגמר הזמן! כל הכבוד!',nice:'הצלחת!',left:'ש׳',hint:'לחצי על משימה כשסיימת. לחיצה נוספת מבטלת.',gtitle:'מצאי את הזוגות!',gsub:'מצאי את כל הזוגות ב-60 שניות. ככל שמהר יותר, הבונוס גדול יותר!',
     win:'המשימה הושלמה!',done:'קבלי מטבעות',skip:'דלגי על המשחק',own:'שלך',
     tn:{hair:'צבע שיער',style:'תסרוקת',skin:'עור',eyes:'עיניים',mouth:'פה',face:'פנים',top:'חולצה',topc:'צבע חולצה',bottom:'תחתית',botc:'צבע תחתית',shoes:'נעליים',hat:'כובעים',acc:'אביזרים',pet:'חיית מחמד',bg:'מקום'},gn:{head:'ראש',clothes:'בגדים',extras:'תוספות',place:'מקומות'},
@@ -224,7 +231,7 @@ const SWATCH=['hair','skin','eyes','topc','botc'];
 const LABELED=['style','top','bottom','shoes','mouth','face','hat','acc','bg'];
 const KEY='chorequest-kid-v1';
 const LOC=JSON.parse(localStorage.getItem(KEY)||'null')||{lang:'en',mute:false,kid:null};
-let S={lang:LOC.lang||'en',mute:!!LOC.mute,coins:0,name:'',tasks:[],done:{},own:[],worn:Object.assign({},DEF),approval:true};
+let S={lang:LOC.lang||'en',mute:!!LOC.mute,coins:0,name:'',tasks:[],done:{},own:[],worn:Object.assign({},DEF),approval:true,prizes:[],preq:[]};
 const save=()=>localStorage.setItem(KEY,JSON.stringify({lang:S.lang,mute:S.mute,kid:LOC.kid}));
 function normWorn(w){w=Object.assign({},w||{});Object.keys(DEF).forEach(t=>{if(!SHOP[t].some(x=>x.id===w[t]))w[t]=DEF[t]});return w}
 const $=id=>document.getElementById(id);
@@ -262,24 +269,31 @@ const today=()=>new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jerusalem'
 let kidId=LOC.kid,busy=false,seenPending={};
 async function refresh(quiet){
   if(!kidId)return;
-  const d0=new Date(Date.now()-2*864e5).toISOString().slice(0,10);
-  const [k,ch,co,ki]=await Promise.all([
+  const d0=new Date(Date.now()-8*864e5).toISOString().slice(0,10);
+  const p0=new Date(Date.now()-7*864e5).toISOString();
+  const [k,ch,co,ki,pz,pq]=await Promise.all([
     sb.from('kids').select('id,name,coins,worn').eq('id',kidId).maybeSingle(),
-    sb.from('chores').select('id,title,icon,coins,game,kid_id').eq('active',true).order('created_at'),
+    sb.from('chores').select('id,title,icon,coins,game,kid_id,repeat,weekdays,weekly_target').eq('active',true).order('created_at'),
     sb.from('completions').select('id,chore_id,status,base_coins,bonus,day').eq('kid_id',kidId).gte('day',d0),
-    sb.from('kid_items').select('item_key').eq('kid_id',kidId)]);
-  if(k.error||ch.error||co.error||ki.error)throw (k.error||ch.error||co.error||ki.error);
+    sb.from('kid_items').select('item_key').eq('kid_id',kidId),
+    sb.from('prizes').select('id,title,icon,cost').eq('active',true).order('created_at'),
+    sb.from('prize_requests').select('id,prize_id,status').eq('kid_id',kidId).in('status',['pending','given']).gte('created_at',p0)]);
+  const bad=[k,ch,co,ki,pz,pq].find(x=>x.error);if(bad)throw bad.error;
   if(!k.data){LOC.kid=kidId=null;save();showPair();return}
   S.name=k.data.name;S.coins=k.data.coins;S.worn=normWorn(k.data.worn);
   const own=new Set(ki.data.map(r=>r.item_key));
   Object.keys(SHOP).forEach(t=>SHOP[t].forEach(x=>{if(x.p===0)own.add(t+':'+x.id)}));
   S.own=[...own];
-  S.tasks=ch.data.filter(c=>!c.kid_id||c.kid_id===kidId).map(c=>({id:c.id,e:c.icon,c:c.coins,g:c.game,name:c.title}));
-  const day=today(),done={};
+  const day=today(),dow=new Date(day+'T12:00:00Z').getUTCDay(),ws=new Date(Date.parse(day+'T12:00:00Z')-dow*864e5).toISOString().slice(0,10);
+  const weekUsed={};
+  co.data.forEach(c=>{if(c.day>=ws&&c.status!=='rejected')weekUsed[c.chore_id]=(weekUsed[c.chore_id]||0)+1});
+  S.tasks=ch.data.filter(c=>(!c.kid_id||c.kid_id===kidId)&&!(c.repeat==='daily'&&c.weekdays&&!c.weekdays.includes(dow)))
+    .map(c=>({id:c.id,e:c.icon,c:c.coins,g:c.game,name:c.title,wk:c.repeat==='weekly'?c.weekly_target:0,used:weekUsed[c.id]||0}));
+  const done={};
   co.data.forEach(c=>{if(c.day===day&&c.status!=='rejected')done[c.chore_id]={cid:c.id,status:c.status,paid:c.base_coins+c.bonus}});
   if(quiet)Object.keys(done).forEach(id=>{if(seenPending[id]&&done[id].status==='approved'){toast('🎉 '+L().pr.appr(done[id].paid));chime();confetti()}});
   seenPending={};Object.keys(done).forEach(id=>{if(done[id].status==='pending')seenPending[id]=1});
-  S.done=done;renderAll();
+  S.done=done;S.prizes=pz.data;S.preq=pq.data;renderAll();
 }
 async function act(fn){
   if(busy)return;busy=true;
@@ -291,11 +305,26 @@ async function act(fn){
 function renderTasks(){
   const l=L(); $('hello').textContent=l.hello(S.name); $('hint').textContent=l.pa.hint;
   let n=0;$('tasks').innerHTML='';
-  S.tasks.forEach(t=>{const d=S.done[t.id],w=isPend(d); if(d)n++;
-    const b=document.createElement('button');b.className='task'+(d&&!w?' done':'')+(w?' wait':'');
-    b.innerHTML='<span class="emoji">'+esc(t.e)+'</span><span class="t">'+esc(tname(t))+'<br><span class="c">'+(w?'⏳ '+esc(l.pa.waiting):'💰 '+t.c)+'</span></span><span class="box">'+(w?'⏳':d?'✓':'')+'</span>';
-    b.onclick=()=>toggleTask(t);$('tasks').appendChild(b)});
+  S.tasks.forEach(t=>{const d=S.done[t.id],w=isPend(d),full=!d&&t.wk&&t.used>=t.wk; if(d||full)n++;
+    const sub=w?'⏳ '+esc(l.pa.waiting):full?esc(l.pz.weekDone):'💰 '+t.c+(t.wk>1?' · '+esc(l.pz.weekN(t.used,t.wk)):'');
+    const b=document.createElement('button');b.className='task'+((d&&!w)||full?' done':'')+(w?' wait':'');
+    b.innerHTML='<span class="emoji">'+esc(t.e)+'</span><span class="t">'+esc(tname(t))+'<br><span class="c">'+sub+'</span></span><span class="box">'+(w?'⏳':d||full?'✓':'')+'</span>';
+    b.onclick=()=>{if(!full)toggleTask(t)};$('tasks').appendChild(b)});
   $('bar').style.width=(S.tasks.length?n/S.tasks.length*100:0)+'%';
+}
+function renderPrizes(){
+  const l=L().pz;$('pzhello').textContent=l.hello;const box=$('prizes');box.innerHTML='';
+  if(!S.prizes.length){box.innerHTML='<p class="hint">'+esc(l.empty)+'</p>';return}
+  S.prizes.forEach(z=>{
+    const rq=S.preq.find(r=>r.prize_id===z.id&&r.status==='pending'),gv=!rq&&S.preq.some(r=>r.prize_id===z.id&&r.status==='given');
+    const b=document.createElement('button');b.className='task'+(rq?' wait':'');
+    b.innerHTML='<span class="emoji">'+esc(z.icon)+'</span><span class="t">'+esc(z.title)+'<br><span class="c">'+(rq?'⏳ '+esc(l.wait):(gv?'✓ '+esc(l.got)+' · ':'')+'💰 '+z.cost)+'</span></span>';
+    b.onclick=()=>{
+      if(rq){act(async()=>{const r=await sb.rpc('cancel_prize_request',{p_id:rq.id});if(r.error)throw r.error});return}
+      if(S.coins<z.cost){toast(l.need);return}
+      if(!confirm(l.ask(z.cost)))return;
+      act(async()=>{const r=await sb.rpc('redeem_prize',{p_kid:kidId,p_prize:z.id});if(r.error)throw r.error;toast('🎁 '+l.asked)})};
+    box.appendChild(b)});
 }
 function toggleTask(t){
   const d=S.done[t.id];
@@ -612,8 +641,8 @@ function renderMe(){
 /* ---------- shell ---------- */
 function renderAll(){
   const l=L();document.documentElement.lang=S.lang;document.documentElement.dir=S.lang==='he'?'rtl':'ltr';
-  $('title').textContent=l.title;$('n1').textContent=l.tasks;$('n2').textContent=l.me;$('coins').textContent=S.coins;$('mute').textContent=S.mute?'🔇':'🔊';
-  renderTasks();renderMe();
+  $('title').textContent=l.title;$('n1').textContent=l.tasks;$('n2').textContent=l.me;$('n3').textContent=l.pz.title;$('coins').textContent=S.coins;$('mute').textContent=S.mute?'🔇':'🔊';
+  renderTasks();renderPrizes();renderMe();
 }
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
   document.querySelectorAll('.page').forEach(p=>p.classList.toggle('on',p.id==='p-'+b.dataset.p))});

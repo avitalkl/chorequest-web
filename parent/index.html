@@ -79,7 +79,10 @@ en:{app:'ChoreQuest Parent',tag:'Set chores, approve them, and cheer your kids o
  inviteT:'Invite another parent',inviteH:'Send this link. It works for 3 days and can be used once.',inviteBtn:'Create invite link',
  members:n=>n+' parent'+(n===1?'':'s'),famRename:'Family name',err:'Something went wrong. Please try again.',
  joinedOk:'You joined the family!',inviteBad:'That invite is invalid or expired.',coinsN:n=>n+' coins',today:'Today',
- noKids:'Add your child to get started',needKid:'Add a child first',paired:n=>n+' device'+(n===1?'':'s')+' paired'},
+ noKids:'Add your child to get started',needKid:'Add a child first',paired:n=>n+' device'+(n===1?'':'s')+' paired',
+ prizes:'Prizes',addPrize:'+ Add prize',cost:'Cost',noPrizes:'No prizes yet. Add real-world rewards like ice cream or movie night.',confirmPrize:'Delete this prize?',
+ given:'Given',wants:'wants',repeat:'Repeats',daily:'Every day',weekly:'Weekly',weekly1:'Once a week',weeklyN:n=>n+'× a week',
+ days:'Only on these days',daysHint:'Leave empty for every day.',target:'Times per week',kidsT:'Kids'},
 he:{app:'ChoreQuest להורים',tag:'קבעו משימות, אשרו אותן ועודדו את הילדים.',google:'המשך עם Google',signout:'התנתקות',
  setupT:'הקמת המשפחה',setupH:'תנו שם למשפחה. אפשר לשנות אחר כך.',famName:'שם המשפחה',create:'יצירת משפחה',
  approvals:'אישורים',chores:'משימות',kids:'ילדים',family:'משפחה',
@@ -93,14 +96,28 @@ he:{app:'ChoreQuest להורים',tag:'קבעו משימות, אשרו אותן 
  inviteT:'הזמנת הורה נוסף',inviteH:'שלחו את הקישור. תקף ל-3 ימים ולשימוש חד פעמי.',inviteBtn:'יצירת קישור הזמנה',
  members:n=>n+' הורים',famRename:'שם המשפחה',err:'משהו השתבש. נסו שוב.',
  joinedOk:'הצטרפתם למשפחה!',inviteBad:'ההזמנה לא תקפה או שפגה.',coinsN:n=>n+' מטבעות',today:'היום',
- noKids:'הוסיפו את הילד/ה כדי להתחיל',needKid:'קודם הוסיפו ילד/ה',paired:n=>n+' מכשירים מחוברים'}};
+ noKids:'הוסיפו את הילד/ה כדי להתחיל',needKid:'קודם הוסיפו ילד/ה',paired:n=>n+' מכשירים מחוברים',
+ prizes:'פרסים',addPrize:'+ הוספת פרס',cost:'מחיר',noPrizes:'אין פרסים עדיין. הוסיפו פרסים אמיתיים כמו גלידה או ערב סרט.',confirmPrize:'למחוק את הפרס?',
+ given:'נמסר',wants:'רוצה',repeat:'חזרה',daily:'כל יום',weekly:'שבועי',weekly1:'פעם בשבוע',weeklyN:n=>n+' פעמים בשבוע',
+ days:'רק בימים האלה',daysHint:'השאירו ריק לכל יום.',target:'פעמים בשבוע',kidsT:'ילדים'}};
 const PK='chorequest-parent-v1';
 const P=JSON.parse(localStorage.getItem(PK)||'null')||{lang:'en'};
 const L=()=>T[P.lang],$=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200)}
-const D={user:null,hh:null,members:0,kids:[],chores:[],pending:[],devices:{}};
-let tab='approvals',editing=null,loading=true;
+const D={user:null,hh:null,members:0,kids:[],chores:[],pending:[],devices:{},prizes:[],prizeReq:[]};
+let tab='approvals',editing=null,loading=true,draft=null;
+const DAYS={en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],he:['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳']};
+function readDraft(){
+  if(!draft||!$('fn'))return;
+  draft.title=$('fn').value;draft.icon=$('fi').value;draft.coins=$('fc').value;draft.game=$('fg').value;draft.kid_id=$('fk').value||null;
+  draft.repeat=$('fr').value;if($('fw'))draft.weekly_target=$('fw').value;
+}
+function scheduleText(c){
+  const l=L(),d=DAYS[P.lang];
+  if(c.repeat==='weekly')return c.weekly_target>1?l.weeklyN(c.weekly_target):l.weekly1;
+  return c.weekdays&&c.weekdays.length?c.weekdays.slice().sort().map(x=>d[x]).join(' '):l.daily;
+}
 
 async function load(){
   const {data:{session}}=await sb.auth.getSession();
@@ -113,15 +130,17 @@ async function load(){
   if(m.error)throw m.error;
   if(!m.data.length){D.hh=null;return}
   const hid=m.data[0].household_id;
-  const [h,mm,k,c,p,dv]=await Promise.all([
+  const [h,mm,k,c,p,dv,pz,pr]=await Promise.all([
     sb.from('households').select('id,name,require_approval').eq('id',hid).single(),
     sb.from('household_members').select('user_id').eq('household_id',hid),
     sb.from('kids').select('id,name,coins').eq('household_id',hid).order('created_at'),
-    sb.from('chores').select('id,title,icon,coins,game,kid_id').eq('household_id',hid).eq('active',true).order('created_at'),
+    sb.from('chores').select('id,title,icon,coins,game,kid_id,repeat,weekdays,weekly_target').eq('household_id',hid).eq('active',true).order('created_at'),
     sb.from('completions').select('id,kid_id,chore_id,base_coins,bonus,created_at').eq('household_id',hid).eq('status','pending').order('created_at'),
-    sb.from('kid_devices').select('kid_id')]);
-  const e=[h,mm,k,c,p,dv].find(x=>x.error);if(e)throw e.error;
-  D.hh=h.data;D.members=mm.data.length;D.kids=k.data;D.chores=c.data;D.pending=p.data;
+    sb.from('kid_devices').select('kid_id'),
+    sb.from('prizes').select('id,title,icon,cost').eq('household_id',hid).eq('active',true).order('created_at'),
+    sb.from('prize_requests').select('id,kid_id,prize_id,cost,created_at').eq('household_id',hid).eq('status','pending').order('created_at')]);
+  const e=[h,mm,k,c,p,dv,pz,pr].find(x=>x.error);if(e)throw e.error;
+  D.hh=h.data;D.members=mm.data.length;D.kids=k.data;D.chores=c.data;D.pending=p.data;D.prizes=pz.data;D.prizeReq=pr.data;
   D.devices={};dv.data.forEach(x=>D.devices[x.kid_id]=(D.devices[x.kid_id]||0)+1);
 }
 async function reload(){try{await load()}catch(e){toast(L().err)}loading=false;render()}
@@ -140,45 +159,67 @@ function render(){
     app.innerHTML=head+'<div class="center" style="padding-top:30px"><div class="logo">🏠</div><h2>'+l.setupT+'</h2><p style="color:var(--muted);font-weight:600">'+l.setupH+'</p>'+
       '<div class="lab" style="text-align:start">'+l.famName+'</div><input id="fam" maxlength="40" value="'+(P.lang==='he'?'המשפחה שלי':'My family')+'"><button class="big" data-a="create">'+l.create+'</button></div>';
     return}
-  const np=D.pending.length;
+  const np=D.pending.length+D.prizeReq.length;
   let body='';
-  if(tab==='approvals')body=viewApprovals();else if(tab==='chores')body=viewChores();else if(tab==='kids')body=viewKids();else body=viewFamily();
+  if(tab==='approvals')body=viewApprovals();else if(tab==='chores')body=viewChores();else if(tab==='prizes')body=viewPrizes();else body=viewFamily();
   app.innerHTML=head+'<main>'+body+'</main><nav><div>'+
-   [['approvals','✅',l.approvals],['chores','📝',l.chores],['kids','👧',l.kids],['family','🏠',l.family]].map(t=>
+   [['approvals','✅',l.approvals],['chores','📝',l.chores],['prizes','🎁',l.prizes],['family','🏠',l.family]].map(t=>
     '<button data-tab="'+t[0]+'" class="'+(tab===t[0]?'on':'')+'"><span class="i">'+t[1]+'</span>'+t[2]+(t[0]==='approvals'&&np?'<span class="badge">'+np+'</span>':'')+'</button>').join('')+'</div></nav>';
 }
 const kname=id=>{const k=D.kids.find(x=>x.id===id);return k?k.name:''};
 function viewApprovals(){
   const l=L();
-  if(!D.pending.length)return '<div class="sec"><div class="empty">🎉 '+l.nothing+'</div></div>';
-  return '<div class="sec">'+D.pending.map(p=>{const c=D.chores.find(x=>x.id===p.chore_id)||{icon:'⭐',title:'?'};
+  if(!D.pending.length&&!D.prizeReq.length)return '<div class="sec"><div class="empty">🎉 '+l.nothing+'</div></div>';
+  let h='';
+  if(D.prizeReq.length)h+='<div class="sec">'+D.prizeReq.map(r=>{const z=D.prizes.find(x=>x.id===r.prize_id)||{icon:'🎁',title:'?'};
+    return '<div class="row"><span class="e">'+esc(z.icon)+'</span><div class="m">'+esc(z.title)+'<small>'+esc(kname(r.kid_id))+' '+l.wants+' · 💰 '+r.cost+'</small></div>'+
+     '<button class="b bad" data-prej="'+r.id+'">'+l.reject+'</button><button class="b ok" data-pgive="'+r.id+'">'+l.given+'</button></div>'}).join('')+'</div>';
+  if(D.pending.length)h+='<div class="sec">'+D.pending.map(p=>{const c=D.chores.find(x=>x.id===p.chore_id)||{icon:'⭐',title:'?'};
     return '<div class="row"><span class="e">'+esc(c.icon)+'</span><div class="m">'+esc(c.title)+'<small>'+esc(kname(p.kid_id))+' · 💰 '+p.base_coins+(p.bonus?' ('+l.bonus(p.bonus)+')':'')+'</small></div>'+
      '<button class="b bad" data-rej="'+p.id+'">'+l.reject+'</button><button class="b ok" data-app="'+p.id+'">'+l.approve+'</button></div>'}).join('')+'</div>';
+  return h;
+}
+function viewPrizes(){
+  const l=L();
+  if(editing){
+    const z=editing==='new'?{icon:'🎁',cost:50,title:''}:D.prizes.find(x=>x.id===editing)||{};
+    return '<div class="sec"><div class="lab" style="margin-top:0">'+l.name+'</div><input id="pn" maxlength="60" value="'+esc(z.title)+'">'+
+     '<div class="lab">'+l.icon+'</div><input id="pi" maxlength="4" value="'+esc(z.icon)+'">'+
+     '<div class="lab">'+l.cost+'</div><input id="pc" type="number" min="1" max="5000" inputmode="numeric" value="'+z.cost+'">'+
+     '<button class="big" data-a="saveprize">'+l.save+'</button><div style="display:flex;gap:10px;margin-top:10px"><button class="b" style="flex:1" data-a="cancel">'+l.cancel+'</button>'+
+     (editing!=='new'?'<button class="b bad" style="flex:1" data-delp="'+editing+'">'+l.del+'</button>':'')+'</div></div>';
+  }
+  return '<div class="sec">'+(D.prizes.length?D.prizes.map(z=>'<div class="row"><span class="e">'+esc(z.icon)+'</span><div class="m">'+esc(z.title)+'<small>💰 '+z.cost+'</small></div><button class="b" data-edp="'+z.id+'">'+l.edit+'</button></div>').join(''):'<div class="empty">'+l.noPrizes+'</div>')+'</div>'+
+   '<button class="big" data-a="newprize">'+l.addPrize+'</button>';
 }
 function viewChores(){
   const l=L();
   if(editing){
-    const c=editing==='new'?{icon:'⭐',coins:5,game:'memory',title:'',kid_id:null}:D.chores.find(x=>x.id===editing)||{};
+    const c=draft;
+    const dn=DAYS[P.lang];
     return '<div class="sec"><div class="lab" style="margin-top:0">'+l.name+'</div><input id="fn" maxlength="60" value="'+esc(c.title)+'">'+
      '<div class="lab">'+l.icon+'</div><input id="fi" maxlength="4" value="'+esc(c.icon)+'">'+
-     '<div class="lab">'+l.coins+'</div><input id="fc" type="number" min="0" max="50" inputmode="numeric" value="'+c.coins+'">'+
+     '<div class="lab">'+l.coins+'</div><input id="fc" type="number" min="0" max="50" inputmode="numeric" value="'+esc(c.coins)+'">'+
      '<div class="lab">'+l.game+'</div><select id="fg">'+GAMES.map(g=>'<option value="'+g+'"'+(c.game===g?' selected':'')+'>'+l.g[g]+'</option>').join('')+'</select>'+
      '<div class="lab">'+l.forWho+'</div><select id="fk"><option value="">'+l.everyone+'</option>'+D.kids.map(k=>'<option value="'+k.id+'"'+(c.kid_id===k.id?' selected':'')+'>'+esc(k.name)+'</option>').join('')+'</select>'+
+     '<div class="lab">'+l.repeat+'</div><select id="fr" data-chg="repeat"><option value="daily"'+(c.repeat==='daily'?' selected':'')+'>'+l.daily+'</option><option value="weekly"'+(c.repeat==='weekly'?' selected':'')+'>'+l.weekly+'</option></select>'+
+     (c.repeat==='weekly'?'<div class="lab">'+l.target+'</div><input id="fw" type="number" min="1" max="7" inputmode="numeric" value="'+esc(c.weekly_target)+'">':
+      '<div class="lab">'+l.days+'</div><div style="display:flex;gap:6px;flex-wrap:wrap">'+dn.map((d,i)=>'<button class="b'+((c.weekdays||[]).includes(i)?' ok':'')+'" data-wd="'+i+'" style="padding:8px 11px">'+d+'</button>').join('')+'</div><div style="color:var(--muted);font-size:12px;font-weight:600;margin-top:6px">'+l.daysHint+'</div>')+
      '<button class="big" data-a="savechore">'+l.save+'</button><div style="display:flex;gap:10px;margin-top:10px"><button class="b" style="flex:1" data-a="cancel">'+l.cancel+'</button>'+
      (editing!=='new'?'<button class="b bad" style="flex:1" data-delc="'+editing+'">'+l.del+'</button>':'')+'</div></div>';
   }
-  return '<div class="sec">'+(D.chores.length?D.chores.map(c=>'<div class="row"><span class="e">'+esc(c.icon)+'</span><div class="m">'+esc(c.title)+'<small>💰 '+c.coins+' · '+l.g[c.game]+(c.kid_id?' · '+esc(kname(c.kid_id)):'')+'</small></div><button class="b" data-edc="'+c.id+'">'+l.edit+'</button></div>').join(''):'<div class="empty">'+l.noChores+'</div>')+'</div>'+
+  return '<div class="sec">'+(D.chores.length?D.chores.map(c=>'<div class="row"><span class="e">'+esc(c.icon)+'</span><div class="m">'+esc(c.title)+'<small>💰 '+c.coins+' · '+scheduleText(c)+' · '+l.g[c.game]+(c.kid_id?' · '+esc(kname(c.kid_id)):'')+'</small></div><button class="b" data-edc="'+c.id+'">'+l.edit+'</button></div>').join(''):'<div class="empty">'+l.noChores+'</div>')+'</div>'+
    '<button class="big" data-a="newchore">'+l.add+'</button>';
 }
 function viewKids(){
   const l=L();
-  return '<div class="sec">'+(D.kids.length?D.kids.map(k=>'<div class="row"><span class="e">👧</span><div class="m">'+esc(k.name)+'<small>'+l.coinsN(k.coins)+' · '+l.paired(D.devices[k.id]||0)+'</small></div>'+
-    '<button class="b" data-ren="'+k.id+'">✏️</button><button class="b ok" data-pair="'+k.id+'">'+l.pair+'</button></div>').join(''):'<div class="empty">'+l.noKids+'</div>')+'</div>'+
-    '<button class="big" data-a="addkid">'+l.addKid+'</button>';
+  return '<div class="sec"><h3>'+l.kidsT+'</h3>'+(D.kids.length?D.kids.map(k=>'<div class="row"><span class="e">👧</span><div class="m">'+esc(k.name)+'<small>'+l.coinsN(k.coins)+' · '+l.paired(D.devices[k.id]||0)+'</small></div>'+
+    '<button class="b" data-ren="'+k.id+'">✏️</button><button class="b ok" data-pair="'+k.id+'">'+l.pair+'</button></div>').join(''):'<div class="empty">'+l.noKids+'</div>')+
+    '<button class="big" data-a="addkid" style="margin-top:8px">'+l.addKid+'</button></div>';
 }
 function viewFamily(){
   const l=L(),h=D.hh;
-  return '<div class="sec"><div class="lab" style="margin-top:0">'+l.famRename+'</div><div style="display:flex;gap:8px"><input id="hn" maxlength="40" value="'+esc(h.name)+'"><button class="b ok" data-a="savename">'+l.save+'</button></div></div>'+
+  return viewKids()+'<div class="sec"><div class="lab" style="margin-top:0">'+l.famRename+'</div><div style="display:flex;gap:8px"><input id="hn" maxlength="40" value="'+esc(h.name)+'"><button class="b ok" data-a="savename">'+l.save+'</button></div></div>'+
    '<div class="sec"><div class="row"><div class="m">'+l.reqApproval+'<small>'+l.reqHint+'</small></div><button class="tog'+(h.require_approval?' on':'')+'" data-a="toggle" aria-label="toggle"></button></div></div>'+
    '<div class="sec"><h3>'+l.inviteT+' <small style="color:var(--muted)">('+l.members(D.members)+')</small></h3><p style="margin:0;color:var(--muted);font-weight:600;font-size:14px">'+l.inviteH+'</p><button class="big" data-a="invite">'+l.inviteBtn+'</button></div>'+
    '<button class="big" style="background:#fff;color:var(--red)" data-a="signout">'+l.signout+'</button>';
@@ -200,7 +241,12 @@ document.addEventListener('click',e=>{
   if(t.dataset.tab){tab=t.dataset.tab;editing=null;render();return}
   if(t.dataset.app){run(async()=>{const r=await sb.rpc('approve_completion',{p_id:t.dataset.app});if(r.error)throw r.error;toast('✅')});return}
   if(t.dataset.rej){run(async()=>{const r=await sb.rpc('reject_completion',{p_id:t.dataset.rej});if(r.error)throw r.error});return}
-  if(t.dataset.edc){editing=t.dataset.edc;render();return}
+  if(t.dataset.edc){editing=t.dataset.edc;const c=D.chores.find(x=>x.id===editing);draft=Object.assign({},c,{weekdays:(c.weekdays||[]).slice()});render();return}
+  if(t.dataset.wd!==undefined){readDraft();const i=+t.dataset.wd,w=draft.weekdays,j=w.indexOf(i);if(j<0)w.push(i);else w.splice(j,1);render();return}
+  if(t.dataset.edp){editing=t.dataset.edp;render();return}
+  if(t.dataset.delp){if(!confirm(l.confirmPrize))return;run(async()=>{const r=await sb.from('prizes').update({active:false}).eq('id',t.dataset.delp);if(r.error)throw r.error;editing=null});return}
+  if(t.dataset.pgive){run(async()=>{const r=await sb.rpc('give_prize',{p_id:t.dataset.pgive});if(r.error)throw r.error;toast('🎁')});return}
+  if(t.dataset.prej){run(async()=>{const r=await sb.rpc('reject_prize',{p_id:t.dataset.prej});if(r.error)throw r.error});return}
   if(t.dataset.delc){if(!confirm(l.confirmDel))return;run(async()=>{const r=await sb.from('chores').update({active:false}).eq('id',t.dataset.delc);if(r.error)throw r.error;editing=null});return}
   if(t.dataset.pair){const id=t.dataset.pair,k=D.kids.find(x=>x.id===id);
     sb.rpc('create_kid_invite',{p_kid:id}).then(r=>{if(r.error)return toast(l.err);showLink(l.pairT+' – '+k.name,l.pairH,here('../kid/?join='+r.data),true)});return}
@@ -212,11 +258,19 @@ document.addEventListener('click',e=>{
     case 'google':localStorage.setItem('cq-google','1');sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname.replace(/index\.html$/,'')}});break;
     case 'signout':sb.auth.signOut().then(()=>{D.user=null;D.hh=null;render()});break;
     case 'create':{const n=($('fam').value||'').trim();run(async()=>{const r=await sb.rpc('create_household',{p_name:n});if(r.error)throw r.error});break}
-    case 'newchore':if(!D.kids.length){toast(l.needKid);tab='kids';render();break}editing='new';render();break;
+    case 'newchore':if(!D.kids.length){toast(l.needKid);tab='family';render();break}editing='new';draft={icon:'⭐',coins:5,game:'memory',title:'',kid_id:null,repeat:'daily',weekdays:[],weekly_target:1};render();break;
+    case 'newprize':editing='new';render();break;
+    case 'saveprize':{
+      const title=$('pn').value.trim();if(!title){toast(l.needName);break}
+      const row={title:title.slice(0,60),icon:($('pi').value.trim()||'🎁').slice(0,8),cost:Math.max(1,Math.min(5000,parseInt($('pc').value,10)||1))};
+      run(async()=>{const r=editing==='new'?await sb.from('prizes').insert(Object.assign({household_id:D.hh.id},row)):await sb.from('prizes').update(row).eq('id',editing);if(r.error)throw r.error;editing=null});break}
     case 'cancel':editing=null;render();break;
     case 'savechore':{
-      const title=$('fn').value.trim();if(!title){toast(l.needName);break}
-      const row={title:title.slice(0,60),icon:($('fi').value.trim()||'⭐').slice(0,8),coins:Math.max(0,Math.min(50,parseInt($('fc').value,10)||0)),game:$('fg').value,kid_id:$('fk').value||null};
+      readDraft();
+      const title=draft.title.trim();if(!title){toast(l.needName);break}
+      const wk=draft.repeat==='weekly';
+      const row={title:title.slice(0,60),icon:(draft.icon.trim()||'⭐').slice(0,8),coins:Math.max(0,Math.min(50,parseInt(draft.coins,10)||0)),game:draft.game,kid_id:draft.kid_id,
+        repeat:draft.repeat,weekly_target:wk?Math.max(1,Math.min(7,parseInt(draft.weekly_target,10)||1)):1,weekdays:!wk&&draft.weekdays.length?draft.weekdays.slice().sort():null};
       run(async()=>{const r=editing==='new'?await sb.from('chores').insert(Object.assign({household_id:D.hh.id},row)):await sb.from('chores').update(row).eq('id',editing);if(r.error)throw r.error;editing=null});break}
     case 'addkid':ask(l.kidName,'',n=>run(async()=>{const r=await sb.from('kids').insert({household_id:D.hh.id,name:n.slice(0,14)});if(r.error)throw r.error}));break;
     case 'savename':{const n=$('hn').value.trim();if(n)run(async()=>{const r=await sb.from('households').update({name:n}).eq('id',D.hh.id);if(r.error)throw r.error;toast('✓')});break}
@@ -227,6 +281,7 @@ document.addEventListener('click',e=>{
   }
 });
 $('modal').addEventListener('click',e=>{if(e.target===$('modal'))closeModal()});
+document.addEventListener('change',e=>{if(e.target.dataset&&e.target.dataset.chg==='repeat'){readDraft();render()}});
 
 (async function boot(){
   render();
