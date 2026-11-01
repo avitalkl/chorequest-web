@@ -19,14 +19,14 @@
     --shadow:0 8px 24px rgba(110,80,200,.18);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{margin:0;font-family:"Segoe UI",system-ui,Arial,sans-serif;color:var(--ink);
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Noto Sans Hebrew",sans-serif;color:var(--ink);
     background:linear-gradient(160deg,var(--bg1),var(--bg2));min-height:100vh;display:flex;justify-content:center}
   #app{width:100%;max-width:480px;min-height:100vh;display:flex;flex-direction:column;position:relative}
   header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 6px}
   header h1{margin:0;font-size:24px}
   .chip{background:var(--card);border-radius:99px;padding:8px 14px;font-weight:700;box-shadow:var(--shadow);display:inline-flex;gap:6px;align-items:center}
   .tools{display:flex;gap:8px;align-items:center}
-  button{font:inherit;color:inherit;cursor:pointer;border:0}
+  button{font:inherit;font-family:inherit;color:inherit;cursor:pointer;border:0}
   .iconbtn{background:var(--card);border-radius:99px;width:40px;height:40px;box-shadow:var(--shadow);font-size:16px;font-weight:700}
   main{flex:1;padding:8px 20px 110px;overflow-y:auto}
   .hello{font-size:15px;color:var(--muted);margin:0 0 12px}
@@ -53,7 +53,7 @@
   .stage svg{width:100%;height:auto;display:block}
   #avatar .charg{animation:bob 3s ease-in-out infinite;filter:drop-shadow(0 0 1.3px #5b3a63) drop-shadow(0 0 .6px #5b3a63)}#avatar .eye{transform-box:fill-box;transform-origin:center;animation:blink 4.5s infinite}#avatar .wave{transform-origin:186px 214px;animation:wave 1.6s ease-in-out infinite}
   @keyframes bob{50%{transform:translateY(-4px)}}@keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}@keyframes wave{50%{transform:rotate(-14deg)}}
-  .stage .name{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:2;background:#ffffffd9;border-radius:99px;padding:4px 18px;line-height:1.4;font-weight:800;font-size:20px;cursor:pointer;box-shadow:var(--shadow);white-space:nowrap}
+  .stage .name{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:2;background:#ffffffd9;border-radius:99px;padding:4px 18px;line-height:1.4;font-weight:700;font-size:20px;cursor:pointer;box-shadow:var(--shadow);white-space:nowrap}
   .tabs{display:flex;gap:8px;margin:16px 0 10px;overflow-x:auto;padding-bottom:4px}
   .tabs button{background:var(--card);padding:8px 14px;border-radius:99px;font-weight:700;white-space:nowrap;box-shadow:var(--shadow)}
   .tabs button.on{background:var(--purple);color:#fff}
@@ -80,7 +80,7 @@
   .card .b{background:linear-gradient(135deg,var(--purple),var(--pink));color:#fff;font-size:28px}
   .card .f{background:#fff;font-size:38px;transform:rotateY(180deg)}
   .card.match .f{background:#e6fbf3}
-  .btn{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;font-weight:800;font-size:18px;padding:14px 28px;border-radius:99px;box-shadow:var(--shadow)}
+  .btn{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;font-weight:700;font-size:18px;padding:14px 28px;border-radius:99px;box-shadow:var(--shadow)}
   .ghost{background:var(--card);color:var(--ink)}
   .win{text-align:center;display:none;margin-top:40px}
   .win.on{display:block}
