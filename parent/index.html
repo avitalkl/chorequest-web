@@ -286,7 +286,7 @@ function viewFamily(){
   return viewKids()+'<div class="sec"><div class="lab" style="margin-top:0">'+l.famRename+'</div><div style="display:flex;gap:8px"><input id="hn" maxlength="40" value="'+esc(h.name)+'"><button class="b ok" data-a="savename">'+l.save+'</button></div></div>'+
    '<div class="sec"><div class="row"><div class="m">'+l.reqApproval+'<small>'+l.reqHint+'</small></div><button class="tog'+(h.require_approval?' on':'')+'" data-a="toggle" aria-label="toggle"></button></div></div>'+
    '<div class="sec"><h3>'+l.inviteT+' <small style="color:var(--muted)">('+l.members(D.members)+')</small></h3><p style="margin:0;color:var(--muted);font-weight:600;font-size:14px">'+l.inviteH+'</p><button class="big" data-a="invite">'+l.inviteBtn+'</button></div>'+
-   '<button class="big" style="background:#fff" data-a="feedback">💬 '+l.fbT+'</button>'+
+   '<button class="big" style="background:#fff;color:var(--ink)" data-a="feedback">💬 '+l.fbT+'</button>'+
    '<button class="big" style="background:#fff;color:var(--red)" data-a="signout">'+l.signout+'</button>';
 }
 function todoFor(k){
