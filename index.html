@@ -100,6 +100,22 @@
   #opts{display:flex;gap:14px;justify-content:center;margin-top:18px}
   .opt{width:92px;height:92px;border-radius:26px;background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;font-size:40px;font-weight:800;box-shadow:var(--shadow)}
   .opt.no{opacity:.35}
+  .task.wait{background:#fff6dd}.task.wait .box{border-color:var(--gold);color:var(--ink);font-size:16px}
+  .pov{position:fixed;inset:0;z-index:30;background:linear-gradient(160deg,var(--bg1),var(--bg2));overflow-y:auto;display:none;justify-content:center}
+  .pov.on{display:flex}
+  .pin{display:block;width:100%;text-align:center;letter-spacing:12px;font-size:28px}
+  #pwrap{width:100%;max-width:480px;padding:18px 20px 40px}
+  #pwrap h1{font-size:24px;margin:0}.phead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .psec{background:var(--card);border-radius:22px;padding:14px 16px;margin-bottom:14px;box-shadow:var(--shadow)}
+  .psec h3{margin:0 0 10px;font-size:16px}
+  .prow{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid #0000000d}.prow:first-of-type{border-top:0}
+  .prow .e{font-size:26px}.prow .m{flex:1;font-weight:700}.prow .m small{display:block;color:var(--muted);font-weight:600;font-size:12px}
+  .sbtn{border-radius:99px;padding:7px 14px;font-weight:700;background:#f1ecff;color:var(--purple)}
+  .sbtn.ok{background:var(--mint);color:#fff}.sbtn.bad{background:#ffe3ea;color:#d63a5e}
+  .fld{font:inherit;width:100%;padding:10px 12px;border-radius:14px;border:2px solid #e3dcff;background:#fff;color:var(--ink);margin:4px 0 10px}
+  .emj{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}.emj button{font-size:22px;background:#f3edff;border-radius:12px;width:40px;height:40px}
+  .frow{display:flex;gap:10px}.frow>div{flex:1}
+  .lab{font-size:13px;font-weight:700;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -107,6 +123,7 @@
   <header>
     <h1 id="title">ChoreQuest</h1>
     <div class="tools">
+      <button class="iconbtn" id="parent" aria-label="parent">🔒</button>
       <button class="iconbtn" id="mute" aria-label="music">🔊</button>
       <button class="iconbtn" id="lang" aria-label="language">עב</button>
       <span class="chip">💰 <span id="coins">0</span></span>
@@ -134,6 +151,11 @@
   </nav>
 </div>
 
+<div class="pov" id="parent-ov"><div id="pwrap">
+  <div class="phead"><h1 id="ptitle"></h1><button class="sbtn" id="pclose"></button></div>
+  <div id="pbody"></div>
+</div></div>
+
 <div class="overlay" id="game">
   <h2 id="gtitle"></h2>
   <div id="gsub" class="hello"></div>
@@ -159,15 +181,17 @@ const T = {
     win:'Quest complete!',done:'Collect coins',skip:'Skip game',own:'Owned',
     tn:{hair:'Hair color',style:'Hair style',skin:'Skin',eyes:'Eyes',mouth:'Mouth',face:'Face',top:'Top',topc:'Top color',bottom:'Bottom',botc:'Bottom color',shoes:'Shoes',hat:'Hats',acc:'Accessories',pet:'Pet',bg:'Place'},gn:{head:'Head',clothes:'Clothes',extras:'Extras',place:'Places'},
     nm:{'style:long':'Long','style:bob':'Bob','style:pigtails':'Pigtails','style:bun':'Bun','style:curly':'Curly','top:tee':'T-shirt','top:tank':'Tank','top:dress':'Dress','top:stripes':'Stripy','top:startee':'Star tee','top:hoodie':'Hoodie','bottom:skirt':'Skirt','bottom:jeans':'Jeans','bottom:shorts':'Shorts','bottom:leggings':'Leggings','bottom:tutu':'Tutu','shoes:pink':'Pink sneakers','shoes:white':'White sneakers','shoes:blue':'Blue sneakers','shoes:redboot':'Red boots','shoes:brownboot':'Brown boots','shoes:gold':'Gold flats','shoes:rbs':'Rainbow sneakers','mouth:smile':'Smile','mouth:grin':'Grin','mouth:laugh':'Laugh','mouth:kitty':'Kitty','face:none':'Plain','face:freckles':'Freckles','face:star':'Star','face:heart':'Heart','face:sparkle':'Sparkle','hat:none':'None','hat:bow':'Bow','hat:band':'Star band','hat:ears':'Cat ears','hat:flower':'Flowers','hat:crown':'Crown','acc:none':'None','acc:glasses':'Glasses','acc:shades':'Shades','acc:necklace':'Necklace','acc:wings':'Wings','bg:bedroom':'Bedroom','bg:living':'Living room','bg:kitchen':'Kitchen','bg:garden':'Garden','bg:night':'Space','bg:beach':'Beach','bg:candy':'Candy land'},need:'Not enough coins yet',bought:'New prize!',
-    t:{bed:'Make the bed',teeth:'Brush teeth',homework:'Do homework',dishes:'Help with dishes',read:'Read 20 minutes',tidy:'Tidy my room'}},
+    t:{bed:'Make the bed',teeth:'Brush teeth',homework:'Do homework',dishes:'Help with dishes',read:'Read 20 minutes',tidy:'Tidy my room'},
+    pa:{parent:'Parent area',enterPin:'Enter your PIN',setPin:'Create a 4-digit PIN to protect this area',ok:'OK',pin4:'PIN must be 4 digits',wrong:'Wrong PIN',close:'Close',approvals:'Waiting for approval',nothing:'Nothing waiting',approve:'Approve',reject:'Reject',chores:'Chores',add:'+ Add chore',edit:'Edit',del:'Delete',save:'Save',cancel:'Cancel',name:'Name',coins:'Coins',game:'Game',nogame:'No game',icon:'Icon',req:'Coins are paid only after a parent approves',changePin:'Change PIN',confirmDel:'Delete this chore?',waiting:'Waiting for parent',hint:'Tap a quest when you finish it. A parent will check it.',settings:'Settings',needName:'Please enter a name'}},
   he:{title:'ChoreQuest',hello:n=>`יום טוב, ${n}! סיימי משימות כדי להרוויח מטבעות.`,tasks:'משימות',me:'אני',nameHint:'לחצי על השם כדי לשנות',gm:{critters:['תפסי את החברים!','לחצי על החברים הקטנים כשהם קופצים. 30 שניות, כל אחד הוא מטבע בונוס!'],simon:['חזרי על השיר!','הסתכלי על הצבעים וחזרי עליהם. כל סיבוב נותן מטבעות בונוס!'],count:['כמה יש?','ספרי ולחצי על המספר הנכון. 40 שניות, כל תשובה היא מטבע בונוס!'],memory:['מצאי את הזוגות!','מצאי את כל הזוגות ב-60 שניות. ככל שמהר יותר, הבונוס גדול יותר!'],bubbles:['פוצצי בועות!','פוצצי כמה שיותר בועות ב-30 שניות. כל אחת היא מטבע בונוס!'],stars:['תפסי כוכבים!','החליקי את הסל כדי לתפוס כוכבים במשך 30 שניות. כל אחד הוא מטבע בונוס!']},
     bonus:n=>`בונוס +${n} מטבעות!`,timeup:'נגמר הזמן! כל הכבוד!',nice:'הצלחת!',left:'ש׳',hint:'לחצי על משימה כשסיימת. לחיצה נוספת מבטלת.',gtitle:'מצאי את הזוגות!',gsub:'מצאי את כל הזוגות ב-60 שניות. ככל שמהר יותר, הבונוס גדול יותר!',
     win:'המשימה הושלמה!',done:'קבלי מטבעות',skip:'דלגי על המשחק',own:'שלך',
     tn:{hair:'צבע שיער',style:'תסרוקת',skin:'עור',eyes:'עיניים',mouth:'פה',face:'פנים',top:'חולצה',topc:'צבע חולצה',bottom:'תחתית',botc:'צבע תחתית',shoes:'נעליים',hat:'כובעים',acc:'אביזרים',pet:'חיית מחמד',bg:'מקום'},gn:{head:'ראש',clothes:'בגדים',extras:'תוספות',place:'מקומות'},
     nm:{'style:long':'ארוך','style:bob':'קארה','style:pigtails':'צמות','style:bun':'פקעת','style:curly':'מתולתל','top:tee':'חולצה','top:tank':'גופייה','top:dress':'שמלה','top:stripes':'פסים','top:startee':'כוכב','top:hoodie':'קפוצ׳ון','bottom:skirt':'חצאית','bottom:jeans':'ג׳ינס','bottom:shorts':'מכנסיים קצרים','bottom:leggings':'טייץ','bottom:tutu':'טוטו','shoes:pink':'סניקרס ורוד','shoes:white':'סניקרס לבן','shoes:blue':'סניקרס כחול','shoes:redboot':'מגפיים אדומים','shoes:brownboot':'מגפיים חומים','shoes:gold':'נעלי זהב','shoes:rbs':'סניקרס צבעוני','mouth:smile':'חיוך','mouth:grin':'חיוך רחב','mouth:laugh':'צחוק','mouth:kitty':'חתולי','face:none':'רגיל','face:freckles':'נמשים','face:star':'כוכב','face:heart':'לב','face:sparkle':'נצנוץ','hat:none':'כלום','hat:bow':'סרט','hat:band':'סרט כוכב','hat:ears':'אוזני חתול','hat:flower':'פרחים','hat:crown':'כתר','acc:none':'כלום','acc:glasses':'משקפיים','acc:shades':'משקפי שמש','acc:necklace':'שרשרת','acc:wings':'כנפיים','bg:bedroom':'חדר שינה','bg:living':'סלון','bg:kitchen':'מטבח','bg:garden':'גינה','bg:night':'חלל','bg:beach':'חוף','bg:candy':'ארץ הממתקים'},need:'אין עדיין מספיק מטבעות',bought:'פרס חדש!',
-    t:{bed:'לסדר את המיטה',teeth:'לצחצח שיניים',homework:'לעשות שיעורי בית',dishes:'לעזור עם הכלים',read:'לקרוא 20 דקות',tidy:'לסדר את החדר'}}
+    t:{bed:'לסדר את המיטה',teeth:'לצחצח שיניים',homework:'לעשות שיעורי בית',dishes:'לעזור עם הכלים',read:'לקרוא 20 דקות',tidy:'לסדר את החדר'},
+    pa:{parent:'אזור הורים',enterPin:'הזינו קוד PIN',setPin:'צרו קוד PIN בן 4 ספרות להגנה על האזור',ok:'אישור',pin4:'הקוד חייב להיות 4 ספרות',wrong:'קוד שגוי',close:'סגירה',approvals:'ממתין לאישור',nothing:'אין מה לאשר',approve:'אישור',reject:'דחייה',chores:'משימות',add:'+ הוספת משימה',edit:'עריכה',del:'מחיקה',save:'שמירה',cancel:'ביטול',name:'שם',coins:'מטבעות',game:'משחק',nogame:'ללא משחק',icon:'אייקון',req:'מטבעות משולמים רק אחרי אישור הורה',changePin:'שינוי קוד PIN',confirmDel:'למחוק את המשימה?',waiting:'ממתין להורה',hint:'לחצי על משימה כשסיימת. הורה יבדוק אותה.',settings:'הגדרות',needName:'נא להזין שם'}}
 };
-const TASKS=[{id:'bed',e:'🛏️',c:5,g:'memory'},{id:'teeth',e:'🦷',c:3,g:'bubbles'},{id:'homework',e:'📚',c:10,g:'count'},{id:'dishes',e:'🍽️',c:6,g:'critters'},{id:'read',e:'📖',c:8,g:'stars'},{id:'tidy',e:'🧸',c:7,g:'simon'}];
+const DEFAULT_TASKS=[{id:'bed',e:'🛏️',c:5,g:'memory'},{id:'teeth',e:'🦷',c:3,g:'bubbles'},{id:'homework',e:'📚',c:10,g:'count'},{id:'dishes',e:'🍽️',c:6,g:'critters'},{id:'read',e:'📖',c:8,g:'stars'},{id:'tidy',e:'🧸',c:7,g:'simon'}];
 const RBC='linear-gradient(135deg,#ff6b8b,#ffc83d,#5fd8b4,#8a6cff)',GXC='linear-gradient(135deg,#2b2a5c,#8a6cff,#ff7eb6)';
 const sw=(id,v,p,css,d)=>({id,v,p,css,d});
 const it=(id,p,x)=>Object.assign({id,p},x||{});
@@ -196,6 +220,8 @@ const KEY='chorequest-web-v1';
 let S=JSON.parse(localStorage.getItem(KEY)||'null')||{coins:0,done:{},own:[],worn:{},lang:'en',mute:false,name:'Cara'};
 (function(){
   if(!S.name)S.name='Cara';
+  if(!Array.isArray(S.tasks))S.tasks=DEFAULT_TASKS.map(x=>Object.assign({},x));
+  if(S.approval===undefined)S.approval=true;
   const w=S.worn=S.worn||{},own=new Set(S.own||[]);
   if(w.outfit){
     w.topc=w.outfit;(S.own||[]).filter(k=>k.startsWith('outfit:')).forEach(k=>own.add('topc:'+k.slice(7)));
@@ -209,6 +235,9 @@ let S=JSON.parse(localStorage.getItem(KEY)||'null')||{coins:0,done:{},own:[],wor
 })();
 const save=()=>localStorage.setItem(KEY,JSON.stringify(S));
 const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const tname=t=>t.name||L().t[t.id]||t.id;
+const isPend=d=>!!d&&typeof d==='object'&&d.status==='pending';
 const L=()=>T[S.lang];
 let grp='head',tab='hair', pendingTask=null, pendingBonus=0;
 
@@ -237,22 +266,79 @@ function confetti(){const c=$('confetti'),x=c.getContext('2d');c.width=innerWidt
 
 /* ---------- tasks ---------- */
 function renderTasks(){
-  const l=L(); $('hello').textContent=l.hello(S.name); $('hint').textContent=l.hint;
+  const l=L(); $('hello').textContent=l.hello(S.name); $('hint').textContent=S.approval?l.pa.hint:l.hint;
   let n=0;$('tasks').innerHTML='';
-  TASKS.forEach(t=>{const d=!!S.done[t.id]; if(d)n++;
-    const b=document.createElement('button');b.className='task'+(d?' done':'');
-    b.innerHTML='<span class="emoji">'+t.e+'</span><span class="t">'+l.t[t.id]+'<br><span class="c">💰 '+t.c+'</span></span><span class="box">'+(d?'✓':'')+'</span>';
+  S.tasks.forEach(t=>{const d=S.done[t.id],w=isPend(d); if(d)n++;
+    const b=document.createElement('button');b.className='task'+(d&&!w?' done':'')+(w?' wait':'');
+    b.innerHTML='<span class="emoji">'+esc(t.e)+'</span><span class="t">'+esc(tname(t))+'<br><span class="c">'+(w?'⏳ '+esc(l.pa.waiting):'💰 '+t.c)+'</span></span><span class="box">'+(w?'⏳':d?'✓':'')+'</span>';
     b.onclick=()=>toggleTask(t);$('tasks').appendChild(b)});
-  $('bar').style.width=(n/TASKS.length*100)+'%';
+  $('bar').style.width=(S.tasks.length?n/S.tasks.length*100:0)+'%';
+  const np=Object.keys(S.done).filter(k=>isPend(S.done[k])).length;$('parent').textContent='🔒'+(np?np:'');
 }
 function toggleTask(t){
-  if(S.done[t.id]){ const paid=typeof S.done[t.id]==='object'?S.done[t.id].paid:t.c; delete S.done[t.id]; S.coins=Math.max(0,S.coins-paid); save(); renderAll(); return }
-  pendingTask=t; openGame();
+  const d=S.done[t.id];
+  if(d){
+    if(isPend(d)){delete S.done[t.id];save();renderAll();return}
+    if(S.approval)return;
+    const paid=typeof d==='object'?d.paid:t.c; delete S.done[t.id]; S.coins=Math.max(0,S.coins-paid); save(); renderAll(); return }
+  pendingTask=t;
+  if(t.g==='none'||!L().gm[t.g]){finishTask(0);return}
+  openGame();
 }
 function finishTask(bonus){
-  const t=pendingTask; if(!t) return; bonus=bonus||0;
-  S.done[t.id]={paid:t.c+bonus}; S.coins+=t.c+bonus; save(); pendingTask=null; renderAll(); toast('💰 +'+(t.c+bonus));
+  const t=pendingTask; if(!t) return; bonus=bonus||0; const paid=t.c+bonus;
+  if(S.approval){S.done[t.id]={paid,status:'pending'};toast('⏳ '+L().pa.waiting)}
+  else{S.done[t.id]={paid,status:'approved'};S.coins+=paid;toast('💰 +'+paid)}
+  save(); pendingTask=null; renderAll();
 }
+
+/* ---------- parent area ---------- */
+let pEdit=null,pUnlocked=false;
+function openParent(){pUnlocked=false;pEdit=null;$('parent-ov').classList.add('on');renderParent()}
+function renderParent(){
+  const l=L(),p=l.pa,box=$('pbody');$('ptitle').textContent=p.parent;$('pclose').textContent=p.close;
+  if(!pUnlocked){
+    box.innerHTML='<div class="psec"><p class="hello">'+(S.pin?p.enterPin:p.setPin)+'</p><input id="pin" class="fld pin" type="password" inputmode="numeric" maxlength="4" autocomplete="off"><p id="pinerr" class="hint" style="color:#d63a5e"></p><button class="btn" id="pinok" style="width:100%">'+p.ok+'</button></div>';
+    const go=()=>{const v=$('pin').value;if(!/^\d{4}$/.test(v)){$('pinerr').textContent=p.pin4;return}
+      if(!S.pin){S.pin=v;save()}else if(v!==S.pin){$('pinerr').textContent=p.wrong;$('pin').value='';return}
+      pUnlocked=true;renderParent()};
+    $('pinok').onclick=go;$('pin').onkeydown=e=>{if(e.key==='Enter')go()};$('pin').focus();return}
+  const gname=g=>g==='none'||!l.gm[g]?p.nogame:l.gm[g][0];
+  const pend=S.tasks.filter(t=>isPend(S.done[t.id]));
+  let h='<div class="psec"><h3>'+p.approvals+'</h3>';
+  h+=pend.length?pend.map(t=>'<div class="prow"><span class="e">'+esc(t.e)+'</span><span class="m">'+esc(tname(t))+'<small>💰 '+S.done[t.id].paid+'</small></span><button class="sbtn ok" data-ap="'+t.id+'">'+p.approve+'</button><button class="sbtn bad" data-rj="'+t.id+'">'+p.reject+'</button></div>').join(''):'<p class="hint" style="margin:0">'+p.nothing+'</p>';
+  h+='</div><div class="psec"><h3>'+p.chores+'</h3>';
+  h+=S.tasks.map(t=>'<div class="prow"><span class="e">'+esc(t.e)+'</span><span class="m">'+esc(tname(t))+'<small>💰 '+t.c+' · '+esc(gname(t.g))+'</small></span><button class="sbtn" data-ed="'+t.id+'">'+p.edit+'</button></div>').join('');
+  if(pEdit){
+    const t=pEdit==='new'?{e:'⭐',c:5,g:'memory',name:''}:S.tasks.find(x=>x.id===pEdit)||{e:'⭐',c:5,g:'memory',name:''};
+    const games=Object.keys(l.gm).concat('none');
+    h+='<div style="margin-top:12px"><div class="lab">'+p.icon+'</div><input id="fe" class="fld" maxlength="4" value="'+esc(t.e)+'"><div class="emj">'+['🛏️','🦷','📚','🍽️','🧸','🧹','🐶','🌱','👕','🎒','🚿','🥦'].map(e=>'<button data-em="'+e+'">'+e+'</button>').join('')+'</div>'
+     +'<div class="lab">'+p.name+'</div><input id="fn" class="fld" maxlength="40" value="'+esc(pEdit==='new'?'':tname(t))+'">'
+     +'<div class="frow"><div><div class="lab">'+p.coins+'</div><input id="fc" class="fld" type="number" min="0" max="50" value="'+t.c+'"></div>'
+     +'<div><div class="lab">'+p.game+'</div><select id="fg" class="fld">'+games.map(g=>'<option value="'+g+'"'+(g===t.g?' selected':'')+'>'+esc(gname(g))+'</option>').join('')+'</select></div></div>'
+     +'<p id="ferr" class="hint" style="color:#d63a5e;margin:0 0 6px"></p>'
+     +'<div class="frow"><button class="btn" id="fsave" style="flex:1">'+p.save+'</button><button class="sbtn" id="fcancel">'+p.cancel+'</button>'+(pEdit!=='new'?'<button class="sbtn bad" id="fdel">'+p.del+'</button>':'')+'</div></div>';
+  }else h+='<button class="btn" id="fadd" style="width:100%;margin-top:10px">'+p.add+'</button>';
+  h+='</div><div class="psec"><h3>'+p.settings+'</h3><label class="prow" style="gap:12px"><input type="checkbox" id="sapp"'+(S.approval?' checked':'')+' style="width:22px;height:22px"><span class="m">'+p.req+'</span></label><button class="sbtn" id="spin" style="margin-top:6px">'+p.changePin+'</button></div>';
+  box.innerHTML=h;
+  box.querySelectorAll('[data-ap]').forEach(b=>b.onclick=()=>{const d=S.done[b.dataset.ap];if(!isPend(d))return;d.status='approved';S.coins+=d.paid;save();renderAll()});
+  box.querySelectorAll('[data-rj]').forEach(b=>b.onclick=()=>{delete S.done[b.dataset.rj];save();renderAll()});
+  box.querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>{pEdit=b.dataset.ed;renderParent()});
+  box.querySelectorAll('[data-em]').forEach(b=>b.onclick=()=>{$('fe').value=b.dataset.em});
+  if($('fadd'))$('fadd').onclick=()=>{pEdit='new';renderParent()};
+  if($('fcancel'))$('fcancel').onclick=()=>{pEdit=null;renderParent()};
+  if($('fdel'))$('fdel').onclick=()=>{if(!confirm(p.confirmDel))return;S.tasks=S.tasks.filter(x=>x.id!==pEdit);delete S.done[pEdit];pEdit=null;save();renderAll()};
+  if($('fsave'))$('fsave').onclick=()=>{
+    const name=$('fn').value.trim(),e=$('fe').value.trim()||'⭐',c=Math.max(0,Math.min(50,Math.round(+$('fc').value)||0)),g=$('fg').value;
+    if(!name){$('ferr').textContent=p.needName;return}
+    if(pEdit==='new')S.tasks.push({id:'c'+Date.now().toString(36),e,c,g,name});
+    else{const t=S.tasks.find(x=>x.id===pEdit);if(t)Object.assign(t,{e,c,g,name})}
+    pEdit=null;save();renderAll()};
+  $('sapp').onchange=e=>{S.approval=e.target.checked;save();renderAll()};
+  $('spin').onclick=()=>{S.pin=null;pUnlocked=false;save();renderParent()};
+}
+$('parent').onclick=openParent;
+$('pclose').onclick=()=>{pUnlocked=false;pEdit=null;$('parent-ov').classList.remove('on')};
 
 /* ---------- game ---------- */
 const EM=['🧦','🌸','🦋','🍓','⭐','🐞','🎈','🍩'];
@@ -554,7 +640,7 @@ function renderMe(){
 function renderAll(){
   const l=L();document.documentElement.lang=S.lang;document.documentElement.dir=S.lang==='he'?'rtl':'ltr';
   $('title').textContent=l.title;$('n1').textContent=l.tasks;$('n2').textContent=l.me;$('coins').textContent=S.coins;$('mute').textContent=S.mute?'🔇':'🔊';
-  renderTasks();renderMe();
+  renderTasks();renderMe();if($('parent-ov').classList.contains('on'))renderParent();
 }
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
   document.querySelectorAll('.page').forEach(p=>p.classList.toggle('on',p.id==='p-'+b.dataset.p))});
