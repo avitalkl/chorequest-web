@@ -250,7 +250,8 @@ const save=()=>localStorage.setItem(KEY,JSON.stringify({lang:S.lang,mute:S.mute,
 function normWorn(w){const d=defFor(S.gender);w=Object.assign({},w||{});Object.keys(DEF).forEach(t=>{const x=SHOP[t].find(x=>x.id===w[t]);if(!x||!shown(t,x))w[t]=d[t]});return w}
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const tname=t=>t.name||L().t[t.id]||t.id;
+const HE_CH={'Brush teeth':['צחצחי שיניים','צחצח שיניים'],'Pick up socks':['אספי גרביים','אסוף גרביים'],'Read 20 minutes':['קראי 20 דקות','קרא 20 דקות'],'Make the bed':['סדרי את המיטה','סדר את המיטה'],'Help with dishes':['עזרי בכלים','עזור בכלים'],'Tidy my room':['סדרי את החדר','סדר את החדר'],'Do homework':['עשי שיעורי בית','עשה שיעורי בית']};
+const tname=t=>{const h=S.lang==='he'&&HE_CH[t.name];return h?h[S.gender==='boy'?1:0]:(t.name||L().t[t.id]||t.id)};
 const isPend=d=>!!d&&d.status==='pending';
 const HE_M=[['סיימי','סיים'],['תפסי','תפוס'],['לחצי','לחץ'],['פוצצי','פוצץ'],['חזרי','חזור'],['הסתכלי','הסתכל'],['ספרי','ספור'],['מצאי','מצא'],['החליקי','החלק'],['בקשי','בקש'],['סרקי','סרוק'],['התחברי','התחבר'],['נסי','נסה'],['בדקי','בדוק'],['הוציאי','הוצא'],['קבלי','קבל'],['דלגי','דלג']].map(([a,b])=>[new RegExp('(?<![א-ת])'+a+'(?![א-ת])','g'),b]);
 const toM=v=>typeof v==='string'?HE_M.reduce((s,[r,b])=>s.replace(r,b),v):typeof v==='function'?(...a)=>toM(v(...a)):Array.isArray(v)?v.map(toM):v&&typeof v==='object'?Object.fromEntries(Object.entries(v).map(([k,x])=>[k,toM(x)])):v;
