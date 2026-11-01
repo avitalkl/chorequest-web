@@ -15,8 +15,8 @@
 :root{--ink:#26214a;--muted:#7a74a3;--blue:#5b6cff;--mint:#2fb892;--red:#e0455f;--gold:#ffc83d;--card:#fff;--shadow:0 6px 20px #4b3f9422}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%}
-body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:var(--ink);background:linear-gradient(160deg,#eef0ff,#f6efff);-webkit-user-select:none;user-select:none}
-button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,'Noto Sans Hebrew',sans-serif;color:var(--ink);background:linear-gradient(160deg,#eef0ff,#f6efff);-webkit-user-select:none;user-select:none}
+button{font:inherit;font-family:inherit;color:inherit;border:0;background:none;cursor:pointer}
 input,select{font:inherit;color:var(--ink);width:100%;padding:12px 14px;border-radius:14px;border:2px solid #e1deff;background:#fff;-webkit-user-select:text;user-select:text}
 #app{max-width:520px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;padding:0 18px}
 header{display:flex;align-items:center;gap:8px;padding:calc(14px + env(safe-area-inset-top)) 0 10px}
@@ -31,7 +31,7 @@ main{flex:1;padding-bottom:100px}
 .row .m small{display:block;color:var(--muted);font-weight:600;font-size:12px}
 .b{border-radius:99px;padding:8px 15px;font-weight:700;background:#eceaff;color:var(--blue);font-size:14px}
 .b.ok{background:var(--mint);color:#fff}.b.bad{background:#ffe3ea;color:var(--red)}
-.big{display:block;width:100%;padding:14px;border-radius:16px;background:linear-gradient(135deg,#5b6cff,#8a6cff);color:#fff;font-weight:800;font-size:16px;margin-top:12px;text-align:center}
+.big{display:block;width:100%;padding:14px;border-radius:16px;background:linear-gradient(135deg,#5b6cff,#8a6cff);color:#fff;font-weight:700;font-size:16px;margin-top:12px;text-align:center}
 .big.g{background:#fff;color:#4285f4;border:2px solid #dbe4ff;display:flex;gap:10px;align-items:center;justify-content:center}
 .lab{font-size:13px;font-weight:700;color:var(--muted);margin:12px 0 5px}
 .empty{color:var(--muted);text-align:center;padding:18px 0;font-weight:600}
