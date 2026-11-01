@@ -590,7 +590,7 @@ function avatar(w0,o){
   }[w.face];
 
   let torso,sleeve='none',ex='',collar='<path d="M134 201 Q150 215 166 201 Q150 196 134 201Z" fill="#fff" opacity=".9"/>',skirtD='';
-  const T0='M120 202 Q150 194 180 202 L186 258 Q150 266 114 258Z',shoulders=r=>'<circle cx="114" cy="210" r="'+r+'" fill="'+tc+'"/><circle cx="186" cy="210" r="'+r+'" fill="'+tc+'"/>';
+  const T0='M120 202 Q150 194 180 202 L186 258 Q150 266 114 258Z',shoulders=r=>'';
   const nk='<path d="M118 204 Q150 194 182 204 L182 216 L118 216Z" fill="'+SK+'"/>';
   if(top==='tank'){torso=nk+'<path d="M126 204 Q150 198 174 204 L180 258 Q150 266 120 258Z" fill="'+tc+'"/>';collar='<path d="M134 202 Q150 218 166 202" stroke="#fff" stroke-width="3" fill="none" opacity=".7"/>'}
   else if(top==='hoodie'){sleeve='long';torso=nk+'<path d="M116 202 Q150 192 184 202 L190 262 Q150 270 110 262Z" fill="'+tc+'"/>'+shoulders(11);collar='';ex='<path d="M124 202 Q150 234 176 202 Q150 194 124 202Z" fill="#0000002a"/><path d="M144 214 v18 M156 214 v18" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M126 242 h48 l5 18 h-58Z" fill="#0000001f"/>'}
@@ -637,7 +637,7 @@ function avatar(w0,o){
   ol('<path d="M85 138 Q85 76 150 76 Q215 76 215 138 Q215 172 192 190 Q172 204 150 204 Q128 204 108 190 Q85 172 85 138Z" fill="'+SK+'"/>')+
   eye(120,-1)+eye(180,1)+
   '<path d="M104 114 Q120 108 136 113" stroke="#4a2f20" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".6"/><path d="M164 113 Q180 108 196 114" stroke="#4a2f20" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".6"/>'+
-  '<ellipse cx="98" cy="168" rx="14" ry="8" fill="#ff7f9f" opacity=".5"/><ellipse cx="202" cy="168" rx="14" ry="8" fill="#ff7f9f" opacity=".5"/>'+
+  '<ellipse cx="106" cy="170" rx="10" ry="6" fill="#ff7f9f" opacity=".5"/><ellipse cx="194" cy="170" rx="10" ry="6" fill="#ff7f9f" opacity=".5"/>'+
   '<g transform="translate(150 176) scale(.82) translate(-150 -176)">'+M+'</g>'+F+ol((BOY_FRONT[w.style]||bangs)(hair))+A+ol(H)+'</g>'+
   '</g>'+
   (o.room===false||!pet?'':'<text x="252" y="314" font-size="54" text-anchor="middle">'+pet+'</text>')+
