@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
@@ -625,7 +625,7 @@ function avatar(w0,o){
   return '<svg viewBox="'+(o.vb||'0 0 300 340')+'" xmlns="http://www.w3.org/2000/svg">'+defs+
   (o.room===false?'':room(w.bg)+'<ellipse cx="150" cy="308" rx="64" ry="8" fill="#0003"/>')+
   '<g class="charg"><g transform="translate(150 310) scale(.9) translate(-150 -310)">'+wings+'</g>'+
-  '<g transform="translate(150 196) scale(1.32) translate(-150 -196)">'+ol((HAIR_BACK[w.style]||HAIR_BACK.long)(hair))+'</g>'+
+  '<g transform="translate(150 196) scale(1.24) translate(-150 -196)">'+ol((HAIR_BACK[w.style]||HAIR_BACK.long)(hair))+'</g>'+
   '<g transform="translate(150 310) scale(.9) translate(-150 -310)">'+
   ol('<rect x="126" y="268" width="15" height="34" rx="7" fill="'+SK+'"/><rect x="159" y="268" width="15" height="34" rx="7" fill="'+SK+'"/>')+
   ol(skirtD+bottom)+ol(shoe(132)+shoe(168))+
@@ -633,7 +633,7 @@ function avatar(w0,o){
   '<g class="wave">'+arm('M186 214 Q216 216 222 186',222,180)+slR+'</g>'+
   ol('<rect x="140" y="186" width="20" height="18" rx="8" fill="'+SD+'"/>')+
   ol(torso)+collar+ex+neck+'</g>'+
-  '<g transform="translate(150 196) scale(1.32) translate(-150 -196)">'+(['pigtails','bun'].includes(w.style)?ol('<circle cx="86" cy="148" r="9" fill="'+SK+'"/><circle cx="214" cy="148" r="9" fill="'+SK+'"/>'):'')+''+
+  '<g transform="translate(150 196) scale(1.24) translate(-150 -196)">'+(['pigtails','bun'].includes(w.style)?ol('<circle cx="86" cy="148" r="9" fill="'+SK+'"/><circle cx="214" cy="148" r="9" fill="'+SK+'"/>'):'')+''+
   ol('<path d="M85 138 Q85 76 150 76 Q215 76 215 138 Q215 172 192 190 Q172 204 150 204 Q128 204 108 190 Q85 172 85 138Z" fill="'+SK+'"/>')+
   eye(120,-1)+eye(180,1)+
   '<path d="M104 114 Q120 108 136 113" stroke="#4a2f20" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".6"/><path d="M164 113 Q180 108 196 114" stroke="#4a2f20" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".6"/>'+
