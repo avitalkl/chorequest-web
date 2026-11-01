@@ -542,7 +542,7 @@ function room(id){
 }
 const star=(cx,cy,r,f)=>{const p=[];for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.45:r;p.push((cx+rr*Math.cos(a)).toFixed(1)+','+(cy+rr*Math.sin(a)).toFixed(1))}return '<polygon points="'+p.join(' ')+'" fill="'+f+'" stroke="#e6a800" stroke-width="1.5" stroke-linejoin="round"/>'};
 const flower=(x,y,c)=>'<g><circle cx="'+(x-5)+'" cy="'+y+'" r="5" fill="'+c+'"/><circle cx="'+(x+5)+'" cy="'+y+'" r="5" fill="'+c+'"/><circle cx="'+x+'" cy="'+(y-5)+'" r="5" fill="'+c+'"/><circle cx="'+x+'" cy="'+(y+5)+'" r="5" fill="'+c+'"/><circle cx="'+x+'" cy="'+y+'" r="3.5" fill="#ffd84a"/></g>';
-const VB={style:'70 36 160 170',mouth:'105 96 90 100',face:'80 92 140 108',hat:'70 24 160 130',acc:'20 40 260 280',top:'76 180 148 110',bottom:'76 236 148 76',shoes:'86 268 128 52'};
+const VB={style:'55 25 190 190',mouth:'100 125 100 90',face:'65 70 170 130',hat:'55 15 190 150',acc:'20 40 260 280',top:'76 195 148 100',bottom:'76 245 148 70',shoes:'86 275 128 48'};
 
 const OL='#3b2552';
 const ol=s=>s.replace(/<(path|rect|ellipse|circle|polygon)\b([^>]*?)\/>/g,(m,t,a)=>{
@@ -624,15 +624,16 @@ function avatar(w0,o){
   const defs='<defs><linearGradient id="rb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff6b8b"/><stop offset=".35" stop-color="#ffc83d"/><stop offset=".65" stop-color="#5fd8b4"/><stop offset="1" stop-color="#8a6cff"/></linearGradient><linearGradient id="gx" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2b2a5c"/><stop offset=".5" stop-color="#8a6cff"/><stop offset="1" stop-color="#ff7eb6"/></linearGradient></defs>';
   return '<svg viewBox="'+(o.vb||'0 0 300 340')+'" xmlns="http://www.w3.org/2000/svg">'+defs+
   (o.room===false?'':room(w.bg)+'<ellipse cx="150" cy="308" rx="64" ry="8" fill="#0003"/>')+
-  '<g class="charg">'+wings+
-  '<g transform="translate(150 196) scale(1.12) translate(-150 -196)">'+ol((HAIR_BACK[w.style]||HAIR_BACK.long)(hair))+'</g>'+
+  '<g class="charg"><g transform="translate(150 310) scale(.9) translate(-150 -310)">'+wings+'</g>'+
+  '<g transform="translate(150 196) scale(1.32) translate(-150 -196)">'+ol((HAIR_BACK[w.style]||HAIR_BACK.long)(hair))+'</g>'+
+  '<g transform="translate(150 310) scale(.9) translate(-150 -310)">'+
   ol('<rect x="126" y="268" width="15" height="34" rx="7" fill="'+SK+'"/><rect x="159" y="268" width="15" height="34" rx="7" fill="'+SK+'"/>')+
   ol(skirtD+bottom)+ol(shoe(132)+shoe(168))+
   arm('M114 214 Q94 240 100 266',100,268)+slL+
   '<g class="wave">'+arm('M186 214 Q216 216 222 186',222,180)+slR+'</g>'+
   ol('<rect x="140" y="186" width="20" height="18" rx="8" fill="'+SD+'"/>')+
-  ol(torso)+collar+ex+neck+
-  '<g transform="translate(150 196) scale(1.12) translate(-150 -196)">'+(['pigtails','bun'].includes(w.style)?ol('<circle cx="86" cy="148" r="9" fill="'+SK+'"/><circle cx="214" cy="148" r="9" fill="'+SK+'"/>'):'')+''+
+  ol(torso)+collar+ex+neck+'</g>'+
+  '<g transform="translate(150 196) scale(1.32) translate(-150 -196)">'+(['pigtails','bun'].includes(w.style)?ol('<circle cx="86" cy="148" r="9" fill="'+SK+'"/><circle cx="214" cy="148" r="9" fill="'+SK+'"/>'):'')+''+
   ol('<path d="M85 138 Q85 76 150 76 Q215 76 215 138 Q215 172 192 190 Q172 204 150 204 Q128 204 108 190 Q85 172 85 138Z" fill="'+SK+'"/>')+
   eye(120,-1)+eye(180,1)+
   '<path d="M104 114 Q120 108 136 113" stroke="#4a2f20" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".6"/><path d="M164 113 Q180 108 196 114" stroke="#4a2f20" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".6"/>'+
