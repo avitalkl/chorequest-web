@@ -63,6 +63,8 @@
   .item .sw{display:block;width:44px;height:44px;border-radius:50%;margin:0 auto 4px;border:3px solid #fff;box-shadow:0 2px 6px #0003}
   .item .big svg{width:64px;height:58px;display:block;margin:0 auto 2px;border-radius:12px;background:#f3ecff}
   .item .lbl{display:block;font-size:12px;margin:2px 0}
+  .stage.mini{max-width:230px;margin:0 auto}
+  .tabs.seg{margin-top:0}.tabs.seg button{flex:1}
   .tabs.sub{flex-wrap:wrap;overflow:visible;margin:0 0 10px}
   .tabs.sub button{padding:6px 12px;font-size:13px}
   .item .rm svg{width:84px;height:62px}
@@ -143,8 +145,17 @@
       <div class="grid" id="shop"></div>
     </section>
     <section class="page" id="p-prizes">
+      <div class="tabs seg" id="pzseg"></div>
+      <div id="shopview">
+        <p class="hello" id="shophello"></p>
+        <div class="stage mini"><div id="savatar"></div></div>
+        <div class="tabs" id="stabs"></div><div class="tabs sub" id="ssub"></div>
+        <div class="grid" id="sgrid"></div>
+      </div>
+      <div id="realview">
       <p class="hello" id="pzhello"></p>
       <div id="prizes"></div>
+      </div>
     </section>
   </main>
 
@@ -188,7 +199,7 @@ const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:'chorequest-kid-a
 const T = {
   en:{title:'ChoreQuest',hello:n=>`Good day, ${n}! Finish your quests to earn coins.`,tasks:'Quests',me:'Me',nameHint:'Tap the name to change it',gm:{critters:['Tap the critters!','Tap the little friends as they pop up. 30 seconds, each one is a bonus coin!'],simon:['Copy the song!','Watch the colors, then repeat them. Every round is bonus coins!'],count:['How many?','Count and tap the right number. 40 seconds, each answer is 2 bonus coins!'],memory:['Match the pairs!','Find all pairs in 60 seconds. The faster you are, the bigger the bonus!'],bubbles:['Pop the bubbles!','Pop as many as you can in 30 seconds. Each one is a bonus coin!'],stars:['Catch the stars!','Slide the basket to catch stars for 30 seconds. Each one is a bonus coin!']},
     pr:{title:'Connect this device',msg:'Ask a parent to show you the QR code in the Parent app, then scan it with the camera. Or paste the code here.',code:'Paste code',go:'Connect',bad:'That code did not work. Ask a parent for a new one.',err:'Something went wrong. Check the internet and try again.',appr:n=>'Approved! +'+n+' coins',retry:'Try again'},
-    pz:{title:'Prizes',hello:'Spend your coins on real prizes!',empty:'No prizes yet. Ask a parent to add some.',wait:'Waiting for a parent',got:'Got it!',ask:n=>'Get this prize for '+n+' coins?',weekN:(a,b)=>a+'/'+b+' this week',weekDone:'Done this week',asked:'Asked! A parent will check.',need:'Not enough coins yet'},
+    pz:{title:'Prizes',hello:'Spend your coins on real prizes!',empty:'No prizes yet. Ask a parent to add some.',wait:'Waiting for a parent',got:'Got it!',ask:n=>'Get this prize for '+n+' coins?',weekN:(a,b)=>a+'/'+b+' this week',weekDone:'Done this week',asked:'Asked! A parent will check.',need:'Not enough coins yet',shop:'Avatar shop',real:'Real prizes',none:'Nothing here yet. Visit the shop!',shopHello:'Buy new looks with your coins!'},
     bonus:n=>`Bonus +${n} coins!`,timeup:'Time is up! Great job!',nice:'You did it!',left:'s',hint:'Tap a quest when you finish it. Tap again to undo.',gtitle:'Match the pairs!',gsub:'Find all pairs in 60 seconds. The faster you are, the bigger the bonus!',
     win:'Quest complete!',done:'Collect coins',skip:'Skip game',own:'Owned',
     tn:{hair:'Hair color',style:'Hair style',skin:'Skin',eyes:'Eyes',mouth:'Mouth',face:'Face',top:'Top',topc:'Top color',bottom:'Bottom',botc:'Bottom color',shoes:'Shoes',hat:'Hats',acc:'Accessories',pet:'Pet',bg:'Place'},gn:{head:'Head',clothes:'Clothes',extras:'Extras',place:'Places'},
@@ -197,7 +208,7 @@ const T = {
     pa:{parent:'Parent area',enterPin:'Enter your PIN',setPin:'Create a 4-digit PIN to protect this area',ok:'OK',pin4:'PIN must be 4 digits',wrong:'Wrong PIN',close:'Close',approvals:'Waiting for approval',nothing:'Nothing waiting',approve:'Approve',reject:'Reject',chores:'Chores',add:'+ Add chore',edit:'Edit',del:'Delete',save:'Save',cancel:'Cancel',name:'Name',coins:'Coins',game:'Game',nogame:'No game',icon:'Icon',req:'Coins are paid only after a parent approves',changePin:'Change PIN',confirmDel:'Delete this chore?',waiting:'Waiting for parent',hint:'Tap a quest when you finish it. A parent will check it.',settings:'Settings',needName:'Please enter a name'}},
   he:{title:'ChoreQuest',hello:n=>`יום טוב, ${n}! סיימי משימות כדי להרוויח מטבעות.`,tasks:'משימות',me:'אני',nameHint:'לחצי על השם כדי לשנות',gm:{critters:['תפסי את החברים!','לחצי על החברים הקטנים כשהם קופצים. 30 שניות, כל אחד הוא מטבע בונוס!'],simon:['חזרי על השיר!','הסתכלי על הצבעים וחזרי עליהם. כל סיבוב נותן מטבעות בונוס!'],count:['כמה יש?','ספרי ולחצי על המספר הנכון. 40 שניות, כל תשובה היא מטבע בונוס!'],memory:['מצאי את הזוגות!','מצאי את כל הזוגות ב-60 שניות. ככל שמהר יותר, הבונוס גדול יותר!'],bubbles:['פוצצי בועות!','פוצצי כמה שיותר בועות ב-30 שניות. כל אחת היא מטבע בונוס!'],stars:['תפסי כוכבים!','החליקי את הסל כדי לתפוס כוכבים במשך 30 שניות. כל אחד הוא מטבע בונוס!']},
     pr:{title:'חיבור המכשיר',msg:'בקשי מהורה להציג את קוד ה-QR באפליקציית ההורים, וסרקי אותו במצלמה. אפשר גם להדביק כאן את הקוד.',code:'הדבקת קוד',go:'התחברי',bad:'הקוד לא עבד. בקשי מהורה קוד חדש.',err:'משהו השתבש. בדקי את האינטרנט ונסי שוב.',appr:n=>'אושר! +'+n+' מטבעות',retry:'נסי שוב'},
-    pz:{title:'פרסים',hello:'הוציאי מטבעות על פרסים אמיתיים!',empty:'אין פרסים עדיין. בקשי מהורה להוסיף.',wait:'ממתין להורה',got:'התקבל!',ask:n=>'לקבל את הפרס תמורת '+n+' מטבעות?',weekN:(a,b)=>a+'/'+b+' השבוע',weekDone:'הושלם השבוע',asked:'נשלח! הורה יבדוק.',need:'אין עדיין מספיק מטבעות'},
+    pz:{title:'פרסים',hello:'הוציאי מטבעות על פרסים אמיתיים!',empty:'אין פרסים עדיין. בקשי מהורה להוסיף.',wait:'ממתין להורה',got:'התקבל!',ask:n=>'לקבל את הפרס תמורת '+n+' מטבעות?',weekN:(a,b)=>a+'/'+b+' השבוע',weekDone:'הושלם השבוע',asked:'נשלח! הורה יבדוק.',need:'אין עדיין מספיק מטבעות',shop:'חנות הדמות',real:'פרסים אמיתיים',none:'אין כאן עדיין כלום. בואי לחנות!',shopHello:'קני מראות חדשים עם המטבעות!'},
     bonus:n=>`בונוס +${n} מטבעות!`,timeup:'נגמר הזמן! כל הכבוד!',nice:'הצלחת!',left:'ש׳',hint:'לחצי על משימה כשסיימת. לחיצה נוספת מבטלת.',gtitle:'מצאי את הזוגות!',gsub:'מצאי את כל הזוגות ב-60 שניות. ככל שמהר יותר, הבונוס גדול יותר!',
     win:'המשימה הושלמה!',done:'קבלי מטבעות',skip:'דלגי על המשחק',own:'שלך',
     tn:{hair:'צבע שיער',style:'תסרוקת',skin:'עור',eyes:'עיניים',mouth:'פה',face:'פנים',top:'חולצה',topc:'צבע חולצה',bottom:'תחתית',botc:'צבע תחתית',shoes:'נעליים',hat:'כובעים',acc:'אביזרים',pet:'חיית מחמד',bg:'מקום'},gn:{head:'ראש',clothes:'בגדים',extras:'תוספות',place:'מקומות'},
@@ -592,7 +603,7 @@ function avatar(w0,o){
   let torso,sleeve='none',ex='',collar='<path d="M134 201 Q150 215 166 201 Q150 196 134 201Z" fill="#fff" opacity=".9"/>',skirtD='';
   const T0='M120 202 Q150 194 180 202 L186 258 Q150 266 114 258Z',shoulders=r=>'';
   const nk='<path d="M118 204 Q150 194 182 204 L182 216 L118 216Z" fill="'+SK+'"/>';
-  if(top==='tank'){torso=nk+'<path d="M126 204 Q150 198 174 204 L180 258 Q150 266 120 258Z" fill="'+tc+'"/>';collar='<path d="M134 202 Q150 218 166 202" stroke="#fff" stroke-width="3" fill="none" opacity=".7"/>'}
+  if(top==='tank'){torso=nk+'<path d="M121 203 Q150 196 179 203 Q181 222 187 234 L186 258 Q150 266 114 258 L113 234 Q119 222 121 203Z" fill="'+tc+'"/>';collar='<path d="M134 202 Q150 218 166 202" stroke="#fff" stroke-width="3" fill="none" opacity=".7"/>'}
   else if(top==='hoodie'){sleeve='long';torso=nk+'<path d="M116 202 Q150 192 184 202 L190 262 Q150 270 110 262Z" fill="'+tc+'"/>'+shoulders(11);collar='';ex='<path d="M124 202 Q150 234 176 202 Q150 194 124 202Z" fill="#0000002a"/><path d="M144 214 v18 M156 214 v18" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M126 242 h48 l5 18 h-58Z" fill="#0000001f"/>'}
   else if(top==='stripes'){sleeve='long';torso=nk+'<path d="'+T0+'" fill="'+tc+'"/>'+shoulders(10);ex='<path d="M117 222 Q150 228 183 222 M116 236 Q150 242 184 236 M115 250 Q150 256 185 250" stroke="#fff" stroke-width="6" fill="none" opacity=".75"/>'}
   else if(top==='startee'){sleeve='short';torso=nk+'<path d="'+T0+'" fill="'+tc+'"/>'+shoulders(10);ex=star(150,234,13,'#ffd84a')}
@@ -650,20 +661,31 @@ function preview(k,x){
   const w={pet:'none'};w[k]=x.id;
   return '<span class="big">'+avatar(w,{vb:VB[k],room:false})+'</span>';
 }
-function renderMe(){
-  const l=L();$('hname').textContent=S.name;$('avatar').innerHTML=avatar();
-  if(!GROUPS[grp].includes(tab))tab=GROUPS[grp][0];
-  const mk=(box,list,name,cur,fn)=>{box.innerHTML='';list.forEach(k=>{const b=document.createElement('button');b.textContent=name(k);b.className=cur===k?'on':'';b.onclick=()=>fn(k);box.appendChild(b)})};
-  mk($('tabs'),Object.keys(GROUPS),g=>l.gn[g],grp,g=>{grp=g;tab=GROUPS[g][0];renderMe()});
-  $('subtabs').style.display=GROUPS[grp].length>1?'':'none';
-  mk($('subtabs'),GROUPS[grp],k=>l.tn[k],tab,k=>{tab=k;renderMe()});
-  $('shop').innerHTML='';SHOP[tab].filter(x=>shown(tab,x)).forEach(x=>{const key=tab+':'+x.id,own=S.own.includes(key),sel=S.worn[tab]===x.id;
+let sgrp='clothes',stab='top',pzv='shop';
+function gridView(ids,v,mode){
+  const l=L(),mk=(box,list,name,cur,fn)=>{box.innerHTML='';list.forEach(k=>{const b=document.createElement('button');b.textContent=name(k);b.className=cur===k?'on':'';b.onclick=()=>fn(k);box.appendChild(b)})};
+  if(!GROUPS[v.grp].includes(v.tab))v.tab=GROUPS[v.grp][0];
+  mk($(ids[0]),Object.keys(GROUPS),g=>l.gn[g],v.grp,g=>{v.grp=g;v.tab=GROUPS[g][0];renderMe()});
+  $(ids[1]).style.display=GROUPS[v.grp].length>1?'':'none';
+  mk($(ids[1]),GROUPS[v.grp],k=>l.tn[k],v.tab,k=>{v.tab=k;renderMe()});
+  const box=$(ids[2]),tab=v.tab;box.innerHTML='';
+  const items=SHOP[tab].filter(x=>shown(tab,x)).filter(x=>mode==='shop'||S.own.includes(tab+':'+x.id)||x.p===0);
+  if(!items.length)box.innerHTML='<p class="hint" style="grid-column:1/-1">'+esc(l.pz.none)+'</p>';
+  items.forEach(x=>{const key=tab+':'+x.id,own=S.own.includes(key)||x.p===0,sel=S.worn[tab]===x.id;
     const d=document.createElement('button');d.className='item'+(sel?' sel':'')+(own?'':' locked');
     d.innerHTML=preview(tab,x)+(LABELED.includes(tab)?'<span class="lbl">'+l.nm[key]+'</span>':'')+(own?(sel?'✓':l.own):'<span class="price">💰 '+x.p+'</span>');
     d.onclick=()=>{ if(!own&&S.coins<x.p){toast(l.need);return}
       const w=Object.assign({},S.worn);w[tab]=x.id;
       act(async()=>{if(!own){const r=await sb.rpc('buy_item',{p_kid:kidId,p_item:key});if(r.error)throw r.error;toast('🎁 '+l.bought);confetti();chime()}
-        const r2=await sb.rpc('set_worn',{p_kid:kidId,p_worn:w});if(r2.error)throw r2.error}) };$('shop').appendChild(d)});
+        const r2=await sb.rpc('set_worn',{p_kid:kidId,p_worn:w});if(r2.error)throw r2.error}) };box.appendChild(d)});
+}
+function renderMe(){
+  const l=L();$('hname').textContent=S.name;$('avatar').innerHTML=avatar();$('savatar').innerHTML=avatar();
+  gridView(['tabs','subtabs','shop'],{get grp(){return grp},set grp(x){grp=x},get tab(){return tab},set tab(x){tab=x}},'wardrobe');
+  gridView(['stabs','ssub','sgrid'],{get grp(){return sgrp},set grp(x){sgrp=x},get tab(){return stab},set tab(x){stab=x}},'shop');
+  const seg=$('pzseg');seg.innerHTML='';[['shop',l.pz.shop],['real',l.pz.real]].forEach(([k,t])=>{const b=document.createElement('button');b.textContent=t;b.className=pzv===k?'on':'';b.onclick=()=>{pzv=k;renderMe()};seg.appendChild(b)});
+  $('shopview').style.display=pzv==='shop'?'':'none';$('realview').style.display=pzv==='real'?'':'none';
+  $('shophello').textContent=l.pz.shopHello;
 }
 
 /* ---------- shell ---------- */
