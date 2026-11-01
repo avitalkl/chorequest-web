@@ -151,7 +151,7 @@
   <nav>
     <button class="on" data-p="tasks"><span class="i">✅</span><span id="n1"></span></button>
     <button data-p="prizes"><span class="i">🎁</span><span id="n3"></span></button>
-    <button data-p="me"><span class="i">👧</span><span id="n2"></span></button>
+    <button data-p="me"><span class="i" id="meico">👧</span><span id="n2"></span></button>
   </nav>
 </div>
 
@@ -283,7 +283,7 @@ async function refresh(quiet){
     sb.from('prize_requests').select('id,prize_id,status').eq('kid_id',kidId).in('status',['pending','given']).gte('created_at',p0)]);
   const bad=[k,ch,co,ki,pz,pq].find(x=>x.error);if(bad)throw bad.error;
   if(!k.data){LOC.kid=kidId=null;save();showPair();return}
-  S.name=k.data.name;S.coins=k.data.coins;S.gender=k.data.gender;S.worn=normWorn(k.data.worn);
+  S.name=k.data.name;S.coins=k.data.coins;S.gender=k.data.gender;$('meico').textContent=S.gender==='boy'?'👦':'👧';S.worn=normWorn(k.data.worn);
   const own=new Set(ki.data.map(r=>r.item_key));
   Object.keys(SHOP).forEach(t=>SHOP[t].forEach(x=>{if(x.p===0)own.add(t+':'+x.id)}));
   S.own=[...own];
