@@ -69,7 +69,7 @@ const T={
 en:{app:'ChoreQuest Parent',tag:'Set chores, approve them, and cheer your kids on.',google:'Continue with Google',signout:'Sign out',
  setupT:'Set up your family',setupH:'Name your family. You can change it later.',famName:'Family name',create:'Create family',
  approvals:'Approvals',chores:'Chores',kids:'Kids',family:'Family',
- nothing:'Nothing waiting for approval',approve:'Approve',reject:'Reject',bonus:n=>'+'+n+' bonus',
+ nothing:'Nothing waiting for approval',doneT:'Completed',dToday:'Today',dWeek:'This week (resets Sunday)',doneNone:'Nothing completed yet',approve:'Approve',reject:'Reject',bonus:n=>'+'+n+' bonus',
  add:'+ Add chore',edit:'Edit',save:'Save',cancel:'Cancel',del:'Delete',name:'Name',icon:'Icon',coins:'Coins',game:'Game',forWho:'For',everyone:'Everyone',
  g:{memory:'Memory match',bubbles:'Pop bubbles',stars:'Catch stars',critters:'Tap critters',simon:'Copy the song',count:'Counting',none:'No game'},
  confirmDel:'Delete this chore?',needName:'Please enter a name',noChores:'No chores yet',
@@ -86,7 +86,7 @@ en:{app:'ChoreQuest Parent',tag:'Set chores, approve them, and cheer your kids o
 he:{app:'ChoreQuest להורים',tag:'קבעו משימות, אשרו אותן ועודדו את הילדים.',google:'המשך עם Google',signout:'התנתקות',
  setupT:'הקמת המשפחה',setupH:'תנו שם למשפחה. אפשר לשנות אחר כך.',famName:'שם המשפחה',create:'יצירת משפחה',
  approvals:'אישורים',chores:'משימות',kids:'ילדים',family:'משפחה',
- nothing:'אין מה לאשר כרגע',approve:'אישור',reject:'דחייה',bonus:n=>'+'+n+' בונוס',
+ nothing:'אין מה לאשר כרגע',doneT:'הושלמו',dToday:'היום',dWeek:'השבוע (מתאפס ביום ראשון)',doneNone:'עוד לא הושלם דבר',approve:'אישור',reject:'דחייה',bonus:n=>'+'+n+' בונוס',
  add:'+ הוספת משימה',edit:'עריכה',save:'שמירה',cancel:'ביטול',del:'מחיקה',name:'שם',icon:'אייקון',coins:'מטבעות',game:'משחק',forWho:'עבור',everyone:'כולם',
  g:{memory:'זיכרון',bubbles:'פוצצו בועות',stars:'תפסו כוכבים',critters:'תפסו חברים',simon:'חזרו על השיר',count:'ספירה',none:'ללא משחק'},
  confirmDel:'למחוק את המשימה?',needName:'נא להזין שם',noChores:'אין משימות עדיין',
@@ -106,7 +106,9 @@ const L=()=>T[P.lang],$=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200)}
 const D={user:null,hh:null,members:0,kids:[],chores:[],pending:[],devices:{},prizes:[],prizeReq:[]};
-let tab='approvals',editing=null,loading=true,draft=null;
+let tab='approvals',editing=null,loading=true,draft=null,dview='today';
+const todayJ=()=>new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jerusalem'});
+const weekStart=()=>{const d=todayJ(),dow=new Date(d+'T12:00:00Z').getUTCDay();return new Date(Date.parse(d+'T12:00:00Z')-dow*864e5).toISOString().slice(0,10)};
 const DAYS={en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],he:['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳']};
 function readDraft(){
   if(!draft||!$('fn'))return;
@@ -130,7 +132,7 @@ async function load(){
   if(m.error)throw m.error;
   if(!m.data.length){D.hh=null;return}
   const hid=m.data[0].household_id;
-  const [h,mm,k,c,p,dv,pz,pr]=await Promise.all([
+  const [h,mm,k,c,p,dv,pz,pr,dn]=await Promise.all([
     sb.from('households').select('id,name,require_approval').eq('id',hid).single(),
     sb.from('household_members').select('user_id').eq('household_id',hid),
     sb.from('kids').select('id,name,coins,gender').eq('household_id',hid).order('created_at'),
@@ -138,8 +140,10 @@ async function load(){
     sb.from('completions').select('id,kid_id,chore_id,base_coins,bonus,created_at').eq('household_id',hid).eq('status','pending').order('created_at'),
     sb.from('kid_devices').select('kid_id'),
     sb.from('prizes').select('id,title,icon,cost').eq('household_id',hid).eq('active',true).order('created_at'),
-    sb.from('prize_requests').select('id,kid_id,prize_id,cost,created_at').eq('household_id',hid).eq('status','pending').order('created_at')]);
-  const e=[h,mm,k,c,p,dv,pz,pr].find(x=>x.error);if(e)throw e.error;
+    sb.from('prize_requests').select('id,kid_id,prize_id,cost,created_at').eq('household_id',hid).eq('status','pending').order('created_at'),
+        sb.from('completions').select('id,kid_id,chore_id,base_coins,bonus,day').eq('household_id',hid).eq('status','approved').gte('day',weekStart())        .order('day',{ascending:false})]);
+          const e=[h,mm,k,c,p,dv,pz,pr,dn].find(x=>x.error);if(e)throw e.error;
+          D.done=dn.data;
   D.hh=h.data;D.members=mm.data.length;D.kids=k.data;D.chores=c.data;D.pending=p.data;D.prizes=pz.data;D.prizeReq=pr.data;
   D.devices={};dv.data.forEach(x=>D.devices[x.kid_id]=(D.devices[x.kid_id]||0)+1);
 }
@@ -167,9 +171,25 @@ function render(){
     '<button data-tab="'+t[0]+'" class="'+(tab===t[0]?'on':'')+'"><span class="i">'+t[1]+'</span>'+t[2]+(t[0]==='approvals'&&np?'<span class="badge">'+np+'</span>':'')+'</button>').join('')+'</div></nav>';
 }
 const kname=id=>{const k=D.kids.find(x=>x.id===id);return k?k.name:''};
+function viewDone(){
+  const l=L(),ws=weekStart(),td=todayJ();
+  const rows=(D.done||[]).filter(r=>dview==='week'?r.day>=ws:r.day===td);
+  let h='<div class="sec"><div class="lab">'+l.doneT+'</div><div style="display:flex;gap:8px;margin-bottom:10px">'+
+    [['today',l.dToday],['week',l.dWeek]].map(s=>'<button class="b '+(dview===s[0]?'ok':'')+'" data-dview="'+s[0]+'">'+s[1]+'</button>').join('')+'</div>';
+  if(!rows.length)return h+'<div class="empty">'+l.doneNone+'</div></div>';
+  D.kids.forEach(k=>{
+    const mine=rows.filter(r=>r.kid_id===k.id);if(!mine.length)return;
+    const by={};mine.forEach(r=>{(by[r.chore_id]=by[r.chore_id]||[]).push(r)});
+    const coins=mine.reduce((s,r)=>s+r.base_coins+(r.bonus||0),0);
+    h+='<div class="row" style="font-weight:800"><div class="m">'+esc(k.name)+'<small>'+mine.length+' ✓ · 💰 '+coins+'</small></div></div>';
+    Object.keys(by).forEach(id=>{const c=D.chores.find(x=>x.id===id)||{icon:'⭐',title:'?'};
+      h+='<div class="row"><span class="e">'+esc(c.icon)+'</span><div class="m">'+esc(c.title)+'</div><b>×'+by[id].length+'</b></div>'});
+  });
+  return h+'</div>';
+}
 function viewApprovals(){
   const l=L();
-  if(!D.pending.length&&!D.prizeReq.length)return '<div class="sec"><div class="empty">🎉 '+l.nothing+'</div></div>';
+  if(!D.pending.length&&!D.prizeReq.length)return '<div class="sec"><div class="empty">🎉 '+l.nothing+'</div></div>'+viewDone();
   let h='';
   if(D.prizeReq.length)h+='<div class="sec">'+D.prizeReq.map(r=>{const z=D.prizes.find(x=>x.id===r.prize_id)||{icon:'🎁',title:'?'};
     return '<div class="row"><span class="e">'+esc(z.icon)+'</span><div class="m">'+esc(z.title)+'<small>'+esc(kname(r.kid_id))+' '+l.wants+' · 💰 '+r.cost+'</small></div>'+
@@ -177,7 +197,7 @@ function viewApprovals(){
   if(D.pending.length)h+='<div class="sec">'+D.pending.map(p=>{const c=D.chores.find(x=>x.id===p.chore_id)||{icon:'⭐',title:'?'};
     return '<div class="row"><span class="e">'+esc(c.icon)+'</span><div class="m">'+esc(c.title)+'<small>'+esc(kname(p.kid_id))+' · 💰 '+p.base_coins+(p.bonus?' ('+l.bonus(p.bonus)+')':'')+'</small></div>'+
      '<button class="b bad" data-rej="'+p.id+'">'+l.reject+'</button><button class="b ok" data-app="'+p.id+'">'+l.approve+'</button></div>'}).join('')+'</div>';
-  return h;
+  return h+viewDone();
 }
 function viewPrizes(){
   const l=L();
@@ -246,6 +266,7 @@ const here=rel=>new URL(rel,location.href).href;
 document.addEventListener('click',e=>{
   const t=e.target.closest('button');if(!t)return;
   const l=L(),a=t.dataset.a;
+  if(t.dataset.dview){dview=t.dataset.dview;render();return}
   if(t.dataset.tab){tab=t.dataset.tab;editing=null;render();return}
   if(t.dataset.app){run(async()=>{const r=await sb.rpc('approve_completion',{p_id:t.dataset.app});if(r.error)throw r.error;toast('✅')});return}
   if(t.dataset.rej){run(async()=>{const r=await sb.rpc('reject_completion',{p_id:t.dataset.rej});if(r.error)throw r.error});return}
