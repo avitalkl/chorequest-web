@@ -179,7 +179,7 @@ function gis(){
 }
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200)}
-const D={user:null,hh:null,members:0,kids:[],chores:[],pending:[],devices:{},prizes:[],prizeReq:[],done:[],hist:[],earned:[],gameEvents:[]};
+const D={user:null,hh:null,noHousehold:false,members:0,kids:[],chores:[],pending:[],devices:{},prizes:[],prizeReq:[],done:[],hist:[],earned:[],gameEvents:[],gamesOk:true};
 let tab='approvals',editing=null,loading=true,draft=null,dview='today';
 const todayJ=()=>new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jerusalem'});
 const weekStart=()=>{const d=todayJ(),dow=new Date(d+'T12:00:00Z').getUTCDay();return new Date(Date.parse(d+'T12:00:00Z')-dow*864e5).toISOString().slice(0,10)};
@@ -293,20 +293,22 @@ function scheduleText(c){
 async function load(){
   const {data:{session}}=await sb.auth.getSession();
   D.user=session&&!session.user.is_anonymous?session.user:null;
-  if(!D.user){D.hh=null;return}
+  if(!D.user){D.hh=null;D.noHousehold=false;return}
   const pend=localStorage.getItem('cq-pending-invite');
   if(pend){localStorage.removeItem('cq-pending-invite');
     const r=await sb.rpc('accept_parent_invite',{p_code:pend});toast(r.error?L().inviteBad:L().joinedOk)}
   const m=await sb.from('household_members').select('household_id,role').limit(1);
   if(m.error)throw m.error;
-  if(!m.data.length){D.hh=null;return}
+  if(!m.data.length){D.hh=null;D.noHousehold=true;return}
+  D.noHousehold=false;
   const hid=m.data[0].household_id;
   const sinceDay=shiftDay(todayJ(),-400);
   const sinceTs=new Date(Date.parse(weekStart()+'T00:00:00Z')-864e5).toISOString();
-  const histP=selectAll(()=>sb.from('completions').select('kid_id,day').eq('household_id',hid).eq('status','approved').gte('day',sinceDay).order('day',{ascending:false}));
+  const histP=selectAll(()=>sb.from('completions').select('kid_id,day').eq('household_id',hid).eq('status','approved').gte('day',sinceDay).order('day',{ascending:false})).catch(()=>null);
   // Chore payouts only. Refunds are positive too, but they reverse a prize spend rather than pay for a chore.
-  const earnP=selectAll(()=>sb.from('coin_ledger').select('kid_id,amount,created_at').eq('household_id',hid).eq('kind','chore').gt('amount',0).gte('created_at',sinceTs).order('created_at',{ascending:false}));
-  const [h,mm,k,c,p,dv,pz,pr,dn,ev]=await Promise.all([
+  const earnP=selectAll(()=>sb.from('coin_ledger').select('kid_id,amount,created_at').eq('household_id',hid).eq('kind','chore').gt('amount',0).gte('created_at',sinceTs).order('created_at',{ascending:false})).catch(()=>null);
+  const evP=allGameEvents(hid).catch(()=>({error:true}));
+  const [h,mm,k,c,p,dv,pz,pr,dn]=await Promise.all([
     sb.from('households').select('id,name,require_approval').eq('id',hid).single(),
     sb.from('household_members').select('user_id').eq('household_id',hid),
     sb.from('kids').select('id,name,coins,gender').eq('household_id',hid).order('created_at'),
@@ -315,13 +317,14 @@ async function load(){
     sb.from('kid_devices').select('kid_id'),
     sb.from('prizes').select('id,title,title_he,icon,cost').eq('household_id',hid).eq('active',true).order('created_at'),
     sb.from('prize_requests').select('id,kid_id,prize_id,cost,created_at').eq('household_id',hid).eq('status','pending').order('created_at'),
-    sb.from('completions').select('id,kid_id,chore_id,base_coins,bonus,day').eq('household_id',hid).eq('status','approved').gte('day',weekStart()).order('day',{ascending:false}),
-    allGameEvents(hid)]);
-  const [hist,earned]=await Promise.all([histP,earnP]);
-  const e=[h,mm,k,c,p,dv,pz,pr,dn,ev].find(x=>x.error);if(e)throw e.error;
-  D.done=dn.data;D.hist=hist;D.earned=earned;D.gameEvents=ev.data;
+    sb.from('completions').select('id,kid_id,chore_id,base_coins,bonus,day').eq('household_id',hid).eq('status','approved').gte('day',weekStart()).order('day',{ascending:false})]);
+  const e=[h,mm,k,c,p,dv,pz,pr,dn].find(x=>x.error);if(e)throw e.error;
+  D.done=dn.data;
   D.hh=h.data;D.members=mm.data.length;D.kids=k.data;D.chores=c.data;D.pending=p.data;D.prizes=pz.data;D.prizeReq=pr.data;
   D.devices={};dv.data.forEach(x=>D.devices[x.kid_id]=(D.devices[x.kid_id]||0)+1);
+  const [hist,earned,ev]=await Promise.all([histP,earnP,evP]);
+  D.hist=hist||[];D.earned=earned||[];
+  if(!ev||ev.error){D.gameEvents=[];D.gamesOk=false}else{D.gameEvents=ev.data||[];D.gamesOk=true}
 }
 async function reload(){try{await load()}catch(e){toast(L().err)}loading=false;render()}
 async function run(fn){try{await fn()}catch(e){toast(L().err);console.error(e)}await reload()}
@@ -337,6 +340,7 @@ function render(){
           gis();
           return}
   if(!D.hh){
+    if(!D.noHousehold){app.innerHTML=head+'<div class="center"><p style="color:var(--muted);font-weight:600">'+l.err+'</p></div>';return}
     app.innerHTML=head+'<div class="center" style="padding-top:30px"><div class="logo">🏠</div><h2>'+l.setupT+'</h2><p style="color:var(--muted);font-weight:600">'+l.setupH+'</p>'+
       '<div class="lab" style="text-align:start">'+l.famName+'</div><input id="fam" maxlength="40" value="'+(P.lang==='he'?'המשפחה שלי':'My family')+'"><button class="big" data-a="create">'+l.create+'</button></div>';
     return}
@@ -430,6 +434,7 @@ function leastLiked(){
   return Object.keys(by).filter(g=>by[g].n>=5).map(g=>({g,s:by[g].s,n:by[g].n,up:by[g].up,down:by[g].down,rate:by[g].s/by[g].n})).sort((a,b)=>b.rate-a.rate||b.s-a.s);
 }
 function viewLeast(){
+  if(D.gamesOk===false) return '';
   const l=L(), rows=leastLiked();
   let h='<div class="sec"><h3>'+l.least+'</h3><p style="margin:0 0 8px;color:var(--muted);font-weight:600;font-size:13px">'+l.leastHint+'</p>';
   if(!rows.length) return h+'<div class="empty">'+l.leastNone+'</div></div>';
