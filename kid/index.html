@@ -28,7 +28,7 @@
   .tools{display:flex;gap:8px;align-items:center}
   button{font:inherit;font-family:inherit;color:inherit;cursor:pointer;border:0}
   .iconbtn{background:var(--card);border-radius:99px;width:40px;height:40px;box-shadow:var(--shadow);font-size:16px;font-weight:700}
-  main{flex:1;padding:8px 20px 110px;overflow-y:auto}
+  main{flex:1;padding:8px 20px calc(120px + env(safe-area-inset-bottom));overflow-y:auto}
   .hello{font-size:15px;color:var(--muted);margin:0 0 12px}
   .progress{height:14px;background:#fff8;border-radius:99px;overflow:hidden;margin:6px 0 18px;box-shadow:inset 0 1px 3px #0001}
   .progress>div{height:100%;background:linear-gradient(90deg,var(--pink),var(--purple));width:0;transition:width .5s}
@@ -43,7 +43,7 @@
   .task.done .t{text-decoration:line-through;opacity:.65}
   .task.done .box{background:var(--mint);border-color:var(--mint)}
   .hint{font-size:13px;color:var(--muted);text-align:center;margin-top:8px}
-  nav{position:fixed;bottom:0;width:100%;max-width:480px;display:flex;background:#fffffff2;backdrop-filter:blur(8px);
+  nav{position:fixed;bottom:0;width:100%;max-width:480px;display:flex;background:#fff;
     padding:8px 12px calc(10px + env(safe-area-inset-bottom));box-shadow:0 -6px 24px rgba(110,80,200,.12);border-radius:26px 26px 0 0;z-index:5}
   nav button{flex:1;background:none;padding:8px;border-radius:18px;font-weight:700;color:var(--muted);font-size:13px}
   nav button .i{display:block;font-size:26px}

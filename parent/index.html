@@ -22,7 +22,7 @@ input,select,textarea{font:inherit;color:var(--ink);width:100%;padding:12px 14px
 header{display:flex;align-items:center;gap:8px;padding:calc(14px + env(safe-area-inset-top)) 0 10px}
 header h1{flex:1;margin:0;font-size:22px}
 .chip{background:#fff;border-radius:99px;padding:8px 13px;font-weight:700;box-shadow:var(--shadow);font-size:14px}
-main{flex:1;padding-bottom:100px}
+main{flex:1;padding-bottom:calc(112px + env(safe-area-inset-bottom))}
 .sec{background:var(--card);border-radius:20px;padding:14px 16px;margin-bottom:14px;box-shadow:var(--shadow)}
 .sec h3{margin:0 0 10px;font-size:16px}
 .row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid #0000000d}
@@ -35,7 +35,7 @@ main{flex:1;padding-bottom:100px}
 .big.g{background:#fff;color:#4285f4;border:2px solid #dbe4ff;display:flex;gap:10px;align-items:center;justify-content:center}
 .lab{font-size:13px;font-weight:700;color:var(--muted);margin:12px 0 5px}
 .empty{color:var(--muted);text-align:center;padding:18px 0;font-weight:600}
-nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;padding:8px 14px calc(8px + env(safe-area-inset-bottom));pointer-events:none}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:center;padding:8px 14px calc(8px + env(safe-area-inset-bottom));background:#f6efff}
 nav div{display:flex;width:100%;max-width:520px;background:#fff;border-radius:24px;box-shadow:0 -4px 24px #4b3f9433;padding:6px;pointer-events:auto}
 nav button{flex:1;min-width:0;padding:8px 1px;border-radius:18px;font-size:10px;font-weight:700;color:var(--muted);position:relative;line-height:1.15}
 nav button.on{background:#eceaff;color:var(--blue)}nav .i{display:block;font-size:20px}
