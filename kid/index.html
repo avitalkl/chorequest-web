@@ -377,6 +377,14 @@ function finishTask(bonus){
   const t=pendingTask; if(!t) return; bonus=bonus||0; pendingTask=null;
   act(async()=>{const r=await sb.rpc('submit_completion',{p_kid:kidId,p_chore:t.id,p_bonus:bonus});if(r.error)throw r.error;toast('⏳ '+L().pa.waiting)});
 }
+function logGame(action){
+  try{
+    const g=pendingTask&&pendingTask.g;
+    if(!kidId||!g||g==='none')return;
+    const p=sb.rpc('log_game_event',{p_kid:kidId,p_game:g,p_action:action});
+    if(p&&typeof p.then==='function')p.then(()=>{},()=>{});
+  }catch(e){}
+}
 
 /* ---------- game ---------- */
 const EM=['🧦','🌸','🦋','🍓','⭐','🐞','🎈','🍩'];
@@ -639,8 +647,8 @@ function birdsGame(){
     raf=requestAnimationFrame(loop)})();
 }
 function winGame(bonus,timed){if(ended)return;ended=true;stopArena();stopMusic();fanfare();confetti();pendingBonus=bonus;$('wintext').textContent=timed?L().timeup:L().nice;$('wbonus').textContent=L().bonus(bonus);$('cards').style.display='none';$('arena').style.display='none';$('dom').style.display='none';$('skip').style.display='none';$('win').classList.add('on')}
-$('done').onclick=()=>{$('game').classList.remove('on');finishTask(pendingBonus)};
-$('skip').onclick=()=>{ended=true;stopArena();stopMusic();$('game').classList.remove('on');finishTask(0)};
+$('done').onclick=()=>{logGame('played');$('game').classList.remove('on');finishTask(pendingBonus)};
+$('skip').onclick=()=>{logGame('skipped');ended=true;stopArena();stopMusic();$('game').classList.remove('on');finishTask(0)};
 
 /* ---------- character ---------- */
 const SKIN='#fbd3b5',SKIND='#f0b896';
