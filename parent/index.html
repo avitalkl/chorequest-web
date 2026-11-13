@@ -322,14 +322,20 @@ async function allGameEvents(hid){
 }
 function leastLiked(){
   const by={};
-  (D.gameEvents||[]).forEach(r=>{const x=by[r.game]||(by[r.game]={s:0,n:0}); x.n++; if(r.action==='skipped') x.s++;});
-  return Object.keys(by).filter(g=>by[g].n>=5).map(g=>({g,s:by[g].s,n:by[g].n,rate:by[g].s/by[g].n})).sort((a,b)=>b.rate-a.rate||b.s-a.s);
+  (D.gameEvents||[]).forEach(r=>{
+    const x=by[r.game]||(by[r.game]={s:0,n:0,up:0,down:0});
+    if(r.action==='skipped'){x.s++;x.n++}
+    else if(r.action==='played')x.n++;
+    else if(r.action==='liked')x.up++;
+    else if(r.action==='disliked')x.down++;
+  });
+  return Object.keys(by).filter(g=>by[g].n>=5).map(g=>({g,s:by[g].s,n:by[g].n,up:by[g].up,down:by[g].down,rate:by[g].s/by[g].n})).sort((a,b)=>b.rate-a.rate||b.s-a.s);
 }
 function viewLeast(){
   const l=L(), rows=leastLiked();
   let h='<div class="sec"><h3>'+l.least+'</h3><p style="margin:0 0 8px;color:var(--muted);font-weight:600;font-size:13px">'+l.leastHint+'</p>';
   if(!rows.length) return h+'<div class="empty">'+l.leastNone+'</div></div>';
-  return h+rows.map(r=>'<div class="row"><div class="m">'+esc(l.g[r.g]||r.g)+'<small>'+esc(l.leastN(r.s,r.n))+'</small></div><b dir="ltr">'+Math.round(r.rate*100)+'%</b></div>').join('')+'</div>';
+  return h+rows.map(r=>'<div class="row"><div class="m">'+esc(l.g[r.g]||r.g)+'<small>'+esc(l.leastN(r.s,r.n))+'</small><small dir="ltr">👍 '+r.up+' · 👎 '+r.down+'</small></div><b dir="ltr">'+Math.round(r.rate*100)+'%</b></div>').join('')+'</div>';
 }
 function viewKids(){
   const l=L();

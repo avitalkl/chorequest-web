@@ -6,7 +6,7 @@ create table public.game_events (
   game text not null check (game in (
     'memory', 'bubbles', 'stars', 'critters', 'simon', 'count',
     'queens', 'tennis', 'flip', 'sudoku', 'scramble', 'slide', 'reflex', 'birds')),
-  action text not null check (action in ('played', 'skipped')),
+  action text not null check (action in ('played', 'skipped', 'liked', 'disliked')),
   created_at timestamptz not null default now()
 );
 create index on public.game_events (household_id, created_at desc);
@@ -22,7 +22,7 @@ create function public.log_game_event(p_kid uuid, p_game text, p_action text) re
 language plpgsql security definer set search_path = '' as $$
 declare k public.kids;
 begin
-  if p_action not in ('played', 'skipped') then raise exception 'bad action'; end if;
+  if p_action not in ('played', 'skipped', 'liked', 'disliked') then raise exception 'bad action'; end if;
   if p_game not in (
     'memory', 'bubbles', 'stars', 'critters', 'simon', 'count',
     'queens', 'tennis', 'flip', 'sudoku', 'scramble', 'slide', 'reflex', 'birds'
