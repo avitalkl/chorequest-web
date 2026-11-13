@@ -562,19 +562,21 @@ function sudokuGame(){
   function conflict(r,c){const v=grid[r][c];if(!v)return false;
     for(let i=0;i<n;i++){if(i!==c&&grid[r][i]===v)return true;if(i!==r&&grid[i][c]===v)return true}
     const r0=r-r%h,c0=c-c%w;for(let y=r0;y<r0+h;y++)for(let x=c0;x<c0+w;x++)if((y!==r||x!==c)&&grid[y][x]===v)return true;return false}
+  function move(i){const z=t.indexOf(0);if(ended||nb(i).indexOf(z)<0)return;t[z]=t[i];t[i]=0;tone(SC[2],ctx().currentTime,.1,'triangle',.1);draw();
+    if(isDone()){solved++;hud();chime();later(newP,800)}}
   function draw(){
-    box.innerHTML='';const gr=document.createElement('div');gr.className='ggrid';gr.style.gridTemplateColumns='repeat('+n+',1fr)';gr.style.maxWidth=(n*58)+'px';
-    let full=true,bad=false;
-    for(let r=0;r<n;r++)for(let c=0;c<n;c++){const b=document.createElement('button'),cf=conflict(r,c);if(!grid[r][c])full=false;if(cf)bad=true;
-      b.className='cell'+(fixed[r][c]?' fix':'')+(cf?' bad':'')+(sel&&sel[0]===r&&sel[1]===c?' sel':'');
-      b.style.background=(Math.floor(r/h)+Math.floor(c/w))%2?'#e9e2ff':'#ffe9f3';b.textContent=grid[r][c];
-      b.onclick=()=>{if(!fixed[r][c]){sel=[r,c];draw()}};gr.appendChild(b)}
-    box.appendChild(gr);
-    const pal=document.createElement('div');pal.className='pal';
-    sym.concat(['✖']).forEach(s=>{const b=document.createElement('button');b.textContent=s;
-      b.onclick=()=>{if(!sel)return;grid[sel[0]][sel[1]]=s==='✖'?'':s;tone(SC[2],ctx().currentTime,.12,'triangle',.1);draw()};pal.appendChild(b)});
-    box.appendChild(pal);
-    if(full&&!bad&&!ended){solved++;hud();chime();later(newP,800)}}
+    box.innerHTML='';const gr=document.createElement('div');gr.className='ggrid';gr.style.gridTemplateColumns='repeat(3,1fr)';gr.style.maxWidth='300px';gr.style.gap='6px';gr.style.touchAction='none';
+    t.forEach((v,i)=>{const b=document.createElement('button');b.className='cell';b.style.fontSize='36px';
+      if(v){b.textContent=v;b.style.background='linear-gradient(135deg,#ff9ec8,#a58bff)';b.style.color='#fff';
+        let sx,sy,dragged;
+        b.onpointerdown=e=>{sx=e.clientX;sy=e.clientY;dragged=false};
+        b.onpointerup=e=>{if(sx==null)return;const dx=e.clientX-sx,dy=e.clientY-sy;sx=null;
+          if(Math.max(Math.abs(dx),Math.abs(dy))<10)return;dragged=true;
+          const z=t.indexOf(0),d=Math.abs(dx)>Math.abs(dy)?(dx>0?1:-1):(dy>0?3:-3);
+          if(z===i+d&&(Math.abs(d)===3||Math.floor(z/3)===Math.floor(i/3)))move(i)};
+        b.onclick=()=>{if(dragged){dragged=false;return}move(i)}}
+      else{b.style.background='#0000000d';b.style.boxShadow='none'}
+      gr.appendChild(b)});box.appendChild(gr)}
   newP();hud();runClock(90,()=>winGame(Math.min(solved*(n===4?8:12),BONUS_CAP),true),s=>{sec=s;hud()});
 }
 function scrambleGame(){
