@@ -37,9 +37,39 @@ main{flex:1;padding-bottom:100px}
 .empty{color:var(--muted);text-align:center;padding:18px 0;font-weight:600}
 nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;padding:8px 14px calc(8px + env(safe-area-inset-bottom));pointer-events:none}
 nav div{display:flex;width:100%;max-width:520px;background:#fff;border-radius:24px;box-shadow:0 -4px 24px #4b3f9433;padding:6px;pointer-events:auto}
-nav button{flex:1;padding:8px 2px;border-radius:18px;font-size:11px;font-weight:700;color:var(--muted);position:relative}
-nav button.on{background:#eceaff;color:var(--blue)}nav .i{display:block;font-size:22px}
-nav .badge{position:absolute;top:2px;right:18%;background:var(--red);color:#fff;border-radius:99px;font-size:11px;min-width:18px;padding:1px 5px}
+nav button{flex:1;min-width:0;padding:8px 1px;border-radius:18px;font-size:10px;font-weight:700;color:var(--muted);position:relative;line-height:1.15}
+nav button.on{background:#eceaff;color:var(--blue)}nav .i{display:block;font-size:20px}
+nav .badge{position:absolute;top:0;inset-inline-end:1px;background:var(--red);color:#fff;border-radius:99px;font-size:11px;min-width:18px;padding:1px 5px}
+.pmeta{color:var(--muted);font-weight:700;font-size:13px}
+.prow{display:flex;align-items:center;gap:8px}
+.prow .e{font-size:28px;line-height:1}
+.prow .who{flex:1;min-width:0;font-weight:800;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.streak{flex:none;background:#fff6e0;color:#9a6b00;border-radius:99px;padding:4px 10px;font-weight:800;font-size:12px;white-space:nowrap}
+.streak.off{background:#f3f1ff;color:var(--muted)}
+.metric{margin-top:12px}
+.metric .ml{display:flex;justify-content:space-between;gap:8px;align-items:baseline;font-size:13px;font-weight:700;margin-bottom:5px}
+.metric .ml span{color:var(--muted)}
+.metric .ml b{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+.pbar{height:12px;border-radius:99px;background:#eceaff;overflow:hidden;display:flex}
+.pbar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#5b6cff,#2fb892)}
+.pbar.gold i{background:linear-gradient(90deg,#f0a202,#ffc83d)}
+.wdays{display:flex;gap:4px;margin-top:12px}
+.wdays div{flex:1;min-width:0;text-align:center;background:#f6f4ff;border-radius:12px;padding:6px 0 5px}
+.wdays b{display:block;font-size:10px;color:var(--muted);font-weight:800}
+.wdays i{display:block;font-style:normal;font-weight:800;font-size:13px;color:#d4cff0;line-height:1.35}
+.wdays .on{background:#e5f8f1}.wdays .on i{color:var(--mint)}
+.wdays .today{box-shadow:inset 0 0 0 2px var(--blue)}
+.pcard.fam{background:linear-gradient(135deg,#5b6cff,#8a6cff);color:#fff}
+.pcard.fam .pmeta,.pcard.fam .metric .ml span,.pcard.fam .wdays b{color:#ffffffd0}
+.pcard.fam .streak{background:#ffffff2e;color:#fff}
+.pcard.fam .streak.off{background:#ffffff22;color:#fff}
+.pcard.fam .pbar{background:#ffffff33}
+.pcard.fam .pbar i,.pcard.fam .pbar.gold i{background:#fff}
+.pcard.fam .wdays div{background:#ffffff22}
+.pcard.fam .wdays i{color:#ffffff66}
+.pcard.fam .wdays .on{background:#ffffff38}
+.pcard.fam .wdays .on i{color:#fff}
+.pcard.fam .wdays .today{box-shadow:inset 0 0 0 2px #fff}
 .center{text-align:center;padding-top:60px}.center .logo{font-size:72px}
 .toast{position:fixed;left:50%;top:18px;transform:translate(-50%,-90px);background:#26214aee;color:#fff;padding:11px 18px;border-radius:99px;font-weight:700;transition:.3s;z-index:50;max-width:90%}
 .toast.on{transform:translate(-50%,0)}
@@ -89,7 +119,9 @@ en:{app:'ChoreQuest Parent',tag:'Set chores, approve them, and cheer your kids o
  given:'Given',wants:'wants',repeat:'Repeats',daily:'Every day',weekly:'Weekly',weekly1:'Once a week',weeklyN:n=>n+'× a week',
  days:'Only on these days',daysHint:'Leave empty for every day.',target:'Times per week',kidsT:'Kids',gender:'Avatar style',girl:'Girl',boy:'Boy',
  todoT:'Not done yet today',allDone:'All done for today 🎉',histT:'Purchase history',noHist:'No purchases yet',pst:{pending:'Waiting',given:'Given',rejected:'Rejected',cancelled:'Cancelled'},
- fbT:'Feedback',fbH:'Tell us what you love, what is broken, or what you wish existed.',fbIdea:'💡 Idea',fbBug:'🐞 Problem',fbOther:'💬 Other',fbSend:'Send',fbThanks:'Thank you! Sent 💌'},
+ fbT:'Feedback',fbH:'Tell us what you love, what is broken, or what you wish existed.',fbIdea:'💡 Idea',fbBug:'🐞 Problem',fbOther:'💬 Other',fbSend:'Send',fbThanks:'Thank you! Sent 💌',
+ progress:'Progress',progWeek:'This week',progResets:'Resets Sunday at midnight',progChores:'Chores done',progCoins:'Coins earned',
+ progDays:n=>n===1?'1 day streak':n+' day streak',progNone:'No streak yet',progFamily:'Family',progNoKids:'Add a child to see weekly progress'},
 he:{app:'מסע המשימות להורים',tag:'קבעו משימות, אשרו אותן ועודדו את הילדים.',google:'המשך עם Google',signout:'התנתקות',
  setupT:'הקמת המשפחה',setupH:'תנו שם למשפחה. אפשר לשנות אחר כך.',famName:'שם המשפחה',create:'יצירת משפחה',
  approvals:'אישורים',chores:'משימות',kids:'ילדים',family:'משפחה',
@@ -108,7 +140,9 @@ he:{app:'מסע המשימות להורים',tag:'קבעו משימות, אשר�
  given:'נמסר',wants:'רוצה',repeat:'חזרה',daily:'כל יום',weekly:'שבועי',weekly1:'פעם בשבוע',weeklyN:n=>n+' פעמים בשבוע',
  days:'רק בימים האלה',daysHint:'השאירו ריק לכל יום.',target:'פעמים בשבוע',kidsT:'ילדים',gender:'סגנון דמות',girl:'בת',boy:'בן',
  todoT:'עוד לא בוצע היום',allDone:'הכול בוצע להיום 🎉',histT:'היסטוריית רכישות',noHist:'אין רכישות עדיין',pst:{pending:'ממתין',given:'נמסר',rejected:'נדחה',cancelled:'בוטל'},
- fbT:'משוב',fbH:'ספרו מה אתם אוהבים, מה שבור, או מה חסר לכם.',fbIdea:'💡 רעיון',fbBug:'🐞 תקלה',fbOther:'💬 אחר',fbSend:'שליחה',fbThanks:'תודה! נשלח 💌'}};
+ fbT:'משוב',fbH:'ספרו מה אתם אוהבים, מה שבור, או מה חסר לכם.',fbIdea:'💡 רעיון',fbBug:'🐞 תקלה',fbOther:'💬 אחר',fbSend:'שליחה',fbThanks:'תודה! נשלח 💌',
+ progress:'התקדמות',progWeek:'השבוע',progResets:'מתאפס ביום ראשון בחצות',progChores:'משימות שהושלמו',progCoins:'מטבעות שהרוויחו',
+ progDays:n=>n===1?'יום ברצף':n===2?'יומיים ברצף':n+' ימים ברצף',progNone:'אין רצף עדיין',progFamily:'המשפחה',progNoKids:'הוסיפו ילד/ה כדי לראות את ההתקדמות השבועית'}};
 const PK='chorequest-parent-v1';
 const P=JSON.parse(localStorage.getItem(PK)||'null')||{lang:'en'};
 const L=()=>T[P.lang],$=id=>document.getElementById(id);
@@ -143,10 +177,68 @@ function gis(){
 }
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200)}
-const D={user:null,hh:null,members:0,kids:[],chores:[],pending:[],devices:{},prizes:[],prizeReq:[]};
+const D={user:null,hh:null,members:0,kids:[],chores:[],pending:[],devices:{},prizes:[],prizeReq:[],done:[],hist:[],earned:[]};
 let tab='approvals',editing=null,loading=true,draft=null,dview='today';
 const todayJ=()=>new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jerusalem'});
 const weekStart=()=>{const d=todayJ(),dow=new Date(d+'T12:00:00Z').getUTCDay();return new Date(Date.parse(d+'T12:00:00Z')-dow*864e5).toISOString().slice(0,10)};
+const shiftDay=(iso,n)=>new Date(Date.parse(iso+'T12:00:00Z')+n*864e5).toISOString().slice(0,10);
+const jDate=iso=>new Date(iso).toLocaleDateString('en-CA',{timeZone:'Asia/Jerusalem'});
+function fmtDay(iso){const [y,m,d]=iso.split('-').map(Number);return new Date(Date.UTC(y,m-1,d)).toLocaleDateString(P.lang==='he'?'he-IL':'en-GB',{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'})}
+async function selectAll(build){
+  const page=1000,rows=[];
+  for(let from=0;from<8000;from+=page){
+    const r=await build().range(from,from+page-1);
+    if(r.error) throw r.error;
+    const chunk=r.data||[];rows.push(...chunk);
+    if(chunk.length<page) break;
+  }
+  return rows;
+}
+function streakCount(days,today){
+  let t=Date.parse(today+'T12:00:00Z');
+  const iso=ms=>new Date(ms).toISOString().slice(0,10);
+  if(!days.has(iso(t))) t-=864e5;
+  let n=0;while(days.has(iso(t))){n++;t-=864e5}
+  return n;
+}
+function slotsFor(c){
+  const days=c.weekdays&&c.weekdays.length?c.weekdays:null;
+  if(c.repeat==='weekly') return Math.min(c.weekly_target||1,days?days.length:7);
+  return days?days.length:7;
+}
+function appliesTo(c,kidId){return !c.kid_id||c.kid_id===kidId}
+function expectedFor(kidId){
+  const kids=kidId?D.kids.filter(k=>k.id===kidId):D.kids;
+  let slots=0,coins=0;
+  kids.forEach(k=>D.chores.forEach(c=>{
+    if(!appliesTo(c,k.id)) return;
+    const n=slotsFor(c);slots+=n;coins+=n*(c.coins||0);
+  }));
+  return {slots,coins};
+}
+function weekRows(kidId){
+  const ws=weekStart(),we=shiftDay(ws,6);
+  return (D.hist||[]).filter(r=>(!kidId||r.kid_id===kidId)&&r.day>=ws&&r.day<=we);
+}
+function choresDone(kidId){return weekRows(kidId).length}
+function coinsEarned(kidId){
+  const ws=weekStart(),we=shiftDay(ws,6);
+  return (D.earned||[]).reduce((s,r)=>{
+    if(kidId&&r.kid_id!==kidId) return s;
+    const d=jDate(r.created_at);
+    return d>=ws&&d<=we?s+r.amount:s;
+  },0);
+}
+function streakFor(kidId){
+  const days=new Set();
+  (D.hist||[]).forEach(r=>{if(!kidId||r.kid_id===kidId) days.add(r.day)});
+  return streakCount(days,todayJ());
+}
+function barPct(val,exp){
+  if(!(exp>0)) return val>0?100:0;
+  if(val<=0) return 0;
+  return Math.max(0,Math.min(100,Math.round(val/exp*100)));
+}
 const DAYS={en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],he:['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳']};
 const ICATS={all:['All','הכל'],morning:['Morning','בוקר'],clean:['Cleaning','ניקיון'],school:['School','לימודים'],sports:['Sports','ספורט'],pets:['Pets','חיות'],kitchen:['Kitchen','מטבח'],outdoor:['Outdoors','בחוץ'],fun:['Fun & prizes','כיף ופרסים']};
 const ICONS=[
@@ -207,6 +299,11 @@ async function load(){
   if(m.error)throw m.error;
   if(!m.data.length){D.hh=null;return}
   const hid=m.data[0].household_id;
+  const sinceDay=shiftDay(todayJ(),-400);
+  const sinceTs=new Date(Date.parse(weekStart()+'T00:00:00Z')-864e5).toISOString();
+  const histP=selectAll(()=>sb.from('completions').select('kid_id,day').eq('household_id',hid).eq('status','approved').gte('day',sinceDay).order('day',{ascending:false}));
+  // Chore payouts only. Refunds are positive too, but they reverse a prize spend rather than pay for a chore.
+  const earnP=selectAll(()=>sb.from('coin_ledger').select('kid_id,amount,created_at').eq('household_id',hid).eq('kind','chore').gt('amount',0).gte('created_at',sinceTs).order('created_at',{ascending:false}));
   const [h,mm,k,c,p,dv,pz,pr,dn]=await Promise.all([
     sb.from('households').select('id,name,require_approval').eq('id',hid).single(),
     sb.from('household_members').select('user_id').eq('household_id',hid),
@@ -216,9 +313,10 @@ async function load(){
     sb.from('kid_devices').select('kid_id'),
     sb.from('prizes').select('id,title,title_he,icon,cost').eq('household_id',hid).eq('active',true).order('created_at'),
     sb.from('prize_requests').select('id,kid_id,prize_id,cost,created_at').eq('household_id',hid).eq('status','pending').order('created_at'),
-        sb.from('completions').select('id,kid_id,chore_id,base_coins,bonus,day').eq('household_id',hid).eq('status','approved').gte('day',weekStart())        .order('day',{ascending:false})]);
-          const e=[h,mm,k,c,p,dv,pz,pr,dn].find(x=>x.error);if(e)throw e.error;
-          D.done=dn.data;
+    sb.from('completions').select('id,kid_id,chore_id,base_coins,bonus,day').eq('household_id',hid).eq('status','approved').gte('day',weekStart()).order('day',{ascending:false})]);
+  const [hist,earned]=await Promise.all([histP,earnP]);
+  const e=[h,mm,k,c,p,dv,pz,pr,dn].find(x=>x.error);if(e)throw e.error;
+  D.done=dn.data;D.hist=hist;D.earned=earned;
   D.hh=h.data;D.members=mm.data.length;D.kids=k.data;D.chores=c.data;D.pending=p.data;D.prizes=pz.data;D.prizeReq=pr.data;
   D.devices={};dv.data.forEach(x=>D.devices[x.kid_id]=(D.devices[x.kid_id]||0)+1);
 }
@@ -241,9 +339,9 @@ function render(){
     return}
   const np=D.pending.length+D.prizeReq.length;
   let body='';
-  if(tab==='approvals')body=viewApprovals();else if(tab==='chores')body=viewChores();else if(tab==='prizes')body=viewPrizes();else body=viewFamily();
+  if(tab==='approvals')body=viewApprovals();else if(tab==='progress')body=viewProgress();else if(tab==='chores')body=viewChores();else if(tab==='prizes')body=viewPrizes();else body=viewFamily();
   app.innerHTML=head+'<main>'+body+'</main><nav><div>'+
-   [['approvals','✅',l.approvals],['chores','📝',l.chores],['prizes','🎁',l.prizes],['family','🏠',l.family]].map(t=>
+   [['approvals','✅',l.approvals],['progress','📊',l.progress],['chores','📝',l.chores],['prizes','🎁',l.prizes],['family','🏠',l.family]].map(t=>
     '<button data-tab="'+t[0]+'" class="'+(tab===t[0]?'on':'')+'"><span class="i">'+t[1]+'</span>'+t[2]+(t[0]==='approvals'&&np?'<span class="badge">'+np+'</span>':'')+'</button>').join('')+'</div></nav>';
 }
 const kname=id=>{const k=D.kids.find(x=>x.id===id);return k?k.name:''};
@@ -320,6 +418,35 @@ function viewFamily(){
    '<div class="sec"><h3>'+l.inviteT+' <small style="color:var(--muted)">('+l.members(D.members)+')</small></h3><p style="margin:0;color:var(--muted);font-weight:600;font-size:14px">'+l.inviteH+'</p><button class="big" data-a="invite">'+l.inviteBtn+'</button></div>'+
    '<button class="big" style="background:#fff;color:var(--ink)" data-a="feedback">💬 '+l.fbT+'</button>'+
    '<button class="big" style="background:#fff;color:var(--red)" data-a="signout">'+l.signout+'</button>';
+}
+function ratio(val,exp){return exp>0?val+' / '+exp:String(val)}
+function metric(label,val,exp,gold){
+  return '<div class="metric"><div class="ml"><span>'+esc(label)+'</span><b>'+(gold?'💰 ':'')+ratio(val,exp)+'</b></div>'+
+   '<div class="pbar'+(gold?' gold':'')+'" role="progressbar" aria-valuenow="'+val+'" aria-valuemin="0" aria-valuemax="'+(exp>0?exp:Math.max(val,1))+'"><i style="width:'+barPct(val,exp)+'%"></i></div></div>';
+}
+function weekStrip(kidId){
+  const ws=weekStart(),today=todayJ(),labels=DAYS[P.lang];
+  const have=new Set(weekRows(kidId).map(r=>r.day));
+  return '<div class="wdays">'+[0,1,2,3,4,5,6].map(i=>{
+    const d=shiftDay(ws,i),on=have.has(d);
+    return '<div class="'+(on?'on':'')+(d===today?' today':'')+'"><b>'+labels[i]+'</b><i>'+(on?'✓':d>today?'':'·')+'</i></div>';
+  }).join('')+'</div>';
+}
+function progressCard(o){
+  const l=L(),exp=expectedFor(o.kidId),st=streakFor(o.kidId);
+  return '<div class="sec pcard'+(o.fam?' fam':'')+'"><div class="prow"><span class="e">'+(o.fam?'🏠':o.emoji)+'</span><div class="who">'+esc(o.name)+'</div>'+
+   (st?'<span class="streak">🔥 '+esc(l.progDays(st))+'</span>':'<span class="streak off">'+esc(l.progNone)+'</span>')+'</div>'+
+   metric(l.progChores,choresDone(o.kidId),exp.slots,false)+
+   metric(l.progCoins,coinsEarned(o.kidId),exp.coins,true)+weekStrip(o.kidId)+'</div>';
+}
+function viewProgress(){
+  const l=L();
+  if(!D.kids.length) return '<div class="sec"><div class="empty">'+l.progNoKids+'</div></div>';
+  const ws=weekStart();
+  let h='<div class="sec"><h3>'+l.progWeek+'</h3><div class="pmeta"><span dir="auto">'+esc(fmtDay(ws))+'</span> – <span dir="auto">'+esc(fmtDay(shiftDay(ws,6)))+'</span></div><div class="pmeta">'+l.progResets+'</div></div>';
+  h+=progressCard({fam:true,name:l.progFamily,kidId:null});
+  D.kids.forEach(k=>h+=progressCard({name:k.name,emoji:k.gender==='boy'?'👦':'👧',kidId:k.id}));
+  return h;
 }
 function todoFor(k){
   const td=todayJ(),dow=new Date(td+'T12:00:00Z').getUTCDay(),ws=weekStart();
