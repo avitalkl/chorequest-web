@@ -74,7 +74,7 @@ const T={
 en:{app:'ChoreQuest Parent',tag:'Set chores, approve them, and cheer your kids on.',google:'Continue with Google',signout:'Sign out',
  setupT:'Set up your family',setupH:'Name your family. You can change it later.',famName:'Family name',create:'Create family',
  approvals:'Approvals',chores:'Chores',kids:'Kids',family:'Family',
- nothing:'Nothing waiting for approval',pickIcon:'Pick an icon',iconSearch:'Search icons (tennis, bed, dog...)',noIcons:q=>'No icons found for "'+q+'"',doneT:'Completed',dToday:'Today',dWeek:'This week (resets Sunday)',doneNone:'Nothing completed yet',approve:'Approve',reject:'Reject',bonus:n=>'+'+n+' bonus',
+ nothing:'Nothing waiting for approval',pickIcon:'Pick an icon',iconSearch:'Search icons (tennis, bed, dog...)',noIcons:q=>'No icons found for "'+q+'"',doneT:'Completed',dToday:'Today',dWeek:'This week (resets Sunday)',doneNone:'Nothing completed yet',approve:'Approve',reject:'Reject',bonus:n=>'+'+n+' bonus',late:'Yesterday',
  add:'+ Add chore',edit:'Edit',save:'Save',cancel:'Cancel',del:'Delete',name:'Name (English)',nameHe:'Name in Hebrew (optional)',icon:'Icon',coins:'Coins',game:'Game',forWho:'For',everyone:'Everyone',
  g:{memory:'Memory match',bubbles:'Pop bubbles',stars:'Catch stars',critters:'Tap critters',simon:'Copy the song',count:'Counting',queens:'Color Queens',sudoku:'Emoji sudoku',scramble:'Word scramble',slide:'Slide puzzle',reflex:'Color reflex',tennis:'Tennis rally',flip:'Flip master',birds:'Catch birds',none:'No game'},
  confirmDel:'Delete this chore?',needName:'Please enter a name',noChores:'No chores yet',
@@ -93,7 +93,7 @@ en:{app:'ChoreQuest Parent',tag:'Set chores, approve them, and cheer your kids o
 he:{app:'מסע המשימות להורים',tag:'קבעו משימות, אשרו אותן ועודדו את הילדים.',google:'המשך עם Google',signout:'התנתקות',
  setupT:'הקמת המשפחה',setupH:'תנו שם למשפחה. אפשר לשנות אחר כך.',famName:'שם המשפחה',create:'יצירת משפחה',
  approvals:'אישורים',chores:'משימות',kids:'ילדים',family:'משפחה',
- nothing:'אין מה לאשר כרגע',pickIcon:'בחרו אייקון',iconSearch:'חיפוש אייקון (טניס, מיטה, כלב...)',noIcons:q=>'לא נמצאו אייקונים עבור "'+q+'"',doneT:'הושלמו',dToday:'היום',dWeek:'השבוע (מתאפס ביום ראשון)',doneNone:'עוד לא הושלם דבר',approve:'אישור',reject:'דחייה',bonus:n=>'+'+n+' בונוס',
+ nothing:'אין מה לאשר כרגע',pickIcon:'בחרו אייקון',iconSearch:'חיפוש אייקון (טניס, מיטה, כלב...)',noIcons:q=>'לא נמצאו אייקונים עבור "'+q+'"',doneT:'הושלמו',dToday:'היום',dWeek:'השבוע (מתאפס ביום ראשון)',doneNone:'עוד לא הושלם דבר',approve:'אישור',reject:'דחייה',bonus:n=>'+'+n+' בונוס',late:'אתמול',
  add:'+ הוספת משימה',edit:'עריכה',save:'שמירה',cancel:'ביטול',del:'מחיקה',name:'שם (אנגלית)',nameHe:'שם בעברית (לא חובה)',icon:'אייקון',coins:'מטבעות',game:'משחק',forWho:'עבור',everyone:'כולם',
  g:{memory:'זיכרון',bubbles:'פוצצו בועות',stars:'תפסו כוכבים',critters:'תפסו חברים',simon:'חזרו על השיר',count:'ספירה',queens:'מלכות הצבעים',sudoku:'סודוקו אימוג׳י',scramble:'ערבוביית מילים',slide:'פאזל הזזה',reflex:'תגובה מהירה',tennis:'טניס',flip:'מתעמלת מאוזנת',birds:'תפסו ציפורים',none:'ללא משחק'},
  confirmDel:'למחוק את המשימה?',needName:'נא להזין שם',noChores:'אין משימות עדיין',
@@ -212,7 +212,7 @@ async function load(){
     sb.from('household_members').select('user_id').eq('household_id',hid),
     sb.from('kids').select('id,name,coins,gender').eq('household_id',hid).order('created_at'),
     sb.from('chores').select('id,title,title_he,icon,coins,game,kid_id,repeat,weekdays,weekly_target').eq('household_id',hid).eq('active',true).order('created_at'),
-    sb.from('completions').select('id,kid_id,chore_id,base_coins,bonus,created_at').eq('household_id',hid).eq('status','pending').order('created_at'),
+    sb.from('completions').select('id,kid_id,chore_id,base_coins,bonus,day,created_at').eq('household_id',hid).eq('status','pending').order('created_at'),
     sb.from('kid_devices').select('kid_id'),
     sb.from('prizes').select('id,title,title_he,icon,cost').eq('household_id',hid).eq('active',true).order('created_at'),
     sb.from('prize_requests').select('id,kid_id,prize_id,cost,created_at').eq('household_id',hid).eq('status','pending').order('created_at'),
@@ -271,7 +271,7 @@ function viewApprovals(){
     return '<div class="row"><span class="e">'+esc(z.icon)+'</span><div class="m">'+esc(ttl(z))+'<small>'+esc(kname(r.kid_id))+' '+l.wants+' · 💰 '+r.cost+'</small></div>'+
      '<button class="b bad" data-prej="'+r.id+'">'+l.reject+'</button><button class="b ok" data-pgive="'+r.id+'">'+l.given+'</button></div>'}).join('')+'</div>';
   if(D.pending.length)h+='<div class="sec">'+D.pending.map(p=>{const c=D.chores.find(x=>x.id===p.chore_id)||{icon:'⭐',title:'?'};
-    return '<div class="row"><span class="e">'+esc(c.icon)+'</span><div class="m">'+esc(ttl(c))+'<small>'+esc(kname(p.kid_id))+' · 💰 '+p.base_coins+(p.bonus?' ('+l.bonus(p.bonus)+')':'')+'</small></div>'+
+    return '<div class="row"><span class="e">'+esc(c.icon)+'</span><div class="m">'+esc(ttl(c))+'<small>'+esc(kname(p.kid_id))+(p.day&&p.day<todayJ()?' · '+l.late:'')+' · 💰 '+p.base_coins+(p.bonus?' ('+l.bonus(p.bonus)+')':'')+'</small></div>'+
      '<button class="b bad" data-rej="'+p.id+'">'+l.reject+'</button><button class="b ok" data-app="'+p.id+'">'+l.approve+'</button></div>'}).join('')+'</div>';
   return h+viewDone();
 }

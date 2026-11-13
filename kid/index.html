@@ -150,6 +150,7 @@
       <div class="progress"><div id="bar"></div></div>
       <div id="tasks"></div>
       <p class="hint" id="hint"></p>
+      <div id="late"></div>
     </section>
 
     <section class="page" id="p-me">
@@ -216,6 +217,7 @@ const T = {
     pz:{title:'Prizes',hello:'Spend your coins on real prizes!',empty:'No prizes yet. Ask a parent to add some.',wait:'Waiting for a parent',got:'Got it!',ask:n=>'Get this prize for '+n+' coins?',weekN:(a,b)=>a+'/'+b+' this week',weekDone:'Done this week',asked:'Asked! A parent will check.',need:'Not enough coins yet',shop:'Avatar shop',real:'Real prizes',none:'Nothing here yet. Visit the shop!',shopHello:'Buy new looks with your coins!'},
     bonus:n=>`Bonus +${n} coins!`,timeup:'Time is up! Great job!',nice:'You did it!',left:'s',hint:'Tap a quest when you finish it. Tap again to undo.',gtitle:'Match the pairs!',gsub:'Find all pairs in 60 seconds. The faster you are, the bigger the bonus!',
     win:'Quest complete!',done:'Collect coins',skip:'Skip game',own:'Owned',
+    late:'Forgot yesterday?',lateHint:'No game. Half the coins, and a parent still checks it.',lateTag:'yesterday',
     tn:{hair:'Hair color',style:'Hair style',skin:'Skin',eyes:'Eyes',mouth:'Mouth',face:'Face',top:'Top',topc:'Top color',bottom:'Bottom',botc:'Bottom color',shoes:'Shoes',hat:'Hats',acc:'Accessories',pet:'Pet',bg:'Place'},gn:{head:'Head',clothes:'Clothes',extras:'Extras',place:'Places'},
     nm:{'style:short':'Short','style:spiky':'Spiky','style:messy':'Messy','bottom:joggers':'Joggers','hat:cap':'Baseball cap','hat:beanie':'Beanie','style:long':'Long','style:bob':'Bob','style:pigtails':'Pigtails','style:bun':'Bun','style:curly':'Curly','top:tee':'T-shirt','top:tank':'Tank','top:dress':'Dress','top:stripes':'Stripy','top:startee':'Star tee','top:hoodie':'Hoodie','bottom:skirt':'Skirt','bottom:jeans':'Jeans','bottom:shorts':'Shorts','bottom:leggings':'Leggings','bottom:tutu':'Tutu','shoes:pink':'Pink sneakers','shoes:white':'White sneakers','shoes:blue':'Blue sneakers','shoes:redboot':'Red boots','shoes:brownboot':'Brown boots','shoes:gold':'Gold flats','shoes:rbs':'Rainbow sneakers','mouth:smile':'Smile','mouth:grin':'Grin','mouth:laugh':'Laugh','mouth:kitty':'Kitty','face:none':'Plain','face:freckles':'Freckles','face:star':'Star','face:heart':'Heart','face:sparkle':'Sparkle','hat:none':'None','hat:bow':'Bow','hat:band':'Star band','hat:ears':'Cat ears','hat:flower':'Flowers','hat:crown':'Crown','acc:none':'None','acc:glasses':'Glasses','acc:shades':'Shades','acc:necklace':'Necklace','acc:wings':'Wings','bg:bedroom':'Bedroom','bg:living':'Living room','bg:kitchen':'Kitchen','bg:garden':'Garden','bg:night':'Space','bg:beach':'Beach','bg:candy':'Candy land','mouth:smirk':'Smirk','style:buzz':'Buzz cut','shoes:greensneak':'Green sneakers','bg:underwater':'Underwater','shoes:blackboot':'Black boots','hat:tophat':'Top hat','bg:city':'City','hat:snow':'Snow hat','mouth:tongue':'Silly','top:sweatshirt':'Sweatshirt','bottom:cargo':'Cargo pants','style:mohawk':'Mohawk','top:polo':'Polo','shoes:blacksneak':'Black sneakers','bottom:longshorts':'Long shorts','hat:knight':'Knight helmet','top:jersey':'Jersey','hat:cowboy':'Cowboy hat','style:afro':'Afro','acc:scarf':'Scarf','hat:wizard':'Wizard hat','style:sidepart':'Side part','acc:bowtie':'Bow tie','bg:snow':'Snowy hills','top:cape':'Hero cape','face:bandaid':'Band-aid','bg:soccer':'Soccer field','acc:headphones':'Headphones','face:warpaint':'War paint','bg:castle':'Castle','top:jacket':'Jacket','shoes:redsneak':'Red sneakers'},need:'Not enough coins yet',bought:'New prize!',
     t:{bed:'Make the bed',teeth:'Brush teeth',homework:'Do homework',dishes:'Help with dishes',read:'Read 20 minutes',tidy:'Tidy my room'},
@@ -225,6 +227,7 @@ const T = {
     pz:{title:'פרסים',hello:'הוציאי מטבעות על פרסים אמיתיים!',empty:'אין פרסים עדיין. בקשי מהורה להוסיף.',wait:'ממתין להורה',got:'התקבל!',ask:n=>'לקבל את הפרס תמורת '+n+' מטבעות?',weekN:(a,b)=>a+'/'+b+' השבוע',weekDone:'הושלם השבוע',asked:'נשלח! הורה יבדוק.',need:'אין עדיין מספיק מטבעות',shop:'חנות הדמות',real:'פרסים אמיתיים',none:'אין כאן עדיין כלום. בואי לחנות!',shopHello:'קני מראות חדשים עם המטבעות!'},
     bonus:n=>`בונוס +${n} מטבעות!`,timeup:'נגמר הזמן! כל הכבוד!',nice:'הצלחת!',left:'ש׳',hint:'לחצי על משימה כשסיימת. לחיצה נוספת מבטלת.',gtitle:'מצאי את הזוגות!',gsub:'מצאי את כל הזוגות ב-60 שניות. ככל שמהר יותר, הבונוס גדול יותר!',
     win:'המשימה הושלמה!',done:'קבלי מטבעות',skip:'דלגי על המשחק',own:'שלך',
+    late:'שכחת אתמול?',lateHint:'בלי משחק. חצי מהמטבעות, והורה עדיין בודק.',lateTag:'אתמול',
     tn:{hair:'צבע שיער',style:'תסרוקת',skin:'עור',eyes:'עיניים',mouth:'פה',face:'פנים',top:'חולצה',topc:'צבע חולצה',bottom:'תחתית',botc:'צבע תחתית',shoes:'נעליים',hat:'כובעים',acc:'אביזרים',pet:'חיית מחמד',bg:'מקום'},gn:{head:'ראש',clothes:'בגדים',extras:'תוספות',place:'מקומות'},
     nm:{'style:short':'קצר','style:spiky':'סיכות','style:messy':'פרוע','bottom:joggers':'מכנסי ספורט','hat:cap':'כובע מצחייה','hat:beanie':'כובע צמר','style:long':'ארוך','style:bob':'קארה','style:pigtails':'צמות','style:bun':'פקעת','style:curly':'מתולתל','top:tee':'חולצה','top:tank':'גופייה','top:dress':'שמלה','top:stripes':'פסים','top:startee':'כוכב','top:hoodie':'קפוצ׳ון','bottom:skirt':'חצאית','bottom:jeans':'ג׳ינס','bottom:shorts':'מכנסיים קצרים','bottom:leggings':'טייץ','bottom:tutu':'טוטו','shoes:pink':'סניקרס ורוד','shoes:white':'סניקרס לבן','shoes:blue':'סניקרס כחול','shoes:redboot':'מגפיים אדומים','shoes:brownboot':'מגפיים חומים','shoes:gold':'נעלי זהב','shoes:rbs':'סניקרס צבעוני','mouth:smile':'חיוך','mouth:grin':'חיוך רחב','mouth:laugh':'צחוק','mouth:kitty':'חתולי','face:none':'רגיל','face:freckles':'נמשים','face:star':'כוכב','face:heart':'לב','face:sparkle':'נצנוץ','hat:none':'כלום','hat:bow':'סרט','hat:band':'סרט כוכב','hat:ears':'אוזני חתול','hat:flower':'פרחים','hat:crown':'כתר','acc:none':'כלום','acc:glasses':'משקפיים','acc:shades':'משקפי שמש','acc:necklace':'שרשרת','acc:wings':'כנפיים','bg:bedroom':'חדר שינה','bg:living':'סלון','bg:kitchen':'מטבח','bg:garden':'גינה','bg:night':'חלל','bg:beach':'חוף','bg:candy':'ארץ הממתקים','mouth:smirk':'חיוך עקום','style:buzz':'גילוח קצר','shoes:greensneak':'סניקרס ירוק','bg:underwater':'מתחת למים','shoes:blackboot':'מגפיים שחורים','hat:tophat':'צילינדר','bg:city':'עיר','hat:snow':'כובע שלג','mouth:tongue':'מצחיק','top:sweatshirt':'סווטשירט','bottom:cargo':'מכנסי דגמ״ח','style:mohawk':'מוהוק','top:polo':'פולו','shoes:blacksneak':'סניקרס שחור','bottom:longshorts':'שורט ארוך','hat:knight':'קסדת אביר','top:jersey':'חולצת כדורגל','hat:cowboy':'כובע בוקרים','style:afro':'אפרו','acc:scarf':'צעיף','hat:wizard':'כובע קוסם','style:sidepart':'פרידה בצד','acc:bowtie':'פפיון','bg:snow':'גבעות שלג','top:cape':'גלימת גיבור','face:bandaid':'פלסטר','bg:soccer':'מגרש כדורגל','acc:headphones':'אוזניות','face:warpaint':'צבעי מלחמה','bg:castle':'טירה','top:jacket':'ז׳קט','shoes:redsneak':'סניקרס אדום'},need:'אין עדיין מספיק מטבעות',bought:'פרס חדש!',
     t:{bed:'לסדר את המיטה',teeth:'לצחצח שיניים',homework:'לעשות שיעורי בית',dishes:'לעזור עם הכלים',read:'לקרוא 20 דקות',tidy:'לסדר את החדר'},
@@ -256,7 +259,7 @@ const SWATCH=['hair','skin','eyes','topc','botc'];
 const LABELED=['style','top','bottom','shoes','mouth','face','hat','acc','bg'];
 const KEY='chorequest-kid-v1';
 const LOC=JSON.parse(localStorage.getItem(KEY)||'null')||{lang:'en',mute:false,kid:null};
-let S={lang:LOC.lang||'en',mute:!!LOC.mute,coins:0,name:'',tasks:[],done:{},own:[],worn:Object.assign({},DEF),approval:true,prizes:[],preq:[],gender:'girl'};
+let S={lang:LOC.lang||'en',mute:!!LOC.mute,coins:0,name:'',tasks:[],done:{},own:[],worn:Object.assign({},DEF),approval:true,prizes:[],preq:[],gender:'girl',chores:[],comps:[]};
 const save=()=>localStorage.setItem(KEY,JSON.stringify({lang:S.lang,mute:S.mute,kid:LOC.kid}));
 function normWorn(w){const d=defFor(S.gender);w=Object.assign({},w||{});Object.keys(DEF).forEach(t=>{const x=SHOP[t].find(x=>x.id===w[t]);if(!x||!shown(t,x))w[t]=d[t]});return w}
 const $=id=>document.getElementById(id);
@@ -325,6 +328,7 @@ async function refresh(quiet){
   const day=today(),dow=new Date(day+'T12:00:00Z').getUTCDay(),ws=new Date(Date.parse(day+'T12:00:00Z')-dow*864e5).toISOString().slice(0,10);
   const weekUsed={};
   co.data.forEach(c=>{if(c.day>=ws&&c.status!=='rejected')weekUsed[c.chore_id]=(weekUsed[c.chore_id]||0)+1});
+  S.chores=ch.data;S.comps=co.data;
   S.tasks=ch.data.filter(c=>(!c.kid_id||c.kid_id===kidId)&&!(c.repeat==='daily'&&c.weekdays&&!c.weekdays.includes(dow)))
     .map(c=>({id:c.id,e:c.icon,c:c.coins,g:c.game,name:c.title,he:c.title_he,wk:c.repeat==='weekly'?c.weekly_target:0,used:weekUsed[c.id]||0}));
   const done={};
@@ -349,6 +353,43 @@ function renderTasks(){
     b.innerHTML='<span class="emoji">'+esc(t.e)+'</span><span class="t">'+esc(tname(t))+'<br><span class="c">'+sub+'</span></span><span class="box">'+(w?'⏳':d||full?'✓':'')+'</span>';
     b.onclick=()=>{if(!full)toggleTask(t)};$('tasks').appendChild(b)});
   $('bar').style.width=(S.tasks.length?n/S.tasks.length*100:0)+'%';
+  renderLate();
+}
+function shiftDay(iso,n){return new Date(Date.parse(iso+'T12:00:00Z')+n*864e5).toISOString().slice(0,10)}
+function halfCoins(n){n=n|0;return n>0?Math.max(1,Math.floor(n/2)):0}
+function lateItems(){
+  const y=shiftDay(today(),-1),dow=new Date(y+'T12:00:00Z').getUTCDay(),ws=shiftDay(y,-dow);
+  const comps=S.comps||[],doneY={},pend={},used={};
+  comps.forEach(c=>{
+    if(c.status==='rejected')return;
+    if(c.day===y){doneY[c.chore_id]=1;if(c.status==='pending')pend[c.chore_id]=c.id}
+    if(c.day>=ws&&c.day<=y)used[c.chore_id]=(used[c.chore_id]||0)+1;
+  });
+  return (S.chores||[]).filter(c=>!c.kid_id||c.kid_id===kidId).filter(c=>{
+    if(c.repeat==='daily'&&c.weekdays&&!c.weekdays.includes(dow))return false;
+    if(!pend[c.id]&&doneY[c.id])return false;
+    if(c.repeat==='weekly'&&!pend[c.id]&&(used[c.id]||0)>=(c.weekly_target||1))return false;
+    return true;
+  }).map(c=>({id:c.id,e:c.icon,c:c.coins,name:c.title,he:c.title_he,wait:!!pend[c.id],cid:pend[c.id]}));
+}
+function renderLate(){
+  const l=L(),box=$('late');if(!box)return;
+  const items=lateItems();
+  box.innerHTML='';
+  if(!items.length)return;
+  const head=document.createElement('p');head.className='hello';head.style.marginTop='18px';head.textContent=l.late;
+  const hint=document.createElement('p');hint.className='hint';hint.style.margin='0 0 10px';hint.textContent=l.lateHint;
+  box.appendChild(head);box.appendChild(hint);
+  items.forEach(t=>{
+    const b=document.createElement('button');b.className='task'+(t.wait?' wait':'');
+    const sub=t.wait?'⏳ '+esc(l.pa.waiting):'💰 '+halfCoins(t.c)+' · '+esc(l.lateTag);
+    b.innerHTML='<span class="emoji">'+esc(t.e)+'</span><span class="t">'+esc(tname(t))+'<br><span class="c">'+sub+'</span></span><span class="box">'+(t.wait?'⏳':'')+'</span>';
+    b.onclick=()=>{
+      if(t.wait)act(async()=>{const r=await sb.rpc('cancel_completion',{p_id:t.cid});if(r.error)throw r.error});
+      else act(async()=>{const r=await sb.rpc('submit_late_completion',{p_kid:kidId,p_chore:t.id});if(r.error)throw r.error;toast('⏳ '+l.pa.waiting)});
+    };
+    box.appendChild(b);
+  });
 }
 function renderPrizes(){
   const l=L().pz;$('pzhello').textContent=l.hello;const box=$('prizes');box.innerHTML='';
