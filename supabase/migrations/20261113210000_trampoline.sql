@@ -1,8 +1,8 @@
 -- Replace the balance-beam game with trampoline bounce.
 -- Old game_events rows stay valid (game 'flip' is still allowed) so history does not fail the check.
+alter table public.chores drop constraint if exists chores_game_check;
 update public.chores set game = 'bounce' where game = 'flip';
 
-alter table public.chores drop constraint if exists chores_game_check;
 alter table public.chores add constraint chores_game_check
   check (game in ('memory', 'bubbles', 'stars', 'critters', 'simon', 'count', 'none',
     'queens', 'tennis', 'bounce', 'sudoku', 'scramble', 'slide', 'reflex', 'birds'));
