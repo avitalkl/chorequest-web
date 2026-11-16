@@ -1,4 +1,4 @@
-const CACHE = 'chorequest-kid-v29';
+const CACHE = 'chorequest-kid-v30';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
