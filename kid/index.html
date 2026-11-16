@@ -215,7 +215,7 @@
 const SB_URL='https://glcdftegvtnxvjqssmat.supabase.co',SB_KEY='sb_publishable_ku9qVFPspoVuliLJy4Pglg_-td_8a2G';
 const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:'chorequest-kid-auth',persistSession:true,autoRefreshToken:true}});
 const T = {
-  en:{title:'ChoreQuest',hello:n=>`Good day, ${n}! Finish your quests to earn coins.`,tasks:'Quests',me:'Me',nameHint:'Tap the name to change it',gm:{critters:['Tap the critters!','Tap the little friends as they pop up. 30 seconds, each one is a bonus coin!'],simon:['Copy the song!','Watch the colors, then repeat them. Every round is bonus coins!'],count:['How many?','Count and tap the right number. 40 seconds, each answer is 2 bonus coins!'],memory:['Match the pairs!','Find all pairs in 60 seconds. The faster you are, the bigger the bonus!'],bubbles:['Pop the bubbles!','Pop as many as you can in 30 seconds. Each one is a bonus coin!'],queens:['Color Queens','Put one 👑 in every row, column and color. No two crowns can touch! Each puzzle is 5 bonus coins.'],tennis:['Tennis','Slide your racket and hit the ball back. Score like tennis: 15, 30, 40, game!'],bounce:['Trampoline','Tap when the ring glows to bounce higher. At the top, tap again for a flip!'],silver:['Silverware sort','Drag or tap each utensil into its drawer slot. A wrong slot just bounces back!'],sudoku:['Emoji sudoku','Fill the grid so no picture repeats in any row, column or box. Each puzzle is bonus coins!'],scramble:['Word scramble','Tap the letters in the right order to spell the word. Each word is 2 bonus coins!'],slide:['Slide puzzle','Slide the tiles into order, 1 to 8. Each puzzle is 10 bonus coins!'],reflex:['Color reflex','Tap the COLOR of the letters, not the word! 30 seconds, each one is a bonus coin!'],birds:['Catch the birds','Slide the net up and down to catch the birds and leaves flying by. 30 seconds, each one is a bonus coin!'],stars:['Catch the stars!','Slide the basket to catch stars for 30 seconds. Each one is a bonus coin!']},
+  en:{title:'ChoreQuest',hello:n=>`Good day, ${n}! Finish your quests to earn coins.`,tasks:'Quests',me:'Me',nameHint:'Tap the name to change it',gm:{critters:['Tap the critters!','Tap the little friends as they pop up. 30 seconds, each one is a bonus coin!'],simon:['Copy the song!','Watch the colors, then repeat them. Every round is bonus coins!'],count:['How many?','Count and tap the right number. 40 seconds, each answer is 2 bonus coins!'],memory:['Match the pairs!','Find all pairs in 60 seconds. The faster you are, the bigger the bonus!'],bubbles:['Pop the bubbles!','Pop as many as you can in 30 seconds. Each one is a bonus coin!'],queens:['Color Queens','Put one 👑 in every row, column and color. No two crowns can touch! Each puzzle is 5 bonus coins.'],tennis:['Tennis','Slide your racket and hit the ball back. Score like tennis: 15, 30, 40, game!'],bounce:['Trampoline','Tap when the ring glows to bounce higher. At the top, tap again for a flip!'],silver:['Silverware sort','Drag or tap each utensil into its drawer slot. A wrong slot just bounces back!'],brush:['Sparkle brush','Tap or swipe the sparkles on the teeth. You cannot lose!'],scramble:['Word scramble','Tap the letters in the right order to spell the word. Each word is 2 bonus coins!'],slide:['Slide puzzle','Slide the tiles into order, 1 to 8. Each puzzle is 10 bonus coins!'],reflex:['Color reflex','Tap the COLOR of the letters, not the word! 30 seconds, each one is a bonus coin!'],birds:['Catch the birds','Slide the net up and down to catch the birds and leaves flying by. 30 seconds, each one is a bonus coin!'],stars:['Catch the stars!','Slide the basket to catch stars for 30 seconds. Each one is a bonus coin!']},
     pr:{title:'Connect this device',msg:'Ask a parent to show you the QR code in the Parent app, then scan it with the camera. Or paste the code here.',code:'Paste code',go:'Connect',bad:'That code did not work. Ask a parent for a new one.',err:'Something went wrong. Check the internet and try again.',appr:n=>'Approved! +'+n+' coins',retry:'Try again'},
     pz:{title:'Prizes',hello:'Spend your coins on real prizes!',empty:'No prizes yet. Ask a parent to add some.',wait:'Waiting for a parent',got:'Got it!',ask:n=>'Get this prize for '+n+' coins?',weekN:(a,b)=>a+'/'+b+' this week',weekDone:'Done this week',asked:'Asked! A parent will check.',need:'Not enough coins yet',shop:'Avatar shop',real:'Real prizes',none:'Nothing here yet. Visit the shop!',shopHello:'Buy new looks with your coins!'},
     bonus:n=>`Bonus +${n} coins!`,timeup:'Time is up! Great job!',nice:'You did it!',left:'s',hint:'Tap a quest when you finish it. Tap again to undo.',gtitle:'Match the pairs!',gsub:'Find all pairs in 60 seconds. The faster you are, the bigger the bonus!',
@@ -225,7 +225,7 @@ const T = {
     nm:{'style:short':'Short','style:spiky':'Spiky','style:messy':'Messy','bottom:joggers':'Joggers','hat:cap':'Baseball cap','hat:beanie':'Beanie','style:long':'Long','style:bob':'Bob','style:pigtails':'Pigtails','style:bun':'Bun','style:curly':'Curly','top:tee':'T-shirt','top:tank':'Tank','top:dress':'Dress','top:stripes':'Stripy','top:startee':'Star tee','top:hoodie':'Hoodie','bottom:skirt':'Skirt','bottom:jeans':'Jeans','bottom:shorts':'Shorts','bottom:leggings':'Leggings','bottom:tutu':'Tutu','shoes:pink':'Pink sneakers','shoes:white':'White sneakers','shoes:blue':'Blue sneakers','shoes:redboot':'Red boots','shoes:brownboot':'Brown boots','shoes:gold':'Gold flats','shoes:rbs':'Rainbow sneakers','mouth:smile':'Smile','mouth:grin':'Grin','mouth:laugh':'Laugh','mouth:kitty':'Kitty','face:none':'Plain','face:freckles':'Freckles','face:star':'Star','face:heart':'Heart','face:sparkle':'Sparkle','hat:none':'None','hat:bow':'Bow','hat:band':'Star band','hat:ears':'Cat ears','hat:flower':'Flowers','hat:crown':'Crown','acc:none':'None','acc:glasses':'Glasses','acc:shades':'Shades','acc:necklace':'Necklace','acc:wings':'Wings','bg:bedroom':'Bedroom','bg:living':'Living room','bg:kitchen':'Kitchen','bg:garden':'Garden','bg:night':'Space','bg:beach':'Beach','bg:candy':'Candy land','mouth:smirk':'Smirk','style:buzz':'Buzz cut','shoes:greensneak':'Green sneakers','bg:underwater':'Underwater','shoes:blackboot':'Black boots','hat:tophat':'Top hat','bg:city':'City','hat:snow':'Snow hat','mouth:tongue':'Silly','top:sweatshirt':'Sweatshirt','bottom:cargo':'Cargo pants','style:mohawk':'Mohawk','top:polo':'Polo','shoes:blacksneak':'Black sneakers','bottom:longshorts':'Long shorts','hat:knight':'Knight helmet','top:jersey':'Jersey','hat:cowboy':'Cowboy hat','style:afro':'Afro','acc:scarf':'Scarf','hat:wizard':'Wizard hat','style:sidepart':'Side part','acc:bowtie':'Bow tie','bg:snow':'Snowy hills','top:cape':'Hero cape','face:bandaid':'Band-aid','bg:soccer':'Soccer field','acc:headphones':'Headphones','face:warpaint':'War paint','bg:castle':'Castle','top:jacket':'Jacket','shoes:redsneak':'Red sneakers'},need:'Not enough coins yet',bought:'New prize!',
     t:{bed:'Make the bed',teeth:'Brush teeth',homework:'Do homework',dishes:'Help with dishes',read:'Read 20 minutes',tidy:'Tidy my room'},
     pa:{parent:'Parent area',enterPin:'Enter your PIN',setPin:'Create a 4-digit PIN to protect this area',ok:'OK',pin4:'PIN must be 4 digits',wrong:'Wrong PIN',close:'Close',approvals:'Waiting for approval',nothing:'Nothing waiting',approve:'Approve',reject:'Reject',chores:'Chores',add:'+ Add chore',edit:'Edit',del:'Delete',save:'Save',cancel:'Cancel',name:'Name',coins:'Coins',game:'Game',nogame:'No game',icon:'Icon',req:'Coins are paid only after a parent approves',changePin:'Change PIN',confirmDel:'Delete this chore?',waiting:'Waiting for parent',hint:'Tap a quest when you finish it. A parent will check it.',settings:'Settings',needName:'Please enter a name'}},
-  he:{title:'מסע המשימות',hello:n=>`יום טוב, ${n}! סיימי משימות כדי להרוויח מטבעות.`,tasks:'משימות',me:'אני',nameHint:'לחצי על השם כדי לשנות',gm:{critters:['תפסי את החברים!','לחצי על החברים הקטנים כשהם קופצים. 30 שניות, כל אחד הוא מטבע בונוס!'],simon:['חזרי על השיר!','הסתכלי על הצבעים וחזרי עליהם. כל סיבוב נותן מטבעות בונוס!'],count:['כמה יש?','ספרי ולחצי על המספר הנכון. 40 שניות, כל תשובה היא מטבע בונוס!'],memory:['מצאי את הזוגות!','מצאי את כל הזוגות ב-60 שניות. ככל שמהר יותר, הבונוס גדול יותר!'],bubbles:['פוצצי בועות!','פוצצי כמה שיותר בועות ב-30 שניות. כל אחת היא מטבע בונוס!'],queens:['מלכות הצבעים','שימי 👑 אחת בכל שורה, עמודה וצבע. שתי כתרים לא יכולים לגעת! כל חידה היא 5 מטבעות בונוס.'],tennis:['טניס','לחצי עם המחבט וחזרי כדורים. ניקוד כמו בטניס: 15, 30, 40, גיים!'],bounce:['טרמפולינה','לחצי כשהטבעת זוהרת כדי לקפוץ גבוה יותר, ובשיא לחצי לסלטה!'],silver:['מיון סכו״ם','גררי או לחצי כל כלי למגירה הנכונה. מקום לא נכון פשוט חוזר!'],sudoku:['סודוקו אימוג׳י','מלאי את הלוח כך שאף תמונה לא תחזור בשורה, בעמודה או בריבוע. כל חידה נותנת בונוס!'],scramble:['ערבוביית מילים','לחצי על האותיות לפי הסדר כדי לאיית את המילה. כל מילה היא 2 מטבעות בונוס!'],slide:['פאזל הזזה','הזיזי את האריחים לפי הסדר, 1 עד 8. כל חידה היא 10 מטבעות בונוס!'],reflex:['תגובה מהירה','לחצי על הצבע של האותיות, לא על המילה! 30 שניות, כל אחד הוא מטבע בונוס!'],birds:['תפסי ציפורים','החליקי את הרשת למעלה ולמטה כדי לתפוס ציפורים ועלים שעפים. 30 שניות, כל אחד הוא מטבע בונוס!'],stars:['תפסי כוכבים!','החליקי את הסל כדי לתפוס כוכבים במשך 30 שניות. כל אחד הוא מטבע בונוס!']},
+  he:{title:'מסע המשימות',hello:n=>`יום טוב, ${n}! סיימי משימות כדי להרוויח מטבעות.`,tasks:'משימות',me:'אני',nameHint:'לחצי על השם כדי לשנות',gm:{critters:['תפסי את החברים!','לחצי על החברים הקטנים כשהם קופצים. 30 שניות, כל אחד הוא מטבע בונוס!'],simon:['חזרי על השיר!','הסתכלי על הצבעים וחזרי עליהם. כל סיבוב נותן מטבעות בונוס!'],count:['כמה יש?','ספרי ולחצי על המספר הנכון. 40 שניות, כל תשובה היא מטבע בונוס!'],memory:['מצאי את הזוגות!','מצאי את כל הזוגות ב-60 שניות. ככל שמהר יותר, הבונוס גדול יותר!'],bubbles:['פוצצי בועות!','פוצצי כמה שיותר בועות ב-30 שניות. כל אחת היא מטבע בונוס!'],queens:['מלכות הצבעים','שימי 👑 אחת בכל שורה, עמודה וצבע. שתי כתרים לא יכולים לגעת! כל חידה היא 5 מטבעות בונוס.'],tennis:['טניס','לחצי עם המחבט וחזרי כדורים. ניקוד כמו בטניס: 15, 30, 40, גיים!'],bounce:['טרמפולינה','לחצי כשהטבעת זוהרת כדי לקפוץ גבוה יותר, ובשיא לחצי לסלטה!'],silver:['מיון סכו״ם','גררי או לחצי כל כלי למגירה הנכונה. מקום לא נכון פשוט חוזר!'],brush:['צחצוח נוצץ','לחצי או החליקי על הנצנצים שעל השיניים. אי אפשר להפסיד!'],scramble:['ערבוביית מילים','לחצי על האותיות לפי הסדר כדי לאיית את המילה. כל מילה היא 2 מטבעות בונוס!'],slide:['פאזל הזזה','הזיזי את האריחים לפי הסדר, 1 עד 8. כל חידה היא 10 מטבעות בונוס!'],reflex:['תגובה מהירה','לחצי על הצבע של האותיות, לא על המילה! 30 שניות, כל אחד הוא מטבע בונוס!'],birds:['תפסי ציפורים','החליקי את הרשת למעלה ולמטה כדי לתפוס ציפורים ועלים שעפים. 30 שניות, כל אחד הוא מטבע בונוס!'],stars:['תפסי כוכבים!','החליקי את הסל כדי לתפוס כוכבים במשך 30 שניות. כל אחד הוא מטבע בונוס!']},
     pr:{title:'חיבור המכשיר',msg:'בקשי מהורה להציג את קוד ה-QR באפליקציית ההורים, וסרקי אותו במצלמה. אפשר גם להדביק כאן את הקוד.',code:'הדבקת קוד',go:'התחברי',bad:'הקוד לא עבד. בקשי מהורה קוד חדש.',err:'משהו השתבש. בדקי את האינטרנט ונסי שוב.',appr:n=>'אושר! +'+n+' מטבעות',retry:'נסי שוב'},
     pz:{title:'פרסים',hello:'הוציאי מטבעות על פרסים אמיתיים!',empty:'אין פרסים עדיין. בקשי מהורה להוסיף.',wait:'ממתין להורה',got:'התקבל!',ask:n=>'לקבל את הפרס תמורת '+n+' מטבעות?',weekN:(a,b)=>a+'/'+b+' השבוע',weekDone:'הושלם השבוע',asked:'נשלח! הורה יבדוק.',need:'אין עדיין מספיק מטבעות',shop:'חנות הדמות',real:'פרסים אמיתיים',none:'אין כאן עדיין כלום. בואי לחנות!',shopHello:'קני מראות חדשים עם המטבעות!'},
     bonus:n=>`בונוס +${n} מטבעות!`,timeup:'נגמר הזמן! כל הכבוד!',nice:'הצלחת!',left:'ש׳',hint:'לחצי על משימה כשסיימת. לחיצה נוספת מבטלת.',gtitle:'מצאי את הזוגות!',gsub:'מצאי את כל הזוגות ב-60 שניות. ככל שמהר יותר, הבונוס גדול יותר!',
@@ -413,9 +413,31 @@ function toggleTask(t){
   if(d){
     if(isPend(d))act(async()=>{const r=await sb.rpc('cancel_completion',{p_id:d.cid});if(r.error)throw r.error});
     return }
-  pendingTask=t;
-  if(t.g==='none'||!L().gm[t.g]){finishTask(0);return}
+  pendingTask=Object.assign({},t);
+  if(pendingTask.g==='sudoku')pendingTask.g='brush';
+  if(pendingTask.g==='random')pendingTask.g=nextRandomGame();
+  else markGameSeen(pendingTask.g);
+  if(pendingTask.g==='none'||!L().gm[pendingTask.g]){finishTask(0);return}
   openGame();
+}
+function markGameSeen(g){
+  if(!g||g==='none'||g==='random'||g==='sudoku'||g==='flip')return;
+  const key='cq-playbag'; let all={};
+  try{all=JSON.parse(localStorage.getItem(key)||'{}')}catch(e){}
+  const id=kidId||'kid', seen=all[id]||{};
+  seen[g]=Date.now(); all[id]=seen;
+  try{localStorage.setItem(key,JSON.stringify(all))}catch(e){}
+}
+function nextRandomGame(){
+  const pool=Object.keys(T.en.gm);
+  const key='cq-playbag'; let all={};
+  try{all=JSON.parse(localStorage.getItem(key)||'{}')}catch(e){}
+  const seen=(all[kidId||'kid'])||{};
+  let best=Infinity, ties=[];
+  pool.forEach(g=>{const t=seen[g]||0; if(t<best){best=t;ties=[g]} else if(t===best)ties.push(g)});
+  const pick=ties[Math.floor(Math.random()*ties.length)]||'memory';
+  markGameSeen(pick);
+  return pick;
 }
 function finishTask(bonus){
   const t=pendingTask; if(!t) return; bonus=bonus||0; pendingTask=null;
@@ -461,7 +483,7 @@ function openGame(){
   $('win').classList.remove('on');$('skip').style.display='';$('gprog').textContent='';ended=false;clearVote();
   $('cards').style.display='none';$('arena').style.display='none';$('dom').style.display='none';
   $('game').classList.add('on'); startMusic();
-  const G={memory:memoryGame,critters:crittersGame,simon:simonGame,count:countGame,queens:queensGame,tennis:tennisGame,bounce:bounceGame,silver:silverGame,sudoku:sudokuGame,scramble:scrambleGame,slide:slideGame,reflex:reflexGame,birds:birdsGame};
+  const G={memory:memoryGame,critters:crittersGame,simon:simonGame,count:countGame,queens:queensGame,tennis:tennisGame,bounce:bounceGame,silver:silverGame,brush:brushGame,scramble:scrambleGame,slide:slideGame,reflex:reflexGame,birds:birdsGame};
   if(G[k])G[k]();else arenaGame(k);
 }
 function memoryGame(){
@@ -744,36 +766,83 @@ function bounceGame(){
     raf=requestAnimationFrame(loop);
   })();
 }
-function sudokuGame(){
-  const box=bigBox(),SY=['🍎','🐟','🌸','⭐','🍓','🎈'];let solved=0,sec=90,n,h,w,grid,fixed,sel=null,sym;
-  const hud=()=>$('gprog').textContent='🧩 '+solved+'   ⏱ '+sec+L().left;
-  function newP(){
-    n=solved<1?4:6;h=2;w=n/2;sym=shuf(SY).slice(0,n);sel=null;
-    const base=(r,c)=>(w*(r%h)+Math.floor(r/h)+c)%n;
-    grid=Array.from({length:n},(_,r)=>Array.from({length:n},(_,c)=>sym[base(r,c)]));
-    fixed=Array.from({length:n},()=>Array.from({length:n},()=>Math.random()<.5));
-    for(let r=0;r<n;r++)for(let c=0;c<n;c++)if(!fixed[r][c])grid[r][c]='';
-    if(fixed.every(r=>r.every(Boolean))){fixed[0][0]=false;grid[0][0]=''}
-    draw()}
-  function conflict(r,c){const v=grid[r][c];if(!v)return false;
-    for(let i=0;i<n;i++){if(i!==c&&grid[r][i]===v)return true;if(i!==r&&grid[i][c]===v)return true}
-    const r0=r-r%h,c0=c-c%w;for(let y=r0;y<r0+h;y++)for(let x=c0;x<c0+w;x++)if((y!==r||x!==c)&&grid[y][x]===v)return true;return false}
-  function move(i){const z=t.indexOf(0);if(ended||nb(i).indexOf(z)<0)return;t[z]=t[i];t[i]=0;tone(SC[2],ctx().currentTime,.1,'triangle',.1);draw();
-    if(isDone()){solved++;hud();chime();later(newP,800)}}
+function brushGame(){
+  const {cv,W,H,g,pos}=canvasSetup(460);
+  const ROUND=26000, t0=Date.now(), who=S.gender==='boy'?'👦':'👧';
+  let stars=0, spots=[], bits=[], held=false, bx=W/2, by=H*.72, sprite=null;
+  try{
+    const img=new Image();
+    img.onload=()=>{sprite=img};
+    img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(avatar(null,{room:false}));
+  }catch(e){}
+  function teeth(){
+    const n=6, arr=[];
+    for(let i=0;i<n;i++){
+      const a=Math.PI*(0.12+0.76*(i+.5)/n);
+      arr.push({x:W/2+Math.cos(Math.PI-a)*(W*.36), y:H*.58+Math.sin(a)*28});
+    }
+    return arr;
+  }
+  function spawn(){
+    if(spots.length>=5)return;
+    const th=teeth()[Math.floor(Math.random()*6)];
+    spots.push({x:th.x+(Math.random()-.5)*20, y:th.y+8+(Math.random()-.5)*14, born:Date.now()});
+  }
+  function cleanAt(x,y){
+    let hit=false;
+    for(let i=spots.length-1;i>=0;i--){
+      const s=spots[i];
+      if(Math.hypot(s.x-x,s.y-y)<34){
+        spots.splice(i,1); stars++; hit=true;
+        for(let k=0;k<6;k++)bits.push({x:s.x,y:s.y,vx:(Math.random()-.5)*3.2,vy:-1.2-Math.random()*2.4,l:1});
+      }
+    }
+    if(hit)tone(SC[stars%6]*1.5,ctx().currentTime,.07,'sine',.07);
+  }
+  cv.onpointerdown=e=>{if(ended)return; held=true; const p=pos(e); bx=p.x; by=p.y; cleanAt(p.x,p.y)};
+  cv.onpointermove=e=>{if(!held||ended)return; const p=pos(e); bx=p.x; by=p.y; cleanAt(p.x,p.y)};
+  cv.onpointerup=()=>{held=false};
+  function rr(x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
   function draw(){
-    box.innerHTML='';const gr=document.createElement('div');gr.className='ggrid';gr.style.gridTemplateColumns='repeat(3,1fr)';gr.style.maxWidth='300px';gr.style.gap='6px';gr.style.touchAction='none';
-    t.forEach((v,i)=>{const b=document.createElement('button');b.className='cell';b.style.fontSize='36px';
-      if(v){b.textContent=v;b.style.background='linear-gradient(135deg,#ff9ec8,#a58bff)';b.style.color='#fff';
-        let sx,sy,dragged;
-        b.onpointerdown=e=>{sx=e.clientX;sy=e.clientY;dragged=false};
-        b.onpointerup=e=>{if(sx==null)return;const dx=e.clientX-sx,dy=e.clientY-sy;sx=null;
-          if(Math.max(Math.abs(dx),Math.abs(dy))<10)return;dragged=true;
-          const z=t.indexOf(0),d=Math.abs(dx)>Math.abs(dy)?(dx>0?1:-1):(dy>0?3:-3);
-          if(z===i+d&&(Math.abs(d)===3||Math.floor(z/3)===Math.floor(i/3)))move(i)};
-        b.onclick=()=>{if(dragged){dragged=false;return}move(i)}}
-      else{b.style.background='#0000000d';b.style.boxShadow='none'}
-      gr.appendChild(b)});box.appendChild(gr)}
-  newP();hud();runClock(90,()=>winGame(Math.min(solved*(n===4?8:12),BONUS_CAP),true),s=>{sec=s;hud()});
+    const bg=g.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#e7f6ff');bg.addColorStop(1,'#ffe6f2');
+    g.fillStyle=bg;g.fillRect(0,0,W,H);
+    const ax=W/2, ay=78, size=86;
+    if(sprite&&sprite.complete&&sprite.naturalWidth)g.drawImage(sprite,ax-size/2,ay-size*.9,size,size*1.15);
+    else{g.font='54px serif';g.textAlign='center';g.textBaseline='middle';g.fillText(who,ax,ay)}
+    g.fillStyle='#ff8fb8';rr(W*.12,H*.5,W*.76,78,36);g.fill();
+    teeth().forEach(th=>{
+      g.fillStyle='#fff';g.strokeStyle='#f3d6e4';g.lineWidth=3;
+      g.beginPath();g.ellipse(th.x,th.y,22,28,0,0,7);g.fill();g.stroke();
+      g.fillStyle='#ffffffcc';g.beginPath();g.ellipse(th.x-6,th.y-8,6,8,0,0,7);g.fill();
+    });
+    const now=Date.now();
+    spots.forEach(s=>{
+      const age=(now-s.born)/7000, al=age>.82?Math.max(0,1-(age-.82)/.18):1;
+      g.save();g.globalAlpha=al;g.translate(s.x,s.y);g.rotate(now/400);
+      g.fillStyle='#ffe14a';g.beginPath();
+      for(let i=0;i<8;i++){const a=i*Math.PI/4, rad=i%2?7:16;g.lineTo(Math.cos(a)*rad,Math.sin(a)*rad)}
+      g.closePath();g.fill();g.restore();
+    });
+    if(held){
+      g.strokeStyle='#7ec8ff';g.lineWidth=8;g.lineCap='round';
+      g.beginPath();g.moveTo(bx-6,by+18);g.lineTo(bx+10,by-16);g.stroke();
+      g.fillStyle='#fff';g.beginPath();g.ellipse(bx+12,by-20,12,7,-.6,0,7);g.fill();
+    }
+    bits.forEach(p=>{g.globalAlpha=Math.max(p.l,0);g.fillStyle='#fff3a0';g.beginPath();g.arc(p.x,p.y,3,0,7);g.fill();g.globalAlpha=1});
+  }
+  spawn();spawn();
+  (function loop(){
+    if(ended)return;
+    const now=Date.now();
+    const sec=Math.max(0,Math.ceil((ROUND-(now-t0))/1000));
+    $('gprog').textContent='⭐ '+stars+'   ⏱ '+sec+L().left;
+    if(now-t0>=ROUND){cv.onpointerdown=cv.onpointermove=cv.onpointerup=null;winGame(Math.min(BONUS_CAP,stars),true);return}
+    spots=spots.filter(s=>now-s.born<7000);
+    if(spots.length<4&&Math.random()<.045)spawn();
+    bits.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.l-=.04});bits=bits.filter(p=>p.l>0);
+    draw();
+    raf=requestAnimationFrame(loop);
+  })();
 }
 function scrambleGame(){
   const he=S.lang==='he',box=bigBox();let score=0,sec=40,word,picked=[];
